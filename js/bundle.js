@@ -10,15 +10,15 @@
 
   // 1. CONFIGURACIÓN Y SÍMBOLOS
   const SIMBOLOS = [
-    { id: 'SYM_LIMON', nombre: 'Limón', categoria: 'Fruta Base', icono: '🍋', peso: 28 },
-    { id: 'SYM_NARANJA', nombre: 'Naranja', categoria: 'Fruta Base', icono: '🍊', peso: 26 },
-    { id: 'SYM_COPA_AZUL', nombre: 'Granizado Azul', categoria: 'Bebida Estándar', icono: '🍧', peso: 20 },
-    { id: 'SYM_COPA_VERDE', nombre: 'Granizado Menta', categoria: 'Bebida Estándar', icono: '🍹', peso: 18 },
-    { id: 'SYM_SHOT', nombre: 'Shot Licor', categoria: 'Alcohol', icono: '🥃', peso: 14 },
-    { id: 'SYM_COCTEL_ROJO', nombre: 'Frozen Berries', categoria: 'Especial', icono: '🍸', peso: 10 },
-    { id: 'SYM_VODKA', nombre: 'Vodka Frozen', categoria: 'Premium', icono: '🍷', peso: 8 },
-    { id: 'SYM_BONUS', nombre: 'Bonus Coctelera', categoria: 'Bonus Especial', icono: '🫗', peso: 5 },
-    { id: 'SYM_GRATIS', nombre: 'Granizado Gratis', categoria: 'Jackpot', icono: '⭐', peso: 2 }
+    { id: 'SYM_LIMON', nombre: 'Limón', categoria: 'Fruta Base', icono: '🍋', peso: 30 },
+    { id: 'SYM_NARANJA', nombre: 'Naranja', categoria: 'Fruta Base', icono: '🍊', peso: 30 },
+    { id: 'SYM_COPA_AZUL', nombre: 'Granizado Azul', categoria: 'Bebida Estándar', icono: '🍧', peso: 24 },
+    { id: 'SYM_COPA_VERDE', nombre: 'Granizado Menta', categoria: 'Bebida Estándar', icono: '🍹', peso: 22 },
+    { id: 'SYM_SHOT', nombre: 'Shot Licor', categoria: 'Alcohol', icono: '🥃', peso: 18 },
+    { id: 'SYM_COCTEL_ROJO', nombre: 'Frozen Berries', categoria: 'Especial', icono: '🍸', peso: 14 },
+    { id: 'SYM_VODKA', nombre: 'Vodka Frozen', categoria: 'Premium', icono: '🍷', peso: 12 },
+    { id: 'SYM_BONUS', nombre: 'Bonus Coctelera', categoria: 'Bonus Especial', icono: '🫗', peso: 9 },
+    { id: 'SYM_GRATIS', nombre: 'Granizado Gratis', categoria: 'Jackpot', icono: '⭐', peso: 4 }
   ];
 
   const MAPA_SIMBOLOS = Object.fromEntries(SIMBOLOS.map(s => [s.id, s]));
@@ -354,6 +354,22 @@
         }
         return matriz;
       }
+      case 'HITBAR': {
+        let gratisColocados = 0;
+        for (let col = 0; col < c; col++) {
+          const fila = [];
+          for (let fil = 0; fil < f; fil++) {
+            if (gratisColocados < 3 && fil === 1) {
+              fila.push(MAPA_SIMBOLOS['SYM_GRATIS']);
+              gratisColocados++;
+            } else {
+              fila.push(MAPA_SIMBOLOS['SYM_LIMON']);
+            }
+          }
+          matriz.push(fila);
+        }
+        return matriz;
+      }
       default:
         return generarMatrizTirada(c, f);
     }
@@ -402,7 +418,7 @@
     };
   }
 
-  function evaluarTirada(matriz) {
+  function evaluarTirada(matriz, jackpotCount = 0) {
     const {
       conteo,
       posiciones,
@@ -416,7 +432,33 @@
 
     const buscarDefinicion = (idNivel) => NIVELES_PREMIO.find(n => n.id === idNivel);
 
+    // 0. TRIGGER HIT BAR (3 o más Granizados Gratis en pantalla)
+    if ((conteo['SYM_GRATIS'] || 0) >= 3) {
+      return {
+        premio: {
+          nivel: 13,
+          id: 'HITBAR_TRIGGER',
+          codigo: '⚡ HIT BAR',
+          beneficio: '¡Desafío Hit Bar!',
+          tipoFeedback: 'win_big'
+        },
+        celdasGanadoras: posiciones['SYM_GRATIS'] || [],
+        cantidadAciertos: conteo['SYM_GRATIS'],
+        esHitBarTrigger: true
+      };
+    }
+
+    // 1. JACKPOT (Granizado Gratis) - Máximo 3 veces por máquina
     if ((conteo['SYM_GRATIS'] || 0) >= 5) {
+      if (jackpotCount >= 3) {
+        // Cupo de Jackpots agotado: Se sustituye por Nivel 12
+        return {
+          premio: buscarDefinicion('NIVEL_12'),
+          celdasGanadoras: posiciones['SYM_GRATIS'] || [],
+          cantidadAciertos: conteo['SYM_GRATIS'],
+          jackpotCupoAlcanzado: true
+        };
+      }
       return { premio: buscarDefinicion('JACKPOT'), celdasGanadoras: posiciones['SYM_GRATIS'] || [], cantidadAciertos: conteo['SYM_GRATIS'] };
     }
     if (conteoEspeciales >= 5) {
@@ -454,6 +496,9 @@
     }
     if (conteoEspeciales >= 2) {
       return { premio: buscarDefinicion('NIVEL_2'), celdasGanadoras: posicionesEspeciales, cantidadAciertos: conteoEspeciales };
+    }
+    if (conteoGranizados >= 2) {
+      return { premio: buscarDefinicion('NIVEL_2'), celdasGanadoras: posicionesGranizados, cantidadAciertos: conteoGranizados };
     }
     if (conteoFrutas >= 2) {
       return { premio: buscarDefinicion('NIVEL_1'), celdasGanadoras: posicionesFrutas, cantidadAciertos: conteoFrutas };
@@ -592,6 +637,18 @@
     "VEN BAILALO.mp3"
   ];
 
+  const HITBAR_TRACKS = [
+    "042  2 Unlimited - No Limit.mp3",
+    "063 unlimited - get ready for this.mp3",
+    "012 tecnotronic - pum up the jam.mp3",
+    "006 Technotronic - Megamix.mp3",
+    "016 outhere brothers - boom boom.mp3",
+    "091 THE OUTHERE BROTHERS - DON'T STOP.mp3",
+    "085 MAQUINA TOTAL 7 - MEGAMIX.mp3",
+    "020 Reel-z real. - Like to move it.mp3",
+    "024 corona - the rythm of the night.mp3"
+  ];
+
   class SoundManager {
     constructor() {
       this.ctx = null;
@@ -664,6 +721,20 @@
       this.audioEl.volume = 0.7;
       this.audioEl.play().catch(e => {
         console.log('Error al reproducir canción de premio:', e);
+      });
+    }
+
+    playHitBarSong() {
+      if (this.musicMuted) return;
+      this.init();
+      this.isWinPlaying = true;
+      const randomIndex = Math.floor(Math.random() * HITBAR_TRACKS.length);
+      const track = HITBAR_TRACKS[randomIndex];
+      this.currentTrackName = track;
+      this.audioEl.src = 'music/' + encodeURIComponent(track);
+      this.audioEl.volume = 0.85;
+      this.audioEl.play().catch(e => {
+        console.log('Error al reproducir canción de Hit Bar:', e);
       });
     }
 
@@ -900,7 +971,7 @@
 
     createSymbolElement(simbolo, col, fila) {
       const cell = document.createElement('div');
-      cell.className = 'symbol-cell w-full h-[60px] sm:h-[68px] p-0.5 flex items-center justify-center';
+      cell.className = 'symbol-cell w-full h-[68px] sm:h-[72px] p-0.5 flex items-center justify-center';
       cell.dataset.col = col;
       cell.dataset.fila = fila;
       cell.dataset.symbolId = simbolo.id;
@@ -920,8 +991,8 @@
       this.clearHighlights();
 
       const firstCell = this.reels[0].trackEl.querySelector('.symbol-cell');
-      const cellHeight = firstCell ? firstCell.getBoundingClientRect().height : 64;
-      const stripLengths = [20, 24, 28, 32, 36];
+      const cellHeight = firstCell ? firstCell.getBoundingClientRect().height : 68;
+      const stripLengths = [22, 28, 34, 44, 52];
 
       const reelPromises = this.reels.map((reel, c) => {
         return new Promise((resolve) => {
@@ -950,7 +1021,7 @@
 
           track.classList.add('reel-spinning');
           const finalOffset = -(stripSymbols.length - 3) * cellHeight;
-          const spinDuration = 1.35 + (c * 0.32);
+          const spinDuration = 1.6 + (c * 0.48);
 
           void track.offsetHeight;
 
@@ -988,22 +1059,363 @@
     }
 
     clearHighlights() {
-      this.container.querySelectorAll('.symbol-winner').forEach(el => {
-        el.classList.remove('symbol-winner');
+      this.container.querySelectorAll('.symbol-winner, .reel-cell-hit-success').forEach(el => {
+        el.classList.remove('symbol-winner', 'reel-cell-hit-success');
       });
+    }
+
+    startFastSpin() {
+      this.isSpinning = true;
+      this.clearHighlights();
+
+      this.reels.forEach((reel, c) => {
+        const track = reel.trackEl;
+        track.style.transition = 'none';
+        track.style.transform = 'translateY(0px)';
+        track.innerHTML = '';
+
+        // Generamos 20 celdas para un bucle continuo fluido e infinito
+        for (let i = 0; i < 20; i++) {
+          const sym = obtenerSimboloAleatorio();
+          const cell = this.createSymbolElement(sym, c, -1);
+          track.appendChild(cell);
+        }
+
+        track.classList.add('reel-fast-spin-active');
+      });
+    }
+
+    stopFastSpin(targetMatrix = null) {
+      this.reels.forEach((reel, c) => {
+        const track = reel.trackEl;
+        track.classList.remove('reel-fast-spin-active');
+        track.style.transition = 'none';
+        track.style.transform = 'translateY(0px)';
+        track.innerHTML = '';
+        const matrixToRender = targetMatrix || this.currentMatrix;
+        if (matrixToRender && matrixToRender[c]) {
+          this.renderReelStatic(c, matrixToRender[c]);
+        }
+      });
+      this.isSpinning = false;
+    }
+
+    startHitBar5Reels(onReadyCallback) {
+      this.isSpinning = true;
+      this.clearHighlights();
+
+      // Strips de 10 símbolos con sólo 1 SYM_GRATIS en el índice 2 (alta dificultad)
+      this.hitBarStripSymbols = [
+        'SYM_LIMON',       // 0
+        'SYM_COPA_AZUL',   // 1
+        'SYM_GRATIS',      // 2 <-- Objetivo principal
+        'SYM_NARANJA',     // 3
+        'SYM_VODKA',       // 4
+        'SYM_COPA_VERDE',  // 5
+        'SYM_BONUS',       // 6
+        'SYM_LIMON',       // 7
+        'SYM_COCTEL_ROJO', // 8
+        'SYM_SHOT'         // 9
+      ];
+
+      const firstCell = this.reels[0].trackEl.querySelector('.symbol-cell');
+      this.hitBarCellHeight = firstCell ? firstCell.getBoundingClientRect().height : 68;
+      if (!this.hitBarCellHeight || this.hitBarCellHeight < 50) this.hitBarCellHeight = 68;
+
+      // Fase 1: Velocidades ultra rápidas iniciales (~38 a 52 px/frame a 60fps)
+      // Fase 2: Transición a velocidad normal legible (~8.5 a 11 px/frame)
+      const fastSpeeds = [38, 42, 45, 48, 52];
+      const normalSpeeds = [8.5, 9.2, 9.8, 10.4, 11.0];
+
+      this.hitBarStates = this.reels.map((reel, c) => {
+        const track = reel.trackEl;
+        track.classList.remove('reel-fast-spin-active', 'reel-spinning');
+        track.style.transition = 'none';
+        track.style.transform = 'translateY(0px)';
+        track.innerHTML = '';
+        reel.columnEl.classList.remove('reel-column-active');
+
+        // 3 repeticiones (30 celdas) para desplazamiento infinito ultra fluido
+        for (let rep = 0; rep < 3; rep++) {
+          this.hitBarStripSymbols.forEach((symId, sIdx) => {
+            const symObj = MAPA_SIMBOLOS[symId] || { id: symId, icono: '🍧', nombre: symId };
+            const cell = this.createSymbolElement(symObj, c, -1);
+            cell.dataset.symbolId = symId;
+            cell.dataset.symbolIndex = sIdx.toString();
+            track.appendChild(cell);
+          });
+        }
+
+        const initialOffset = Math.floor(Math.random() * (this.hitBarCellHeight * 10));
+        track.style.transform = `translateY(-${initialOffset}px)`;
+
+        return {
+          col: c,
+          reelEl: reel.columnEl,
+          trackEl: track,
+          offset: initialOffset,
+          currentSpeed: fastSpeeds[c],
+          targetSpeed: normalSpeeds[c],
+          isSpinning: true,
+          isStopped: false,
+          isHit: false,
+          centerSymbolId: null
+        };
+      });
+
+      const startTime = Date.now();
+      let hasSettledToNormal = false;
+      let frameCount = 0;
+
+      // Aplicar clase de giro rápido con desenfoque de movimiento en todos los carriles
+      this.reels.forEach(reel => {
+        reel.trackEl.classList.add('reel-fast-spin-active');
+      });
+
+      const animLoop = () => {
+        if (!this.isSpinning) return;
+        frameCount++;
+        const totalHeight10 = this.hitBarCellHeight * 10;
+        const elapsed = Date.now() - startTime;
+
+        // Fase 1: Durante los primeros 1200ms (o ~70 frames) giran a máxima velocidad ("muy rápido")
+        // Fase 2: A partir de 1200ms desaceleran gradualmente hasta llegar a velocidad normal
+        if (elapsed > 1200 || frameCount > 70) {
+          this.reels.forEach(reel => {
+            reel.trackEl.classList.remove('reel-fast-spin-active');
+          });
+
+          this.hitBarStates.forEach(state => {
+            if (state.currentSpeed > state.targetSpeed) {
+              state.currentSpeed = Math.max(state.targetSpeed, state.currentSpeed * 0.92);
+            }
+          });
+
+          if ((elapsed > 1800 || frameCount > 105) && !hasSettledToNormal) {
+            hasSettledToNormal = true;
+            this.hitBarStates.forEach(st => { st.currentSpeed = st.targetSpeed; });
+            if (onReadyCallback) {
+              onReadyCallback();
+            }
+          }
+        }
+
+        this.hitBarStates.forEach(state => {
+          if (state.isSpinning) {
+            state.offset = (state.offset + state.currentSpeed) % totalHeight10;
+            state.trackEl.style.transform = `translateY(-${state.offset}px)`;
+          }
+        });
+
+        this.hitBarAnimId = requestAnimationFrame(animLoop);
+      };
+
+      if (this.hitBarAnimId) cancelAnimationFrame(this.hitBarAnimId);
+      this.hitBarAnimId = requestAnimationFrame(animLoop);
+    }
+
+    detenerHitBarReel(colIndex) {
+      if (!this.hitBarStates || !this.hitBarStates[colIndex]) return null;
+      const state = this.hitBarStates[colIndex];
+      if (!state.isSpinning) return null;
+
+      state.isSpinning = false;
+      state.isStopped = true;
+
+      const cellHeight = this.hitBarCellHeight || 68;
+      const totalHeight10 = cellHeight * 10;
+
+      // Calcular qué celda cae exactamente en la línea central (Row 1: Y = 68 a 136px, centro = 102px)
+      const centerIndex = Math.floor((state.offset + (cellHeight * 1.5)) / cellHeight) % 10;
+      const centerSymbolId = this.hitBarStripSymbols[centerIndex];
+      const topSymbolId = this.hitBarStripSymbols[(centerIndex - 1 + 10) % 10];
+      const bottomSymbolId = this.hitBarStripSymbols[(centerIndex + 1) % 10];
+
+      state.centerSymbolId = centerSymbolId;
+
+      // Snapping matemático exacto a la línea central
+      let snappedOffset = (centerIndex * cellHeight) - cellHeight;
+      if (snappedOffset < 0) snappedOffset += totalHeight10;
+      state.offset = snappedOffset;
+      state.trackEl.style.transform = `translateY(-${snappedOffset}px)`;
+
+      // Actualizar matriz interna para renderizado y evaluación
+      this.currentMatrix[colIndex] = [
+        MAPA_SIMBOLOS[topSymbolId] || { id: topSymbolId, icono: '🍧', nombre: topSymbolId },
+        MAPA_SIMBOLOS[centerSymbolId] || { id: centerSymbolId, icono: '⭐', nombre: centerSymbolId },
+        MAPA_SIMBOLOS[bottomSymbolId] || { id: bottomSymbolId, icono: '🍧', nombre: bottomSymbolId }
+      ];
+
+      const isHit = (centerSymbolId === 'SYM_GRATIS');
+      state.isHit = isHit;
+
+      // Encontrar la celda central visual (en repetición 1: índice 10 + centerIndex)
+      const allCells = state.trackEl.querySelectorAll('.symbol-cell');
+      const centerCell = allCells[10 + centerIndex];
+
+      if (isHit) {
+        if (centerCell) {
+          centerCell.classList.add('reel-cell-hit-success');
+        }
+        state.reelEl.classList.add('reel-column-active');
+      } else {
+        state.reelEl.classList.remove('reel-column-active');
+      }
+
+      return {
+        col: colIndex,
+        isHit: isHit,
+        centerSymbolId: centerSymbolId,
+        centerCell: centerCell
+      };
+    }
+
+    setActiveHitBarColumn(colIndex) {
+      if (!this.hitBarStates) return;
+      this.hitBarStates.forEach((st, idx) => {
+        if (idx === colIndex) {
+          st.reelEl.classList.add('reel-column-active');
+        } else if (!st.isHit) {
+          st.reelEl.classList.remove('reel-column-active');
+        }
+      });
+    }
+
+    finalizarHitBar() {
+      if (this.hitBarAnimId) {
+        cancelAnimationFrame(this.hitBarAnimId);
+        this.hitBarAnimId = null;
+      }
+      this.isSpinning = false;
+      this.reels.forEach(reel => {
+        reel.trackEl.classList.remove('reel-fast-spin-active');
+        reel.columnEl.classList.remove('reel-column-active');
+      });
+      if (this.hitBarStates) {
+        this.hitBarStates.forEach(st => {
+          st.reelEl.classList.remove('reel-column-active');
+        });
+      }
     }
   }
 
-  // 7. APLICACIÓN PRINCIPAL CON ESCALADA DE LA PIRÁMIDE
+  // 6.5 FUNCIONES DE SEGURIDAD Y TERMINAL PARA VERIFICACIÓN QR
+  function getOrCreateTerminalId() {
+    let id = localStorage.getItem('paradice_terminal_id');
+    if (!id) {
+      const hex = () => Math.floor(Math.random() * 256).toString(16).toUpperCase().padStart(2, '0');
+      id = `MAC-${hex()}-${hex()}-${hex()}-${hex()}-${hex()}-${hex()}`;
+      localStorage.setItem('paradice_terminal_id', id);
+    }
+    return id;
+  }
+
+  function getDeviceSummary() {
+    const ua = navigator.userAgent;
+    let os = 'Dispositivo';
+    if (ua.indexOf('Win') !== -1) os = 'Windows PC';
+    else if (ua.indexOf('Android') !== -1) os = 'Android';
+    else if (ua.indexOf('iPhone') !== -1 || ua.indexOf('iPad') !== -1) os = 'iOS';
+    else if (ua.indexOf('Mac') !== -1) os = 'MacOS';
+    else if (ua.indexOf('Linux') !== -1) os = 'Linux';
+    return os;
+  }
+
+  function calcularFirma(intento, premio, fecha, hora, terminal) {
+    const secret = "PARADICE_SECRET_SLOT_KEY_2026";
+    const raw = `${intento}|${premio}|${fecha}|${hora}|${terminal}|${secret}`;
+    let hash1 = 0;
+    for (let i = 0; i < raw.length; i++) {
+      const char = raw.charCodeAt(i);
+      hash1 = ((hash1 << 5) - hash1) + char;
+      hash1 = hash1 & hash1;
+    }
+    let hash2 = 5381;
+    for (let i = 0; i < raw.length; i++) {
+      hash2 = ((hash2 << 5) + hash2) + raw.charCodeAt(i);
+      hash2 = hash2 & hash2;
+    }
+    return Math.abs(hash1).toString(16).toUpperCase().padStart(8, '0') +
+           Math.abs(hash2).toString(16).toUpperCase().padStart(8, '0');
+  }
+
+  let cachedPublicIp = null;
+
+  async function detectarIpPublica() {
+    if (cachedPublicIp) return cachedPublicIp;
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1800);
+      const resp = await fetch('https://api.ipify.org?format=json', { signal: controller.signal });
+      clearTimeout(timeoutId);
+      if (resp.ok) {
+        const data = await resp.json();
+        if (data && data.ip) {
+          cachedPublicIp = data.ip;
+          return cachedPublicIp;
+        }
+      }
+    } catch (e) {
+      // Entorno offline de kiosko
+    }
+    cachedPublicIp = '192.168.1.100';
+    return cachedPublicIp;
+  }
+
+  function isTerminalBlocked() {
+    const blockedFlag = localStorage.getItem('paradice_terminal_blocked');
+    if (blockedFlag === 'true') return true;
+    const blockedList = JSON.parse(localStorage.getItem('paradice_blocked_terminals') || '[]');
+    const mac = getOrCreateTerminalId();
+    return blockedList.includes(mac) || (cachedPublicIp && blockedList.includes(cachedPublicIp));
+  }
+
+  function blockTerminal(ip = null) {
+    localStorage.setItem('paradice_terminal_blocked', 'true');
+    const mac = getOrCreateTerminalId();
+    let blockedList = JSON.parse(localStorage.getItem('paradice_blocked_terminals') || '[]');
+    if (!blockedList.includes(mac)) blockedList.push(mac);
+    if (ip && !blockedList.includes(ip)) blockedList.push(ip);
+    localStorage.setItem('paradice_blocked_terminals', JSON.stringify(blockedList));
+  }
+
+  function unblockTerminal() {
+    localStorage.removeItem('paradice_terminal_blocked');
+    const mac = getOrCreateTerminalId();
+    let blockedList = JSON.parse(localStorage.getItem('paradice_blocked_terminals') || '[]');
+    blockedList = blockedList.filter(item => item !== mac && item !== cachedPublicIp);
+    localStorage.setItem('paradice_blocked_terminals', JSON.stringify(blockedList));
+  }
+
+  // 7. APLICACIÓN PRINCIPAL CON ESCALADA DE LA PIRÁMIDE Y HIT BAR DIRECTO EN PANEL PRINCIPAL
   class GranizadosSlotApp {
     constructor() {
       this.estado = ESTADOS_JUEGO.IDLE;
       this.reelsController = null;
       this.ultimoResultado = null;
+      this.premioActualEnMano = null;
       this.historialTiradas = [];
       this.confettiInstance = null;
       this.modoPruebaForzado = null;
       this.autoSpinActivo = false;
+
+      // Sistema de 3 Vidas / Oportunidades persistente en localStorage
+      const vidasGuardadas = localStorage.getItem('paradice_vidas_restantes');
+      const intentoGuardado = localStorage.getItem('paradice_intento_actual');
+      this.vidasRestantes = (vidasGuardadas !== null) ? parseInt(vidasGuardadas, 10) : 3;
+      this.intentoActual = (intentoGuardado !== null) ? parseInt(intentoGuardado, 10) : 1;
+
+      // Minijuego HIT BAR en el panel principal (5 rodillos interactivos)
+      this.hitBarModoActivo = false;
+      this.hitBarColumnaActual = 0;
+      this.hitBarAciertos = 0;
+      this.hitBarStoppingStep = false;
+      this.hitBarResolverPromise = null;
+      this.hitBarJugadoEnPartida = false;
+      this.vidaHitBarMisterio = Math.floor(Math.random() * 3) + 1;
+
+      // Control estricto de Jackpots (Máximo 3)
+      this.jackpotWinsCount = parseInt(localStorage.getItem('paradice_jackpot_wins_count') || '0', 10);
 
       try {
         const guardado = localStorage.getItem('paradice_slot_historial');
@@ -1015,16 +1427,89 @@
       }
     }
 
+    guardarVidas() {
+      try {
+        localStorage.setItem('paradice_vidas_restantes', this.vidasRestantes.toString());
+        localStorage.setItem('paradice_intento_actual', this.intentoActual.toString());
+      } catch (e) {}
+    }
+
+    dispararChispasHitBar() {
+      if (!this.confettiInstance) return;
+
+      // Chispas eléctricas brillantes y doradas de casino
+      this.confettiInstance({
+        particleCount: 70,
+        startVelocity: 42,
+        spread: 360,
+        ticks: 85,
+        origin: { x: 0.5, y: 0.55 },
+        colors: ['#00f0ff', '#facc15', '#ffffff', '#fbbf24', '#38bdf8', '#ff007f'],
+        shapes: ['circle', 'square'],
+        scalar: 0.68,
+        gravity: 1.15
+      });
+
+      setTimeout(() => {
+        if (!this.confettiInstance) return;
+        this.confettiInstance({
+          particleCount: 40,
+          angle: 55,
+          spread: 50,
+          startVelocity: 35,
+          origin: { x: 0.12, y: 0.55 },
+          colors: ['#facc15', '#00f0ff', '#ffffff'],
+          scalar: 0.55
+        });
+        this.confettiInstance({
+          particleCount: 40,
+          angle: 125,
+          spread: 50,
+          startVelocity: 35,
+          origin: { x: 0.88, y: 0.55 },
+          colors: ['#facc15', '#00f0ff', '#ffffff'],
+          scalar: 0.55
+        });
+      }, 200);
+    }
+
+    dispararChispasColumna(colIdx) {
+      if (!this.confettiInstance) return;
+      const xPos = 0.12 + (colIdx * 0.19);
+      this.confettiInstance({
+        particleCount: 30,
+        spread: 75,
+        startVelocity: 30,
+        ticks: 60,
+        origin: { x: xPos, y: 0.52 },
+        colors: ['#facc15', '#ffffff', '#fbbf24', '#00f0ff'],
+        scalar: 0.6,
+        gravity: 1.25
+      });
+    }
+
     init() {
       this.cacheDOM();
       this.initConfetti();
+
+      detectarIpPublica().then(() => {
+        this.actualizarSupervisorUI();
+      });
 
       this.reelsController = new ReelsController(this.dom.reelsContainer, 5, 3);
       this.reelsController.init();
 
       this.bindEvents();
       this.actualizarUIEstado();
+      this.actualizarVidasUI();
+      this.actualizarJackpotUI();
       this.actualizarHistorialUI();
+      this.actualizarSupervisorUI();
+
+      if (isTerminalBlocked() || this.vidasRestantes <= 0) {
+        this.bloquearTerminalActual();
+        this.mostrarBloqueoTerminal();
+      }
     }
 
     cacheDOM() {
@@ -1052,17 +1537,51 @@
         testBonusBtn: document.getElementById('test-bonus-btn'),
         testMojarroBtn: document.getElementById('test-mojarro-btn'),
         clearHistoryBtn: document.getElementById('clear-history-btn'),
+        // Minijuego Hit Bar en vivo (Panel Principal)
+        hitbarBanner: document.getElementById('hitbar-live-banner'),
+        hitbarTitle: document.getElementById('hitbar-live-title'),
+        hitbarScore: document.getElementById('hitbar-live-score'),
+        paylineGuide: document.getElementById('main-payline-guide'),
+        testHitbarBtn: document.getElementById('test-hitbar-btn'),
+        // Bloqueo de Terminal IP/MAC
+        terminalBlockedModal: document.getElementById('terminal-blocked-modal'),
+        blockedTerminalMac: document.getElementById('blocked-terminal-mac'),
+        blockedTerminalIp: document.getElementById('blocked-terminal-ip'),
+        unlockTerminalBtn: document.getElementById('unlock-terminal-btn'),
+        supervisorTerminalStatus: document.getElementById('supervisor-terminal-status'),
+        supervisorTerminalInfo: document.getElementById('supervisor-terminal-info'),
+        supervisorStateBadge: document.getElementById('supervisor-state-badge'),
+        supervisorResultSummary: document.getElementById('supervisor-result-summary'),
+        // Indicador de Vidas
+        life1: document.getElementById('life-1'),
+        life2: document.getElementById('life-2'),
+        life3: document.getElementById('life-3'),
+        livesLabel: document.getElementById('lives-label'),
         // Combinaciones
         combinationsBtn: document.getElementById('combinations-btn'),
         combinationsModal: document.getElementById('combinations-modal'),
         closeCombinationsBtn: document.getElementById('close-combinations-modal'),
         closeCombinationsBtnBottom: document.getElementById('close-combinations-btn-bottom'),
-        // Popout Ganador
+        // Popout Ganador 3D Flip y QR
         winPopoutModal: document.getElementById('win-popout-modal'),
+        flipCardInner: document.getElementById('flip-card-inner'),
         winPopoutIcon: document.getElementById('win-popout-icon'),
+        winPopoutTitle: document.getElementById('win-popout-title'),
         winPopoutTier: document.getElementById('win-popout-tier'),
         winPopoutPrize: document.getElementById('win-popout-prize'),
-        closeWinPopoutBtn: document.getElementById('close-win-popout-btn')
+        winPopoutAttemptInfo: document.getElementById('win-popout-attempt-info'),
+        claimPrizeBtn: document.getElementById('claim-prize-btn'),
+        retrySpinBtn: document.getElementById('retry-spin-btn'),
+        closeWinPopoutBtn: document.getElementById('close-win-popout-btn'),
+        qrcodeBox: document.getElementById('qrcode-box'),
+        qrSummaryPrize: document.getElementById('qr-summary-prize'),
+        qrSummaryAttempt: document.getElementById('qr-summary-attempt'),
+        qrSummaryTime: document.getElementById('qr-summary-time'),
+        qrSummaryTerminal: document.getElementById('qr-summary-terminal'),
+        qrDirectLink: document.getElementById('qr-direct-link'),
+        // Supervisor Jackpot Quota
+        jackpotCountDisplay: document.getElementById('jackpot-count-display'),
+        resetJackpotBtn: document.getElementById('reset-jackpot-btn')
       };
     }
 
@@ -1129,13 +1648,32 @@
         });
       }
 
-      // Popout Ganador
+      // Popout Ganador 3D y Decisiones
+      if (this.dom.claimPrizeBtn) {
+        this.dom.claimPrizeBtn.addEventListener('click', () => {
+          this.reclamarPremioYVoltearQR();
+        });
+      }
+
+      if (this.dom.retrySpinBtn) {
+        this.dom.retrySpinBtn.addEventListener('click', () => {
+          this.descartarYVolverATirar();
+        });
+      }
+
       if (this.dom.closeWinPopoutBtn) {
         this.dom.closeWinPopoutBtn.addEventListener('click', () => {
-          if (this.dom.winPopoutModal) {
-            this.dom.winPopoutModal.classList.add('hidden');
-          }
-          this.supervisorReiniciar();
+          this.reiniciarNuevaPartida();
+        });
+      }
+
+      if (this.dom.resetJackpotBtn) {
+        this.dom.resetJackpotBtn.addEventListener('click', () => {
+          this.jackpotWinsCount = 0;
+          try {
+            localStorage.setItem('paradice_jackpot_wins_count', '0');
+          } catch (e) {}
+          this.actualizarJackpotUI();
         });
       }
 
@@ -1183,6 +1721,20 @@
         });
       }
 
+      if (this.dom.testHitbarBtn) {
+        this.dom.testHitbarBtn.addEventListener('click', () => {
+          this.modoPruebaForzado = 'HITBAR';
+          this.cerrarModalSupervisor();
+          this.ejecutarGiro();
+        });
+      }
+
+      if (this.dom.unlockTerminalBtn) {
+        this.dom.unlockTerminalBtn.addEventListener('click', () => {
+          this.desbloquearTerminal();
+        });
+      }
+
       if (this.dom.clearHistoryBtn) {
         this.dom.clearHistoryBtn.addEventListener('click', () => {
           this.historialTiradas = [];
@@ -1203,6 +1755,13 @@
       };
       window.addEventListener('click', unlockAudioAndStartMusic);
       window.addEventListener('touchstart', unlockAudioAndStartMusic);
+
+      window.addEventListener('keydown', (e) => {
+        if (e.code === 'Space') {
+          e.preventDefault();
+          this.handleSpinClick();
+        }
+      });
     }
 
     toggleAutoSpin() {
@@ -1222,6 +1781,14 @@
     }
 
     async handleSpinClick() {
+      if (this.hitBarModoActivo) {
+        this.avanzarHitBarPaso();
+        return;
+      }
+      if (isTerminalBlocked()) {
+        this.mostrarBloqueoTerminal();
+        return;
+      }
       if (this.estado !== ESTADOS_JUEGO.IDLE) {
         if (this.estado === ESTADOS_JUEGO.LOCKED) {
           this.mostrarAlertaSupervisorRequerido();
@@ -1229,6 +1796,236 @@
         return;
       }
       this.ejecutarGiro();
+    }
+
+    iniciarHitBarEnPanelPrincipal() {
+      this.hitBarModoActivo = true;
+      this.hitBarColumnaActual = 0;
+      this.hitBarAciertos = 0;
+      this.hitBarStoppingStep = true;
+
+      // 1. Cambio de canción a Hit Bar (eurodance de alta energía)
+      soundManager.playHitBarSong();
+
+      // 2. Generar chispas y efecto de premio inmediato
+      this.dispararChispasHitBar();
+
+      // 3. Mostrar banner en vivo sobre las ruletas con animación de aceleración
+      if (this.dom.hitbarBanner) {
+        this.dom.hitbarBanner.classList.remove('hidden');
+      }
+      if (this.dom.hitbarTitle) {
+        this.dom.hitbarTitle.innerHTML = '⚡ <span class="text-amber-300 font-extrabold animate-pulse">¡¡HIT BAR ACTIVADO!! ¡MÁXIMA VELOCIDAD! ⚡</span>';
+      }
+      if (this.dom.hitbarScore) {
+        this.dom.hitbarScore.textContent = '0 / 5 Acertados';
+      }
+
+      // 4. Encender guía dorada central
+      if (this.dom.paylineGuide) {
+        this.dom.paylineGuide.classList.add('hitbar-payline-active');
+      }
+
+      // 5. Botón en estado preparatorio mientras se produce la animación rápida inicial
+      if (this.dom.spinBtn) {
+        this.dom.spinBtn.disabled = true;
+        this.dom.spinBtn.classList.add('spin-btn-hitbar-mode');
+      }
+      if (this.dom.spinBtnText) {
+        this.dom.spinBtnText.textContent = 'PREPÁRATE';
+      }
+      if (this.dom.spinBtnIcon) {
+        this.dom.spinBtnIcon.classList.add('animate-spin');
+        this.dom.spinBtnIcon.textContent = '⚡';
+      }
+
+      // 6. Animación de velocidad: primero muy rápido y luego desacelera a velocidad normal
+      this.reelsController.startHitBar5Reels(() => {
+        // Al desacelerar y llegar a velocidad normal:
+        this.hitBarStoppingStep = false;
+        if (this.dom.spinBtn) {
+          this.dom.spinBtn.disabled = false;
+        }
+        if (this.dom.spinBtnText) {
+          this.dom.spinBtnText.textContent = 'DETENER 1';
+        }
+        if (this.dom.spinBtnIcon) {
+          this.dom.spinBtnIcon.classList.remove('animate-spin');
+          this.dom.spinBtnIcon.textContent = '🛑';
+        }
+        if (this.dom.hitbarTitle) {
+          this.dom.hitbarTitle.innerHTML = '⚡ <span>HIT BAR: ¡DETÉN LA CASILLA 1 DE 5!</span>';
+        }
+        this.reelsController.setActiveHitBarColumn(0);
+      });
+
+      return new Promise((resolve) => {
+        this.hitBarResolverPromise = resolve;
+      });
+    }
+
+    avanzarHitBarPaso() {
+      if (!this.hitBarModoActivo || this.hitBarStoppingStep || this.hitBarColumnaActual >= 5) {
+        return;
+      }
+
+      this.hitBarStoppingStep = true;
+      const colActual = this.hitBarColumnaActual;
+
+      // Detener el rodillo actual y calcular alineación
+      const stopResult = this.reelsController.detenerHitBarReel(colActual);
+      if (!stopResult) {
+        this.hitBarStoppingStep = false;
+        return;
+      }
+
+      if (stopResult.isHit) {
+        this.hitBarAciertos++;
+        this.dispararChispasColumna(colActual);
+        soundManager.playClimbTick(7, 9);
+        if (this.dom.hitbarTitle) {
+          this.dom.hitbarTitle.innerHTML = `⭐ <span class="text-amber-300 animate-pulse">¡ACERTASTE CASILLA ${colActual + 1}! ⭐</span>`;
+        }
+      } else {
+        soundManager.playBlanqueo();
+        if (this.dom.hitbarTitle) {
+          this.dom.hitbarTitle.innerHTML = `❌ <span class="text-rose-400">Casilla ${colActual + 1} no cayó en granizado</span>`;
+        }
+      }
+
+      if (this.dom.hitbarScore) {
+        this.dom.hitbarScore.textContent = `${this.hitBarAciertos} / 5 Acertados`;
+      }
+
+      // Pausa táctil para asimilar la parada y activar la siguiente casilla
+      setTimeout(() => {
+        this.hitBarColumnaActual++;
+
+        if (this.hitBarColumnaActual < 5) {
+          const siguienteCol = this.hitBarColumnaActual;
+          this.reelsController.setActiveHitBarColumn(siguienteCol);
+
+          if (this.dom.hitbarTitle) {
+            this.dom.hitbarTitle.innerHTML = `⚡ <span>HIT BAR: ¡DETÉN LA CASILLA ${siguienteCol + 1} DE 5!</span>`;
+          }
+          if (this.dom.spinBtnText) {
+            this.dom.spinBtnText.textContent = `DETENER ${siguienteCol + 1}`;
+          }
+          this.hitBarStoppingStep = false;
+        } else {
+          this.concluirHitBar();
+        }
+      }, 420);
+    }
+
+    async concluirHitBar() {
+      if (this.dom.spinBtn) {
+        this.dom.spinBtn.disabled = true;
+      }
+      if (this.dom.spinBtnText) {
+        this.dom.spinBtnText.textContent = 'PROCESANDO';
+      }
+      if (this.dom.spinBtnIcon) {
+        this.dom.spinBtnIcon.textContent = '⏳';
+      }
+
+      const aciertos = this.hitBarAciertos;
+      let premioId = 'MOJARRO';
+
+      if (aciertos === 5) {
+        premioId = 'JACKPOT';
+        if (this.dom.hitbarTitle) {
+          this.dom.hitbarTitle.innerHTML = '⭐ <span class="text-amber-300 font-extrabold animate-bounce">¡¡¡5 DE 5 ALINEADOS!!! ¡¡¡GRANIZADO GRATIS (JACKPOT)!!! ⭐⭐⭐</span>';
+        }
+        soundManager.playHitBarSong();
+        this.dispararConfeti(true);
+      } else if (aciertos === 4) {
+        premioId = 'NIVEL_11';
+        if (this.dom.hitbarTitle) {
+          this.dom.hitbarTitle.innerHTML = '🍸 <span class="text-sky-300 font-extrabold animate-pulse">¡4 DE 5! ¡GRANIZADO DOBLE x13K! 🍸</span>';
+        }
+        soundManager.playWinSong();
+        this.dispararConfeti(false);
+      } else if (aciertos === 3) {
+        premioId = 'NIVEL_10';
+        if (this.dom.hitbarTitle) {
+          this.dom.hitbarTitle.innerHTML = '🍧 <span class="text-yellow-300 font-extrabold">¡3 DE 5! ¡DESCUENTO -$1.000 COP! 🍧</span>';
+        }
+        soundManager.playWinSong();
+        this.dispararConfeti(false);
+      } else if (aciertos === 2) {
+        premioId = 'NIVEL_2';
+        if (this.dom.hitbarTitle) {
+          this.dom.hitbarTitle.innerHTML = '🍹 <span class="text-emerald-300 font-extrabold">¡2 DE 5! ¡DESCUENTO -$300 COP! 🍹</span>';
+        }
+        soundManager.playWinSong();
+      } else if (aciertos === 1) {
+        premioId = 'NIVEL_1';
+        if (this.dom.hitbarTitle) {
+          this.dom.hitbarTitle.innerHTML = '🍋 <span class="text-amber-200 font-bold">¡1 DE 5! ¡DESCUENTO -$150 COP! 🍋</span>';
+        }
+        soundManager.playWinSong();
+      } else {
+        premioId = 'MOJARRO';
+        if (this.dom.hitbarTitle) {
+          this.dom.hitbarTitle.innerHTML = '<span class="text-slate-400">¡0 de 5 acertados! No lograste alinear los granizados esta vez.</span>';
+        }
+        soundManager.playBlanqueo();
+      }
+
+      if (premioId === 'JACKPOT' && this.jackpotWinsCount >= 3) {
+        premioId = 'NIVEL_12';
+      }
+
+      const premioObj = NIVELES_PREMIO.find(n => n.id === premioId);
+
+      // Pausa para apreciar el resultado completo de las 5 casillas
+      await new Promise(r => setTimeout(r, 1600));
+
+      // Desactivar modo Hit Bar
+      this.hitBarModoActivo = false;
+      this.reelsController.finalizarHitBar();
+
+      if (this.dom.hitbarBanner) {
+        this.dom.hitbarBanner.classList.add('hidden');
+      }
+      if (this.dom.paylineGuide) {
+        this.dom.paylineGuide.classList.remove('hitbar-payline-active');
+      }
+
+      // Devolver botón de girar a su estado original
+      if (this.dom.spinBtn) {
+        this.dom.spinBtn.classList.remove('spin-btn-hitbar-mode');
+        this.dom.spinBtn.disabled = false;
+      }
+      if (this.dom.spinBtnText) {
+        this.dom.spinBtnText.textContent = 'GIRAR';
+      }
+      if (this.dom.spinBtnIcon) {
+        this.dom.spinBtnIcon.textContent = '🔄';
+      }
+
+      // Celdas ganadoras en la payline central
+      const celdasGanadoras = [];
+      if (this.reelsController.currentMatrix) {
+        this.reelsController.currentMatrix.forEach((colSyms, colIdx) => {
+          if (colSyms[1] && colSyms[1].id === 'SYM_GRATIS') {
+            celdasGanadoras.push({ col: colIdx, fila: 1 });
+          }
+        });
+      }
+
+      const resultadoFinal = {
+        premio: premioObj,
+        cantidadAciertos: aciertos,
+        esHitBar: true,
+        celdasGanadoras: celdasGanadoras
+      };
+
+      if (this.hitBarResolverPromise) {
+        this.hitBarResolverPromise(resultadoFinal);
+        this.hitBarResolverPromise = null;
+      }
     }
 
     async ejecutarGiro() {
@@ -1250,13 +2047,35 @@
       await this.reelsController.spinTo(matrizDestino);
       soundManager.stopSpin();
 
+      // Suspense y adrenalina: breve pausa antes de iniciar la escalada
+      await new Promise(r => setTimeout(r, 450));
+
       this.estado = ESTADOS_JUEGO.RESOLVED;
-      const resultado = evaluarTirada(matrizDestino);
-      this.ultimoResultado = resultado;
+      let resultado = evaluarTirada(matrizDestino, this.jackpotWinsCount);
 
       if (resultado.celdasGanadoras && resultado.celdasGanadoras.length > 0) {
         this.reelsController.highlightWinningCells(resultado.celdasGanadoras);
       }
+
+      // Activación del MINIJUEGO HIT BAR EN PANEL PRINCIPAL:
+      // Se activa si aparecen 3+ Granizados Gratis O de manera aleatoria/misterio en una de las vidas
+      let dispararHitBar = false;
+      if (resultado.esHitBarTrigger) {
+        dispararHitBar = true;
+      } else if (!this.hitBarJugadoEnPartida && (this.intentoActual === this.vidaHitBarMisterio || (this.intentoActual === 3 && Math.random() < 0.75))) {
+        dispararHitBar = true;
+      }
+
+      if (dispararHitBar) {
+        this.hitBarJugadoEnPartida = true;
+        if (this.dom.statusTitle) {
+          this.dom.statusTitle.textContent = '⚡ ¡HIT BAR ACTIVADO! ¡GIRANDO A MÁXIMA VELOCIDAD! ⚡';
+        }
+        const resultadoHitBar = await this.iniciarHitBarEnPanelPrincipal();
+        resultado = resultadoHitBar;
+      }
+
+      this.ultimoResultado = resultado;
 
       // Animación de escalada de la pirámide alumbrando peldaño por peldaño
       await this.animarEscaladaTorre(resultado);
@@ -1264,14 +2083,48 @@
       this.ejecutarFeedback(resultado);
       this.registrarTiradaEnHistorial(resultado);
 
-      // Si ganó un premio (distinto de MOJARRO), cambiar a canción de premio y mostrar popout
-      if (resultado.premio.id !== 'MOJARRO') {
-        soundManager.playWinSong();
-        this.mostrarPopoutPremio(resultado);
+      if (resultado.premio.id === 'JACKPOT') {
+        this.jackpotWinsCount++;
+        try {
+          localStorage.setItem('paradice_jackpot_wins_count', this.jackpotWinsCount.toString());
+        } catch (e) {}
+        this.actualizarJackpotUI();
       }
 
-      this.estado = ESTADOS_JUEGO.LOCKED;
-      this.actualizarUIEstado();
+      // Si ganó un premio (distinto de MOJARRO), cambiar a canción de premio y mostrar popout interactivo con decisión
+      if (resultado.premio.id !== 'MOJARRO') {
+        soundManager.playWinSong();
+        this.mostrarPopoutConDecision(resultado);
+        this.estado = ESTADOS_JUEGO.LOCKED;
+        this.actualizarUIEstado();
+      } else {
+        // MOJARRO (Sin premio)
+        this.vidasRestantes--;
+        this.intentoActual++;
+        this.guardarVidas();
+        this.actualizarVidasUI();
+
+        if (this.vidasRestantes > 0) {
+          if (this.dom.statusTitle) {
+            this.dom.statusTitle.textContent = `Sin suerte. Te quedan ${this.vidasRestantes} ${this.vidasRestantes === 1 ? 'intento' : 'intentos'}.`;
+          }
+          setTimeout(() => {
+            this.estado = ESTADOS_JUEGO.IDLE;
+            this.limpiarResaltadoTorre();
+            this.reelsController.clearHighlights();
+            this.actualizarUIEstado();
+          }, 1400);
+        } else {
+          // Sin intentos restantes: Bloqueo de terminal tras agotar 3 vidas
+          if (this.dom.statusTitle) {
+            this.dom.statusTitle.textContent = '¡Sin más intentos! Has agotado tus 3 vidas.';
+          }
+          this.bloquearTerminalActual();
+          setTimeout(() => {
+            this.mostrarBloqueoTerminal();
+          }, 1800);
+        }
+      }
 
       if (this.autoSpinActivo) {
         setTimeout(() => {
@@ -1381,8 +2234,10 @@
       }
     }
 
-    mostrarPopoutPremio(resultado) {
+    mostrarPopoutConDecision(resultado) {
       if (!this.dom.winPopoutModal) return;
+
+      this.premioActualEnMano = resultado;
 
       let icon = '🎁';
       if (resultado.premio.id === 'JACKPOT') icon = '⭐';
@@ -1393,10 +2248,165 @@
       else icon = '🍹';
 
       if (this.dom.winPopoutIcon) this.dom.winPopoutIcon.textContent = icon;
-      if (this.dom.winPopoutTier) this.dom.winPopoutTier.textContent = `${resultado.premio.codigo} ${resultado.premio.nombre || ''}`;
+      if (this.dom.winPopoutTitle) this.dom.winPopoutTitle.textContent = (resultado.premio.id === 'JACKPOT') ? '⭐ ¡JACKPOT! ⭐' : '¡GANASTE!';
+      if (this.dom.winPopoutTier) this.dom.winPopoutTier.textContent = `${resultado.premio.codigo || ''} ${resultado.premio.nombre || ''}`;
       if (this.dom.winPopoutPrize) this.dom.winPopoutPrize.textContent = resultado.premio.beneficio;
 
+      // Actualizar texto del intento y vidas restantes
+      if (this.dom.winPopoutAttemptInfo) {
+        if (this.intentoActual >= 3) {
+          this.dom.winPopoutAttemptInfo.innerHTML = `Obtenido en el <span class="font-bold text-amber-300">Intento 3 de 3 (Última Oportunidad)</span>. Este es tu premio definitivo.`;
+        } else {
+          const vidasQuedan = this.vidasRestantes - 1;
+          this.dom.winPopoutAttemptInfo.innerHTML = `Obtenido en el <span class="font-bold text-amber-300">Intento ${this.intentoActual} de 3</span>. ¿Deseas quedarte con este premio o cambiarlo? (Te ${vidasQuedan === 1 ? 'queda' : 'quedan'} ${vidasQuedan} ${vidasQuedan === 1 ? 'vida' : 'vidas'}).`;
+        }
+      }
+
+      // En el intento 3 se oculta el botón de descartar
+      if (this.dom.retrySpinBtn) {
+        if (this.intentoActual >= 3) {
+          this.dom.retrySpinBtn.classList.add('hidden');
+        } else {
+          this.dom.retrySpinBtn.classList.remove('hidden');
+        }
+      }
+
+      // Asegurarse de mostrar la cara frontal
+      if (this.dom.flipCardInner) {
+        this.dom.flipCardInner.classList.remove('flipped');
+      }
+
       this.dom.winPopoutModal.classList.remove('hidden');
+    }
+
+    reclamarPremioYVoltearQR() {
+      if (!this.premioActualEnMano) return;
+
+      const intento = this.intentoActual;
+      const premio = this.premioActualEnMano.premio.beneficio;
+      const codigo = this.premioActualEnMano.premio.codigo || '';
+      const now = new Date();
+      const fecha = now.toISOString().slice(0, 10);
+      const hora = now.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const dispositivo = getDeviceSummary();
+      const terminal = getOrCreateTerminalId();
+      const sig = calcularFirma(intento, premio, fecha, hora, terminal);
+
+      const baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1) + 'verificar.html';
+      const params = new URLSearchParams({
+        intento: intento.toString(),
+        premio: premio,
+        codigo: codigo,
+        fecha: fecha,
+        hora: hora,
+        dispositivo: dispositivo,
+        terminal: terminal,
+        sig: sig
+      });
+      const verificationUrl = `${baseUrl}?${params.toString()}`;
+
+      // Actualizar resumen en el reverso
+      if (this.dom.qrSummaryPrize) this.dom.qrSummaryPrize.textContent = (codigo ? codigo + ' ' : '') + premio;
+      if (this.dom.qrSummaryAttempt) this.dom.qrSummaryAttempt.textContent = `Intento ${intento} de 3`;
+      if (this.dom.qrSummaryTime) this.dom.qrSummaryTime.textContent = `${fecha} ${hora}`;
+      if (this.dom.qrSummaryTerminal) this.dom.qrSummaryTerminal.textContent = terminal;
+      if (this.dom.qrDirectLink) this.dom.qrDirectLink.href = verificationUrl;
+
+      // Renderizar código QR
+      if (this.dom.qrcodeBox) {
+        this.dom.qrcodeBox.innerHTML = '';
+        if (typeof QRCode !== 'undefined') {
+          new QRCode(this.dom.qrcodeBox, {
+            text: verificationUrl,
+            width: 120,
+            height: 120,
+            colorDark: "#040814",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.M
+          });
+        } else {
+          this.dom.qrcodeBox.innerHTML = `<div class="p-2 text-center text-[10px] text-slate-800 font-bold">QR Generado<br>${sig}</div>`;
+        }
+      }
+
+      // Voltear tarjeta en 3D y bloquear terminal por premio reclamado
+      if (this.dom.flipCardInner) {
+        this.dom.flipCardInner.classList.add('flipped');
+      }
+
+      this.vidasRestantes = 0;
+      this.guardarVidas();
+      this.bloquearTerminalActual();
+    }
+
+    descartarYVolverATirar() {
+      if (this.intentoActual >= 3) return;
+
+      this.vidasRestantes--;
+      this.intentoActual++;
+      this.guardarVidas();
+      this.actualizarVidasUI();
+
+      if (this.dom.winPopoutModal) {
+        this.dom.winPopoutModal.classList.add('hidden');
+      }
+      if (this.dom.flipCardInner) {
+        this.dom.flipCardInner.classList.remove('flipped');
+      }
+
+      this.limpiarResaltadoTorre();
+      this.reelsController.clearHighlights();
+
+      this.estado = ESTADOS_JUEGO.IDLE;
+      this.actualizarUIEstado();
+
+      if (this.dom.statusTitle) {
+        this.dom.statusTitle.textContent = `Premio descartado. ¡Gira tu intento ${this.intentoActual} de 3!`;
+      }
+    }
+
+    reiniciarNuevaPartida() {
+      if (isTerminalBlocked() || this.vidasRestantes <= 0) {
+        if (this.dom.winPopoutModal) {
+          this.dom.winPopoutModal.classList.add('hidden');
+        }
+        this.mostrarBloqueoTerminal();
+        return;
+      }
+
+      this.vidasRestantes = 3;
+      this.intentoActual = 1;
+      this.guardarVidas();
+      this.premioActualEnMano = null;
+      this.hitBarJugadoEnPartida = false;
+      this.vidaHitBarMisterio = Math.floor(Math.random() * 3) + 1;
+      this.actualizarVidasUI();
+
+      if (this.dom.winPopoutModal) {
+        this.dom.winPopoutModal.classList.add('hidden');
+      }
+      if (this.dom.flipCardInner) {
+        this.dom.flipCardInner.classList.remove('flipped');
+      }
+
+      this.supervisorReiniciar();
+    }
+
+    actualizarVidasUI() {
+      const vidas = this.vidasRestantes;
+      if (this.dom.life1) this.dom.life1.classList.toggle('lost', vidas < 1);
+      if (this.dom.life2) this.dom.life2.classList.toggle('lost', vidas < 2);
+      if (this.dom.life3) this.dom.life3.classList.toggle('lost', vidas < 3);
+
+      if (this.dom.livesLabel) {
+        this.dom.livesLabel.textContent = `Intento ${Math.min(this.intentoActual, 3)} de 3`;
+      }
+    }
+
+    actualizarJackpotUI() {
+      if (this.dom.jackpotCountDisplay) {
+        this.dom.jackpotCountDisplay.textContent = `${this.jackpotWinsCount} / 3`;
+      }
     }
 
     resaltarFilaTorre(nivelId) {
@@ -1432,14 +2442,14 @@
         case ESTADOS_JUEGO.SPINNING:
         case ESTADOS_JUEGO.STOPPING:
           if (spinBtn) spinBtn.disabled = true;
-          if (spinBtnText) spinBtnText.textContent = 'GIRANDO';
+          if (spinBtnText) spinBtnText.textContent = 'Buena suerte';
           if (spinBtnIcon) spinBtnIcon.classList.add('animate-spin');
 
           if (statusBadge) {
             statusBadge.textContent = 'GIRANDO';
             statusBadge.className = 'px-2 py-0.5 rounded-full text-[8px] sm:text-[9px] font-black uppercase tracking-wider bg-blue-950 text-blue-400 border border-blue-500/40 animate-pulse';
           }
-          if (statusTitle) statusTitle.textContent = '¡Buscando Combinación Ganadora!';
+          if (statusTitle) statusTitle.textContent = '¡Buena suerte!';
           break;
 
         case ESTADOS_JUEGO.RESOLVED:
@@ -1455,11 +2465,6 @@
               statusBadge.className = 'px-2 py-0.5 rounded-full text-[8px] sm:text-[9px] font-black uppercase tracking-wider bg-slate-800 text-slate-400 border border-slate-600';
             }
             if (statusTitle) statusTitle.textContent = '¡Sin Suerte esta vez!';
-            setTimeout(() => {
-              if (this.estado === ESTADOS_JUEGO.LOCKED && this.ultimoResultado && this.ultimoResultado.premio.id === 'MOJARRO') {
-                this.supervisorReiniciar();
-              }
-            }, 1200);
           } else if (premio && premio.id === 'JACKPOT') {
             if (statusBadge) {
               statusBadge.textContent = '⭐ JACKPOT ⭐';
@@ -1485,6 +2490,7 @@
     abrirModalSupervisor() {
       this.dom.supervisorModal.classList.remove('hidden');
       this.actualizarHistorialUI();
+      this.actualizarSupervisorUI();
     }
 
     cerrarModalSupervisor() {
@@ -1502,11 +2508,93 @@
     }
 
     supervisorReiniciar() {
+      unblockTerminal();
+      if (this.dom.terminalBlockedModal) {
+        this.dom.terminalBlockedModal.classList.add('hidden');
+      }
+      this.vidasRestantes = 3;
+      this.intentoActual = 1;
+      this.guardarVidas();
+      this.hitBarModoActivo = false;
+      this.hitBarStoppingStep = false;
+      this.hitBarJugadoEnPartida = false;
+      this.vidaHitBarMisterio = Math.floor(Math.random() * 3) + 1;
+      this.actualizarVidasUI();
+
+      if (this.reelsController) {
+        this.reelsController.finalizarHitBar();
+      }
+      if (this.dom.hitbarBanner) {
+        this.dom.hitbarBanner.classList.add('hidden');
+      }
+      if (this.dom.paylineGuide) {
+        this.dom.paylineGuide.classList.remove('hitbar-payline-active');
+      }
+      if (this.dom.spinBtn) {
+        this.dom.spinBtn.classList.remove('spin-btn-hitbar-mode');
+      }
+
       this.estado = ESTADOS_JUEGO.IDLE;
       this.limpiarResaltadoTorre();
       this.reelsController.clearHighlights();
       this.actualizarUIEstado();
+      this.actualizarSupervisorUI();
       this.cerrarModalSupervisor();
+    }
+
+    mostrarBloqueoTerminal() {
+      const mac = getOrCreateTerminalId();
+      const ip = cachedPublicIp || '192.168.1.100';
+
+      if (this.dom.blockedTerminalMac) this.dom.blockedTerminalMac.textContent = mac;
+      if (this.dom.blockedTerminalIp) this.dom.blockedTerminalIp.textContent = ip;
+      if (this.dom.terminalBlockedModal) this.dom.terminalBlockedModal.classList.remove('hidden');
+
+      if (this.dom.spinBtn) this.dom.spinBtn.disabled = true;
+      this.actualizarSupervisorUI();
+    }
+
+    bloquearTerminalActual() {
+      const ip = cachedPublicIp || '192.168.1.100';
+      blockTerminal(ip);
+      this.actualizarSupervisorUI();
+    }
+
+    desbloquearTerminal() {
+      unblockTerminal();
+      if (this.dom.terminalBlockedModal) {
+        this.dom.terminalBlockedModal.classList.add('hidden');
+      }
+      this.vidasRestantes = 3;
+      this.intentoActual = 1;
+      this.hitBarJugadoEnPartida = false;
+      this.vidaHitBarMisterio = Math.floor(Math.random() * 3) + 1;
+      this.actualizarVidasUI();
+      this.supervisorReiniciar();
+      this.actualizarSupervisorUI();
+      if (this.dom.statusTitle) {
+        this.dom.statusTitle.textContent = '¡Terminal desbloqueada! ¡Tira tu Granizado de la Suerte!';
+      }
+    }
+
+    actualizarSupervisorUI() {
+      const mac = getOrCreateTerminalId();
+      const ip = cachedPublicIp || 'Detectando...';
+      if (this.dom.supervisorTerminalInfo) {
+        this.dom.supervisorTerminalInfo.textContent = `MAC: ${mac} • IP: ${ip}`;
+      }
+      const blocked = isTerminalBlocked();
+      if (this.dom.supervisorTerminalStatus) {
+        this.dom.supervisorTerminalStatus.innerHTML = blocked
+          ? '<span class="text-rose-400 font-bold">🔴 BLOQUEADA (3 Vidas)</span>'
+          : '<span class="text-emerald-400 font-bold">🟢 Habilitada</span>';
+      }
+      if (this.dom.supervisorStateBadge) {
+        this.dom.supervisorStateBadge.textContent = this.estado;
+      }
+      if (this.dom.supervisorResultSummary && this.ultimoResultado) {
+        this.dom.supervisorResultSummary.textContent = this.ultimoResultado.premio.beneficio;
+      }
     }
 
     registrarTiradaEnHistorial(resultado) {
@@ -1572,5 +2660,6 @@
   window.addEventListener('DOMContentLoaded', () => {
     const app = new GranizadosSlotApp();
     app.init();
+    window.paradiceApp = app;
   });
 })();
