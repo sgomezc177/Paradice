@@ -910,6 +910,66 @@
         osc.stop(now + idx * 0.12 + 0.15);
       });
     }
+
+    playHitBarPerdida() {
+      // 1. Detener la música acelerada de Hit Bar para dar paso al sonido de pérdida
+      this.stopMusic();
+      this.isWinPlaying = false;
+
+      if (this.sfxMuted) return;
+      this.init();
+      if (!this.ctx) return;
+
+      const now = this.ctx.currentTime;
+
+      // Sonido de pérdida de arcade / sad trombone retro con notas descendentes
+      const notas = [
+        { freq: 196.00, time: 0.00, dur: 0.32 }, // G3
+        { freq: 185.00, time: 0.32, dur: 0.32 }, // F#3
+        { freq: 174.61, time: 0.64, dur: 0.32 }, // F3
+        { freq: 155.56, time: 0.96, dur: 0.85, slideTo: 105.0 } // Eb3 con deslizamiento triste hacia abajo
+      ];
+
+      notas.forEach(n => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        const filter = this.ctx.createBiquadFilter();
+
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(n.freq, now + n.time);
+        if (n.slideTo) {
+          osc.frequency.exponentialRampToValueAtTime(n.slideTo, now + n.time + n.dur);
+        }
+
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(750, now + n.time);
+        filter.frequency.exponentialRampToValueAtTime(320, now + n.time + n.dur);
+
+        gain.gain.setValueAtTime(0.25, now + n.time);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + n.time + n.dur);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now + n.time);
+        osc.stop(now + n.time + n.dur + 0.05);
+      });
+
+      // Golpe sordo de fallo / sub-bass
+      const subOsc = this.ctx.createOscillator();
+      const subGain = this.ctx.createGain();
+      subOsc.type = 'sine';
+      subOsc.frequency.setValueAtTime(115, now);
+      subOsc.frequency.exponentialRampToValueAtTime(30, now + 0.5);
+      subGain.gain.setValueAtTime(0.32, now);
+      subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+
+      subOsc.connect(subGain);
+      subGain.connect(this.ctx.destination);
+      subOsc.start(now);
+      subOsc.stop(now + 0.51);
+    }
   }
 
   const soundManager = new SoundManager();
@@ -1122,10 +1182,10 @@
       this.hitBarCellHeight = firstCell ? firstCell.getBoundingClientRect().height : 68;
       if (!this.hitBarCellHeight || this.hitBarCellHeight < 50) this.hitBarCellHeight = 68;
 
-      // Fase 1: Velocidades ultra rápidas iniciales (~38 a 52 px/frame a 60fps)
-      // Fase 2: Transición a velocidad normal legible (~8.5 a 11 px/frame)
-      const fastSpeeds = [38, 42, 45, 48, 52];
-      const normalSpeeds = [8.5, 9.2, 9.8, 10.4, 11.0];
+      // Fase 1: Velocidades ultra rápidas iniciales (-5%: ~36.1 a 49.4 px/frame a 60fps)
+      // Fase 2: Transición a velocidad normal legible (-5%: ~8.08 a 10.45 px/frame)
+      const fastSpeeds = [36.1, 39.9, 42.75, 45.6, 49.4];
+      const normalSpeeds = [8.08, 8.74, 9.31, 9.88, 10.45];
 
       this.hitBarStates = this.reels.map((reel, c) => {
         const track = reel.trackEl;
@@ -1968,9 +2028,9 @@
       } else {
         premioId = 'MOJARRO';
         if (this.dom.hitbarTitle) {
-          this.dom.hitbarTitle.innerHTML = '<span class="text-slate-400">¡0 de 5 acertados! No lograste alinear los granizados esta vez.</span>';
+          this.dom.hitbarTitle.innerHTML = '❌ <span class="text-rose-400 font-extrabold animate-pulse">¡0 DE 5 ACERTADOS! SIN COMBINACIÓN GANADORA ❌</span>';
         }
-        soundManager.playBlanqueo();
+        soundManager.playHitBarPerdida();
       }
 
       if (premioId === 'JACKPOT' && this.jackpotWinsCount >= 3) {
@@ -1979,8 +2039,9 @@
 
       const premioObj = NIVELES_PREMIO.find(n => n.id === premioId);
 
-      // Pausa para apreciar el resultado completo de las 5 casillas
-      await new Promise(r => setTimeout(r, 1600));
+      // Pausa para apreciar el resultado completo (sonido de pérdida o victoria)
+      const duracionPausa = (aciertos === 0) ? 2000 : 1600;
+      await new Promise(r => setTimeout(r, duracionPausa));
 
       // Desactivar modo Hit Bar
       this.hitBarModoActivo = false;
@@ -2113,6 +2174,7 @@
             this.limpiarResaltadoTorre();
             this.reelsController.clearHighlights();
             this.actualizarUIEstado();
+            soundManager.startMusic();
           }, 1400);
         } else {
           // Sin intentos restantes: Bloqueo de terminal tras agotar 3 vidas
