@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-950 overflow-hidden">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Paradice - Premios Granizados</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              cyan: '#00f0ff',
+              blue: '#0284c7',
+              pink: '#ff007f',
+              purple: '#9333ea',
+              gold: '#facc15'
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Canvas Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <!-- Estilos Custom Oficiales -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="h-full w-full flex flex-col items-center justify-center p-0 sm:p-2 relative overflow-hidden selection:bg-cyan-500 selection:text-slate-950">
+
+  <!-- Canvas para Confeti en Premios -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- 1. ELEMENTOS DE FONDO (Sunburst Rayos, Estrellas y Resplandor Azul) -->
+  <div class="bg-stage-elements">
+    <div class="sunburst-glow"></div>
+    <div class="stars-field"></div>
+  </div>
+
+  <!-- Contenedor Principal (100dvh Exacto: Todo Encaja Sin Cortes) -->
+  <div id="app-container" class="app-container w-full sm:max-w-[420px] flex flex-col justify-between relative z-10 sm:rounded-3xl sm:border sm:border-sky-400/40 sm:shadow-[0_0_35px_rgba(56,189,248,0.3)] overflow-hidden px-2 pt-1.5 pb-2 bg-slate-950/85 backdrop-blur-md">
+    
+    <!-- BARRA SUPERIOR: PARADICE, Música de fondo aleatoria, Combinaciones y Supervisor -->
+    <header class="w-full flex-shrink-0 flex items-center justify-between py-1 px-1.5 text-[10px] text-slate-300 border-b border-sky-500/30 bg-slate-950/90 rounded-t-xl">
+      <div class="flex items-center space-x-1.5">
+        <span class="font-black text-sky-400 tracking-tight text-sm sm:text-base flex items-center gap-1.5">
+          <span class="text-amber-400 text-base">⚡</span> PARADICE
+        </span>
+      </div>
+
+      <!-- Controles de Audio, Combinaciones y Supervisor -->
+      <div class="flex items-center space-x-1.5">
+        <!-- Botón para ver combinaciones de premios -->
+        <button id="combinations-btn" class="px-2.5 py-1 rounded-full bg-sky-950 border border-sky-400/70 text-sky-300 hover:text-white flex items-center gap-1 text-[10px] font-bold shadow-[0_0_8px_rgba(56,189,248,0.4)] transition-all" title="Ver Combinaciones Ganadoras">
+          <span>📜</span> <span>Premios</span>
+        </button>
+
+        <!-- Botón de Música (Playlist de canciones aleatorias en /music) -->
+        <button id="music-btn" class="px-2.5 py-1 rounded-full bg-purple-950/90 border border-purple-400/70 text-purple-300 hover:text-white flex items-center gap-1 text-[10px] font-bold shadow-[0_0_8px_rgba(168,85,247,0.4)] transition-all" title="Música Aleatoria">
+          <span id="music-icon">🎵</span> <span>Música</span>
+        </button>
+
+        <!-- Silenciar / Activar SFX -->
+        <button id="mute-btn" class="w-7 h-7 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center text-xs text-slate-300" title="Sonido SFX">
+          <span id="mute-icon">🔊</span>
+        </button>
+
+        <!-- Panel de Supervisor -->
+        <button id="supervisor-btn" class="w-7 h-7 rounded-full bg-slate-900 border border-sky-500/50 text-sky-400 flex items-center justify-center text-xs font-bold" title="Panel de Supervisor">
+          🛡️
+        </button>
+      </div>
+    </header>
+
+    <!-- 2. TORRE PIRAMIDAL "PREMIOS GRANIZADOS" (Más delgada abajo, más ancha arriba y texto centrado) -->
+    <section class="w-full flex-shrink-0 my-0.5 relative flex flex-col items-center">
+      
+      <!-- Salpicadura Líquida 3D Izquierda (Chorro Rojo Fresa) -->
+      <svg class="splash-stream-left" viewBox="0 0 50 180" fill="none">
+        <path d="M45,0 Q10,40 35,90 Q8,135 25,180" stroke="#f43f5e" stroke-width="8" stroke-linecap="round" opacity="0.9"/>
+        <path d="M45,0 Q10,40 35,90 Q8,135 25,180" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.8"/>
+        <circle cx="12" cy="55" r="3.5" fill="#e11d48"/>
+        <circle cx="8" cy="110" r="4" fill="#fb7185"/>
+        <circle cx="18" cy="150" r="3" fill="#be123c"/>
+      </svg>
+
+      <!-- Salpicadura Líquida 3D Derecha (Chorro Amarillo Mango) -->
+      <svg class="splash-stream-right" viewBox="0 0 50 180" fill="none">
+        <path d="M5,0 Q40,40 15,90 Q42,135 25,180" stroke="#f59e0b" stroke-width="8" stroke-linecap="round" opacity="0.9"/>
+        <path d="M5,0 Q40,40 15,90 Q42,135 25,180" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.8"/>
+        <circle cx="38" cy="55" r="3.5" fill="#facc15"/>
+        <circle cx="42" cy="110" r="4" fill="#fbbf24"/>
+        <circle cx="32" cy="150" r="3" fill="#d97706"/>
+      </svg>
+
+      <!-- Encabezado de la Pirámide con Vasitos Verde y Rojo -->
+      <div class="relative w-[95%] flex items-center justify-between mb-0.5 z-20">
+        
+        <!-- Vasito Verde Izquierdo -->
+        <div class="w-7 h-7 flex-shrink-0 filter drop-shadow-[0_0_6px_rgba(74,222,128,0.8)]">
+          <svg viewBox="0 0 100 100" class="w-full h-full">
+            <path d="M26,30 Q50,15 74,30 L66,86 Q50,92 34,86 Z" fill="#22c55e"/>
+            <ellipse cx="50" cy="30" rx="24" ry="7" fill="#86efac"/>
+            <path d="M24,28 L33,88 Q50,94 67,88 L76,28 Z" fill="rgba(255,255,255,0.2)" stroke="#ffffff" stroke-width="2"/>
+            <rect x="52" y="8" width="5" height="24" fill="#ffffff" transform="rotate(15 52 8)"/>
+          </svg>
+        </div>
+
+        <!-- Cartel Central 3D: PREMIOS GRANIZADOS -->
+        <div class="premios-banner-box flex-1 mx-1.5 py-0.5 px-3 flex flex-col items-center justify-center">
+          <span class="premios-3d-text text-[11px] sm:text-xs font-black tracking-wider uppercase">PREMIOS</span>
+          <span class="premios-3d-text text-[10px] sm:text-[11px] font-black tracking-widest uppercase -mt-0.5">GRANIZADOS</span>
+        </div>
+
+        <!-- Vasito Rojo Derecho -->
+        <div class="w-7 h-7 flex-shrink-0 filter drop-shadow-[0_0_6px_rgba(244,63,94,0.8)]">
+          <svg viewBox="0 0 100 100" class="w-full h-full">
+            <path d="M26,30 Q50,15 74,30 L66,86 Q50,92 34,86 Z" fill="#e11d48"/>
+            <ellipse cx="50" cy="30" rx="24" ry="7" fill="#fda4af"/>
+            <path d="M24,28 L33,88 Q50,94 67,88 L76,28 Z" fill="rgba(255,255,255,0.2)" stroke="#ffffff" stroke-width="2"/>
+            <rect x="52" y="8" width="5" height="24" fill="#ffffff" transform="rotate(-15 52 8)"/>
+          </svg>
+        </div>
+
+      </div>
+
+      <!-- Cuerpo Piramidal de la Torre (De abajo hacia arriba: Más delgada abajo, más ancha arriba y texto centrado) -->
+      <div class="premios-tower-trapezoid w-[95%] pt-1 pb-1.5 px-2 flex flex-col items-center">
+        
+        <!-- Filas de la Torre con Anchos Graduados y Texto Centrado -->
+        <div id="paytable-tower" class="w-full space-y-0.5 text-xs flex flex-col items-center">
+          
+          <!-- Nivel 13 (Cúspide, más ancha 100%): Granizado gratis -->
+          <div class="pill-row w-full mx-auto flex items-center justify-center text-center px-3 py-0.5 rounded-full bg-gradient-to-r from-emerald-500 to-green-600 text-white font-bold border border-emerald-300 text-[10px]" data-nivel-id="JACKPOT" data-ladder-index="8">
+            <span class="font-black text-emerald-100">13:</span>
+            <span class="font-extrabold tracking-wide ml-1.5">Granizado gratis</span>
+          </div>
+
+          <!-- Nivel 12 (96%): 2 Granizados dobles x23k -->
+          <div class="pill-row w-[96%] mx-auto flex items-center justify-center text-center px-3 py-0.5 rounded-full bg-gradient-to-r from-purple-700 to-fuchsia-700 text-white font-bold border border-purple-400 text-[10px]" data-nivel-id="NIVEL_12" data-ladder-index="7">
+            <span class="font-black text-purple-200">12:</span>
+            <span class="font-bold tracking-wide ml-1.5">2 Granizados dobles x23k</span>
+          </div>
+
+          <!-- Nivel 11 (92%): Granizado doble x13k -->
+          <div class="pill-row w-[92%] mx-auto flex items-center justify-center text-center px-3 py-0.5 rounded-full bg-gradient-to-r from-sky-600 to-blue-600 text-white font-bold border border-sky-300 text-[10px]" data-nivel-id="NIVEL_11" data-ladder-index="6">
+            <span class="font-black text-sky-200">11:</span>
+            <span class="font-bold tracking-wide ml-1.5">Granizado doble x13k</span>
+          </div>
+
+          <!-- Nivel 10 (88%): -1000 -->
+          <div class="pill-row w-[88%] mx-auto flex items-center justify-center text-center px-3 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-yellow-600 text-slate-950 font-black border border-yellow-300 text-[10px]" data-nivel-id="NIVEL_10" data-ladder-index="5">
+            <span class="font-black text-slate-950">10:</span>
+            <span class="font-black ml-1.5">-1000</span>
+          </div>
+
+          <!-- Nivel 9 (84%): -900 -->
+          <div class="pill-row w-[84%] mx-auto flex items-center justify-center text-center px-3 py-0.5 rounded-full bg-gradient-to-r from-orange-600 to-amber-600 text-white font-bold border border-orange-400 text-[10px]" data-nivel-id="NIVEL_9" data-ladder-index="4">
+            <span class="font-black text-orange-200">9:</span>
+            <span class="font-bold ml-1.5">-900</span>
+          </div>
+
+          <!-- Nivel 8 (80%): -600 -->
+          <div class="pill-row w-[80%] mx-auto flex items-center justify-center text-center px-3 py-0.5 rounded-full bg-gradient-to-r from-red-600 to-orange-700 text-white font-bold border border-red-400 text-[10px]" data-nivel-id="NIVEL_8" data-ladder-index="3">
+            <span class="font-black text-red-200">8:</span>
+            <span class="font-bold ml-1.5">-600</span>
+          </div>
+
+          <!-- Bonus (76%): Jeringa de alcohol -->
+          <div class="pill-row w-[76%] mx-auto flex items-center justify-center text-center px-3 py-0.5 rounded-full bg-gradient-to-r from-fuchsia-600 to-pink-600 text-white font-black border border-fuchsia-300 text-[10px] animate-pulse" data-nivel-id="BONUS_ALCOHOL" data-ladder-index="2">
+            <span class="text-fuchsia-200">Bonus:</span>
+            <span class="font-black ml-1.5">Jeringa de alcohol</span>
+          </div>
+
+          <!-- Nivel 7 (72%): -800 -->
+          <div class="pill-row w-[72%] mx-auto flex items-center justify-center text-center px-3 py-0.5 rounded-full bg-gradient-to-r from-red-700 to-rose-800 text-white font-bold border border-red-400 text-[10px]" data-nivel-id="NIVEL_7" data-ladder-index="1">
+            <span class="font-black text-red-200">7:</span>
+            <span class="font-bold ml-1.5">-800</span>
+          </div>
+
+          <!-- Nivel 5 (Base, más delgada 68%): -600 -->
+          <div class="pill-row w-[68%] mx-auto flex items-center justify-center text-center px-3 py-0.5 rounded-full bg-gradient-to-r from-amber-700 to-yellow-800 text-amber-100 font-bold border border-yellow-500 text-[10px]" data-nivel-id="NIVEL_5" data-ladder-index="0">
+            <span class="font-black text-yellow-200">5:</span>
+            <span class="font-bold ml-1.5">-600</span>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 3. VIEWPORT DE RODILLOS (5 Columnas x 3 Filas en Tarjetas de Vidrio Oscuro) -->
+    <main class="relative w-full flex-1 flex flex-col justify-center min-h-[195px] max-h-[235px] my-1">
+      <div class="reels-viewport-casino w-full h-full relative flex">
+        <!-- Línea Guía de Juego Central -->
+        <div class="absolute top-1/2 left-0 right-0 h-1/3 -translate-y-1/2 border-y border-sky-400/25 pointer-events-none z-10"></div>
+
+        <!-- Contenedor de Rodillos -->
+        <div id="reels-container" class="w-full h-full flex"></div>
+      </div>
+    </main>
+
+    <!-- 4. CONTROLES INFERIORES: Botón Circular Gigante Centrado y Limpio -->
+    <footer class="w-full flex-shrink-0 flex items-center justify-center pt-1 pb-1 relative z-30">
+      
+      <!-- BOTÓN CIRCULAR GIGANTE DE GIRO NEÓN -->
+      <div class="relative flex items-center justify-center">
+        <!-- Aro de luz exterior decorativo -->
+        <div class="absolute w-[88px] h-[88px] rounded-full border border-sky-400/40 animate-pulse pointer-events-none"></div>
+
+        <button id="spin-btn" class="spin-main-button w-[76px] h-[76px]" title="Girar Rodillos">
+          <!-- Texto circular perimetral estilizado -->
+          <svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100">
+            <path id="spinTextPath" d="M 50, 50 m -38, 0 a 38,38 0 1,1 76,0 a 38,38 0 1,1 -76,0" fill="none"/>
+            <text font-size="5.8" font-family="system-ui, Arial, sans-serif" font-weight="900" fill="#94a3b8" letter-spacing="1.2">
+              <textPath href="#spinTextPath" startOffset="50%" text-anchor="middle">
+                MANTENER PRESIONADO PARA AUTO JUEGO
+              </textPath>
+            </text>
+          </svg>
+
+          <!-- Flechas de giro en el centro -->
+          <div class="flex flex-col items-center justify-center z-10">
+            <span id="spin-btn-icon" class="text-2xl text-white font-black leading-none filter drop-shadow">🔄</span>
+            <span id="spin-btn-text" class="text-[8px] font-black uppercase tracking-wider text-sky-300 mt-0.5">GIRAR</span>
+          </div>
+        </button>
+      </div>
+
+    </footer>
+
+    <!-- Elementos ocultos para retrocompatibilidad segura -->
+    <div class="hidden" aria-hidden="true">
+      <div id="status-badge"></div>
+      <div id="status-title"></div>
+      <button id="auto-spin-btn"></button>
+      <button id="bet-btn"></button>
+    </div>
+
+  </div>
+
+  <!-- 5. MODAL POPOUT DE PREMIO GANADOR (Aparece automáticamente al ganar y cambia la música) -->
+  <div id="win-popout-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="w-full max-w-xs sm:max-w-sm bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 border-2 border-amber-400 rounded-3xl p-5 shadow-[0_0_50px_rgba(250,204,21,0.55)] flex flex-col items-center text-center relative overflow-hidden animate-popout-zoom">
+      
+      <!-- Resplandores decorativos de fondo -->
+      <div class="absolute -top-12 -left-12 w-32 h-32 bg-amber-500/20 rounded-full blur-2xl pointer-events-none"></div>
+      <div class="absolute -bottom-12 -right-12 w-32 h-32 bg-sky-500/20 rounded-full blur-2xl pointer-events-none"></div>
+
+      <!-- Icono Trofeo / Estrella animado -->
+      <div id="win-popout-icon" class="text-5xl sm:text-6xl mb-2 filter drop-shadow-[0_0_15px_rgba(250,204,21,0.9)] animate-bounce">
+        ⭐
+      </div>
+
+      <!-- Título de Victoria -->
+      <h3 class="text-2xl sm:text-3xl font-black text-amber-300 tracking-wider uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+        ¡GANASTE!
+      </h3>
+      
+      <!-- Nivel Alcanzado -->
+      <div id="win-popout-tier" class="mt-1 px-3 py-0.5 rounded-full bg-amber-400/20 border border-amber-400/50 text-[10px] font-bold text-amber-200 tracking-wider uppercase">
+        Nivel 13 - Jackpot
+      </div>
+
+      <!-- Premio Ganado Destacado -->
+      <div id="win-popout-prize" class="my-3 py-2 px-4 rounded-2xl bg-slate-900/90 border border-amber-400/70 text-lg sm:text-xl font-black text-white tracking-tight shadow-[0_0_20px_rgba(250,204,21,0.4)] w-full">
+        Granizado gratis
+      </div>
+
+      <!-- Instrucción para el cliente -->
+      <p class="text-[11px] text-slate-300 mb-4 px-2 leading-relaxed">
+        🎉 ¡Felicitaciones! Presenta esta pantalla en caja para redimir tu premio de <span class="font-bold text-sky-300">PARADICE</span>.
+      </p>
+
+      <!-- Botón para cerrar popout y continuar -->
+      <button id="close-win-popout-btn" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-black text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(250,204,21,0.6)] active:scale-95 transition-all">
+        ¡Reclamar y Continuar!
+      </button>
+    </div>
+  </div>
+
+  <!-- 6. MODAL DE TABLA DE COMBINACIONES -->
+  <div id="combinations-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-3 hidden">
+    <div class="w-full max-w-md bg-slate-900 border-2 border-sky-400 rounded-3xl p-4 shadow-[0_0_35px_rgba(56,189,248,0.4)] flex flex-col max-h-[88vh]">
+      
+      <!-- Header Modal -->
+      <div class="flex items-center justify-between pb-2 border-b border-sky-500/30">
+        <div class="flex items-center space-x-2">
+          <span class="text-2xl">📜</span>
+          <div>
+            <h3 class="text-sm sm:text-base font-black text-sky-300 uppercase tracking-tight">Tabla de Combinaciones</h3>
+            <p class="text-[10px] text-slate-400">Guía oficial de coincidencias en los 15 símbolos</p>
+          </div>
+        </div>
+        <button id="close-combinations-modal" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-sky-400 border border-sky-500/40 flex items-center justify-center text-sm font-black">
+          ✕
+        </button>
+      </div>
+
+      <!-- Lista de combinaciones oficiales -->
+      <div class="flex-1 overflow-y-auto space-y-1.5 py-3 pr-1 text-xs">
+        
+        <!-- Nivel 13 Jackpot -->
+        <div class="p-2 rounded-xl bg-slate-950 border border-amber-400/60 shadow-[0_0_10px_rgba(250,204,21,0.2)] flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">⭐</span>
+            <div class="flex flex-col">
+              <span class="font-extrabold text-amber-300 text-[11px]">5+ Granizado Gratis ⭐</span>
+              <span class="text-[9px] text-slate-400">5 o más sellos dorados en pantalla</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 font-black text-[10px]">Granizado Gratis</span>
+        </div>
+
+        <!-- Nivel 12 -->
+        <div class="p-2 rounded-xl bg-slate-950 border border-purple-500/50 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">🍸🍷</span>
+            <div class="flex flex-col">
+              <span class="font-bold text-purple-300 text-[11px]">5 Cócteles Especiales</span>
+              <span class="text-[9px] text-slate-400">Cualquier combinación de Berries / Vodka</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-purple-700 text-white font-bold text-[10px]">2 Dobles x $23k</span>
+        </div>
+
+        <!-- Nivel 11 -->
+        <div class="p-2 rounded-xl bg-slate-950 border border-sky-500/50 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">🍸🍷</span>
+            <div class="flex flex-col">
+              <span class="font-bold text-sky-300 text-[11px]">4 Cócteles Especiales</span>
+              <span class="text-[9px] text-slate-400">4 Berries o Vodka</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-sky-600 text-white font-bold text-[10px]">Doble x $13k</span>
+        </div>
+
+        <!-- Nivel 10 -->
+        <div class="p-2 rounded-xl bg-slate-950 border border-yellow-400/50 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">🍧🍹</span>
+            <div class="flex flex-col">
+              <span class="font-bold text-yellow-300 text-[11px]">5 Granizados</span>
+              <span class="text-[9px] text-slate-400">5 Granizados Azul o Verde</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-yellow-500 text-slate-950 font-black text-[10px]">-$1.000 COP</span>
+        </div>
+
+        <!-- Nivel 9 -->
+        <div class="p-2 rounded-xl bg-slate-950 border border-orange-500/50 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">🍋🍊</span>
+            <div class="flex flex-col">
+              <span class="font-bold text-orange-300 text-[11px]">5 Frutas</span>
+              <span class="text-[9px] text-slate-400">5 Limones o Naranjas</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-orange-600 text-white font-bold text-[10px]">-$900 COP</span>
+        </div>
+
+        <!-- Nivel 8 -->
+        <div class="p-2 rounded-xl bg-slate-950 border border-amber-600/50 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">🍧🍹</span>
+            <div class="flex flex-col">
+              <span class="font-bold text-amber-200 text-[11px]">4 Granizados</span>
+              <span class="text-[9px] text-slate-400">4 Granizados Azul o Verde</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-amber-800 text-amber-100 font-bold text-[10px]">-$600 COP</span>
+        </div>
+
+        <!-- Bonus Alcohol -->
+        <div class="p-2 rounded-xl bg-slate-950 border border-fuchsia-500/50 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">🫗</span>
+            <div class="flex flex-col">
+              <span class="font-bold text-fuchsia-300 text-[11px]">3+ Bonus Coctelera</span>
+              <span class="text-[9px] text-slate-400">3 o más shakers en pantalla</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-fuchsia-700 text-white font-black text-[10px]">Jeringa de Alcohol</span>
+        </div>
+
+        <!-- Nivel 7 -->
+        <div class="p-2 rounded-xl bg-slate-950 border border-red-500/50 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">🍋🍊</span>
+            <div class="flex flex-col">
+              <span class="font-bold text-red-300 text-[11px]">4 Frutas</span>
+              <span class="text-[9px] text-slate-400">4 Limones o Naranjas</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-red-700 text-white font-bold text-[10px]">-$800 COP</span>
+        </div>
+
+        <!-- Nivel 5 -->
+        <div class="p-2 rounded-xl bg-slate-950 border border-yellow-600/50 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">🍧🍹</span>
+            <div class="flex flex-col">
+              <span class="font-bold text-yellow-300 text-[11px]">3 Granizados</span>
+              <span class="text-[9px] text-slate-400">3 Granizados Azul o Verde</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-yellow-700 text-amber-100 font-bold text-[10px]">-$600 COP</span>
+        </div>
+
+        <!-- Promo 2x3 -->
+        <div class="p-2 rounded-xl bg-slate-950 border border-amber-500/40 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">🥃</span>
+            <div class="flex flex-col">
+              <span class="font-bold text-amber-300 text-[11px]">3 Shots de Licor</span>
+              <span class="text-[9px] text-slate-400">3 Shots dorados con hielo</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-amber-600 text-white font-bold text-[10px]">Pague 2 Lleve 3</span>
+        </div>
+
+        <!-- Nivel 4 -->
+        <div class="p-2 rounded-xl bg-slate-950 border border-yellow-500/40 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">🍋</span>
+            <div class="flex flex-col">
+              <span class="font-bold text-yellow-200 text-[11px]">3 Limones</span>
+              <span class="text-[9px] text-slate-400">3 Limones amarillos</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-yellow-600 text-slate-950 font-bold text-[10px]">-$500 COP</span>
+        </div>
+
+        <!-- Nivel 3 -->
+        <div class="p-2 rounded-xl bg-slate-950 border border-orange-500/40 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">🍊</span>
+            <div class="flex flex-col">
+              <span class="font-bold text-orange-200 text-[11px]">3 Naranjas</span>
+              <span class="text-[9px] text-slate-400">3 Naranjas frescas</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-orange-700 text-white font-bold text-[10px]">-$400 COP</span>
+        </div>
+
+        <!-- Nivel 2 -->
+        <div class="p-2 rounded-xl bg-slate-950 border border-purple-500/30 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">🍸🍷</span>
+            <div class="flex flex-col">
+              <span class="font-bold text-purple-200 text-[11px]">Pareja Alta (2 especiales)</span>
+              <span class="text-[9px] text-slate-400">2 Cócteles especiales</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-purple-900 text-purple-200 font-bold text-[10px]">-$300 COP</span>
+        </div>
+
+        <!-- Nivel 1 -->
+        <div class="p-2 rounded-xl bg-slate-950 border border-slate-700 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">🍋🍊</span>
+            <div class="flex flex-col">
+              <span class="font-bold text-slate-300 text-[11px]">Pareja Básica (2 frutas)</span>
+              <span class="text-[9px] text-slate-400">2 Limones o 2 Naranjas</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-bold text-[10px]">-$150 COP</span>
+        </div>
+
+      </div>
+
+      <div class="pt-2 border-t border-sky-500/30 text-center">
+        <p class="text-[9px] text-slate-400">Todos los premios están sujetos a validación del supervisor.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. MODAL DE SUPERVISOR (MODERACIÓN Y PRUEBAS) -->
+  <div id="supervisor-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="w-full max-w-sm bg-slate-900 border border-slate-700 rounded-2xl p-4 shadow-2xl flex flex-col space-y-3 text-xs">
+      
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+        <div class="flex items-center space-x-2">
+          <span class="text-lg">🛡️</span>
+          <span class="font-bold text-white uppercase tracking-wider">Panel de Supervisor</span>
+        </div>
+        <button id="close-supervisor-modal" class="text-slate-400 hover:text-white text-base">✕</button>
+      </div>
+
+      <!-- Estado Actual -->
+      <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800 space-y-1.5">
+        <div class="flex justify-between items-center">
+          <span class="text-slate-400">Estado Máquina:</span>
+          <span id="supervisor-state-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-cyan-300">IDLE</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-slate-400">Último Premio:</span>
+          <span id="supervisor-result-summary" class="font-bold text-amber-400">Ninguno</span>
+        </div>
+      </div>
+
+      <!-- Zona de Validación / Desbloqueo -->
+      <div id="supervisor-validation-box" class="p-2.5 rounded-lg bg-cyan-950/40 border border-cyan-500/30 text-center space-y-2 hidden">
+        <p id="supervisor-action-hint" class="text-[11px] text-cyan-200 font-medium">Hay un premio pendiente de entrega.</p>
+        <button id="supervisor-validate-btn" class="w-full py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold rounded-lg shadow-lg">
+          ✓ Validar y Habilitar Siguiente Jugada
+        </button>
+      </div>
+
+      <!-- Herramientas de Prueba -->
+      <div class="space-y-1.5 pt-1">
+        <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Simular Resultados de Prueba</span>
+        <div class="grid grid-cols-3 gap-1.5">
+          <button id="test-jackpot-btn" class="py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-300 font-medium rounded border border-amber-500/30 text-[10px]">
+            ⭐ Jackpot
+          </button>
+          <button id="test-bonus-btn" class="py-1.5 bg-slate-800 hover:bg-slate-700 text-fuchsia-300 font-medium rounded border border-fuchsia-500/30 text-[10px]">
+            🫗 Bonus
+          </button>
+          <button id="test-mojarro-btn" class="py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium rounded border border-slate-700 text-[10px]">
+            🐟 Mojarro
+          </button>
+        </div>
+      </div>
+
+      <!-- Acciones Administrativas -->
+      <div class="pt-1 flex space-x-2">
+        <button id="supervisor-reset-btn" class="flex-1 py-1.5 bg-rose-950/60 hover:bg-rose-900 border border-rose-800 text-rose-200 rounded font-medium text-[10px]">
+          ⚠️ Desbloqueo Forzado
+        </button>
+        <button id="clear-history-btn" class="flex-1 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded font-medium text-[10px]">
+          🗑️ Borrar Historial
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- BUNDLE JS AUTOCONTENIDO (Funciona directamente con doble clic vía file:///) -->
+  <script src="js/bundle.js"></script>
+</body>
+</html>
