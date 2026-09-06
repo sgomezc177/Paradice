@@ -18,13 +18,13 @@
     { id: 'SYM_COCTEL_ROJO', nombre: 'Frozen Berries', categoria: 'Especial', icono: '🍸', peso: 14 },
     { id: 'SYM_VODKA', nombre: 'Vodka Frozen', categoria: 'Premium', icono: '🍷', peso: 12 },
     { id: 'SYM_BONUS', nombre: 'Bonus Coctelera', categoria: 'Bonus Especial', icono: '🫗', peso: 9 },
-    { id: 'SYM_GRATIS', nombre: 'Granizado Gratis', categoria: 'Jackpot', icono: '⭐', peso: 4 }
+    { id: 'SYM_GRATIS', nombre: 'Promo 2x1', categoria: 'Jackpot', icono: '⭐', peso: 4 }
   ];
 
   const MAPA_SIMBOLOS = Object.fromEntries(SIMBOLOS.map(s => [s.id, s]));
 
   const NIVELES_PREMIO = [
-    { nivel: 13, id: 'JACKPOT', codigo: '13:', beneficio: 'Granizado gratis', tipoFeedback: 'jackpot' },
+    { nivel: 13, id: 'JACKPOT', codigo: '13:', beneficio: '¡Super Promo 2x1 en Granizados!', tipoFeedback: 'jackpot' },
     { nivel: 12, id: 'NIVEL_12', codigo: '12:', beneficio: '2 Granizados dobles x23k', tipoFeedback: 'win_big' },
     { nivel: 11, id: 'NIVEL_11', codigo: '11:', beneficio: 'Granizado doble x13k', tipoFeedback: 'win_big' },
     { nivel: 10, id: 'NIVEL_10', codigo: '10:', beneficio: '-1000', tipoFeedback: 'win_medium' },
@@ -92,9 +92,9 @@
         <text x="50" y="60" text-anchor="middle" font-family="system-ui, Arial Black, Impact, sans-serif" font-size="8.8" font-weight="900" fill="#03254c" stroke="#03254c" stroke-width="2.5">GRANIZADO</text>
         <text x="50" y="59" text-anchor="middle" font-family="system-ui, Arial Black, Impact, sans-serif" font-size="8.8" font-weight="900" fill="#ffffff" stroke="#ffffff" stroke-width="1">GRANIZADO</text>
         <text x="50" y="59" text-anchor="middle" font-family="system-ui, Arial Black, Impact, sans-serif" font-size="8.8" font-weight="900" fill="url(#bCyanTextGrad)">GRANIZADO</text>
-        <text x="50" y="75" text-anchor="middle" font-family="system-ui, Arial Black, Impact, sans-serif" font-size="12.5" font-weight="900" fill="#451a03" stroke="#451a03" stroke-width="3">GRATIS</text>
-        <text x="50" y="74" text-anchor="middle" font-family="system-ui, Arial Black, Impact, sans-serif" font-size="12.5" font-weight="900" fill="#ffffff" stroke="#ffffff" stroke-width="1.2">GRATIS</text>
-        <text x="50" y="74" text-anchor="middle" font-family="system-ui, Arial Black, Impact, sans-serif" font-size="12.5" font-weight="900" fill="url(#bGoldTextGrad)">GRATIS</text>
+        <text x="50" y="75" text-anchor="middle" font-family="system-ui, Arial Black, Impact, sans-serif" font-size="12.5" font-weight="900" fill="#451a03" stroke="#451a03" stroke-width="3">2 X 1</text>
+        <text x="50" y="74" text-anchor="middle" font-family="system-ui, Arial Black, Impact, sans-serif" font-size="12.5" font-weight="900" fill="#ffffff" stroke="#ffffff" stroke-width="1.2">2 X 1</text>
+        <text x="50" y="74" text-anchor="middle" font-family="system-ui, Arial Black, Impact, sans-serif" font-size="12.5" font-weight="900" fill="url(#bGoldTextGrad)">2 X 1</text>
       </svg>
     `,
 
@@ -1423,28 +1423,17 @@
   }
 
   function isTerminalBlocked() {
-    const blockedFlag = localStorage.getItem('paradice_terminal_blocked');
-    if (blockedFlag === 'true') return true;
-    const blockedList = JSON.parse(localStorage.getItem('paradice_blocked_terminals') || '[]');
-    const mac = getOrCreateTerminalId();
-    return blockedList.includes(mac) || (cachedPublicIp && blockedList.includes(cachedPublicIp));
+    // Modo continuo: se eliminó la restricción por IP/MAC para permitir juego continuo y ventas
+    return false;
   }
 
   function blockTerminal(ip = null) {
-    localStorage.setItem('paradice_terminal_blocked', 'true');
-    const mac = getOrCreateTerminalId();
-    let blockedList = JSON.parse(localStorage.getItem('paradice_blocked_terminals') || '[]');
-    if (!blockedList.includes(mac)) blockedList.push(mac);
-    if (ip && !blockedList.includes(ip)) blockedList.push(ip);
-    localStorage.setItem('paradice_blocked_terminals', JSON.stringify(blockedList));
+    // La terminal no se bloquea para permitir partidas continuas
   }
 
   function unblockTerminal() {
     localStorage.removeItem('paradice_terminal_blocked');
-    const mac = getOrCreateTerminalId();
-    let blockedList = JSON.parse(localStorage.getItem('paradice_blocked_terminals') || '[]');
-    blockedList = blockedList.filter(item => item !== mac && item !== cachedPublicIp);
-    localStorage.setItem('paradice_blocked_terminals', JSON.stringify(blockedList));
+    localStorage.removeItem('paradice_blocked_terminals');
   }
 
   // 7. APLICACIÓN PRINCIPAL CON ESCALADA DE LA PIRÁMIDE Y HIT BAR DIRECTO EN PANEL PRINCIPAL
@@ -1622,6 +1611,11 @@
         combinationsModal: document.getElementById('combinations-modal'),
         closeCombinationsBtn: document.getElementById('close-combinations-modal'),
         closeCombinationsBtnBottom: document.getElementById('close-combinations-btn-bottom'),
+        // Instrucciones / Cómo Jugar
+        instructionsBtn: document.getElementById('instructions-btn'),
+        instructionsModal: document.getElementById('instructions-modal'),
+        closeInstructionsBtn: document.getElementById('close-instructions-modal'),
+        closeInstructionsBtnBottom: document.getElementById('close-instructions-btn-bottom'),
         // Popout Ganador 3D Flip y QR
         winPopoutModal: document.getElementById('win-popout-modal'),
         flipCardInner: document.getElementById('flip-card-inner'),
@@ -1641,7 +1635,8 @@
         qrDirectLink: document.getElementById('qr-direct-link'),
         // Supervisor Jackpot Quota
         jackpotCountDisplay: document.getElementById('jackpot-count-display'),
-        resetJackpotBtn: document.getElementById('reset-jackpot-btn')
+        resetJackpotBtn: document.getElementById('reset-jackpot-btn'),
+        btnRestartFreePlay: document.getElementById('btn-restart-free-play')
       };
     }
 
@@ -1707,6 +1702,37 @@
           this.dom.combinationsModal.classList.add('hidden');
         });
       }
+      if (this.dom.combinationsModal) {
+        this.dom.combinationsModal.addEventListener('click', (e) => {
+          if (e.target === this.dom.combinationsModal) {
+            this.dom.combinationsModal.classList.add('hidden');
+          }
+        });
+      }
+
+      // Modal de Instrucciones / Cómo Jugar
+      if (this.dom.instructionsBtn) {
+        this.dom.instructionsBtn.addEventListener('click', () => {
+          if (this.dom.instructionsModal) this.dom.instructionsModal.classList.remove('hidden');
+        });
+      }
+      if (this.dom.closeInstructionsBtn) {
+        this.dom.closeInstructionsBtn.addEventListener('click', () => {
+          if (this.dom.instructionsModal) this.dom.instructionsModal.classList.add('hidden');
+        });
+      }
+      if (this.dom.closeInstructionsBtnBottom) {
+        this.dom.closeInstructionsBtnBottom.addEventListener('click', () => {
+          if (this.dom.instructionsModal) this.dom.instructionsModal.classList.add('hidden');
+        });
+      }
+      if (this.dom.instructionsModal) {
+        this.dom.instructionsModal.addEventListener('click', (e) => {
+          if (e.target === this.dom.instructionsModal) {
+            this.dom.instructionsModal.classList.add('hidden');
+          }
+        });
+      }
 
       // Popout Ganador 3D y Decisiones
       if (this.dom.claimPrizeBtn) {
@@ -1734,6 +1760,12 @@
             localStorage.setItem('paradice_jackpot_wins_count', '0');
           } catch (e) {}
           this.actualizarJackpotUI();
+        });
+      }
+
+      if (this.dom.btnRestartFreePlay) {
+        this.dom.btnRestartFreePlay.addEventListener('click', () => {
+          this.reiniciarNuevaPartida();
         });
       }
 
@@ -1816,9 +1848,41 @@
       window.addEventListener('click', unlockAudioAndStartMusic);
       window.addEventListener('touchstart', unlockAudioAndStartMusic);
 
+      // Control Universal con Tecla Espacio
       window.addEventListener('keydown', (e) => {
-        if (e.code === 'Space') {
+        if (e.code === 'Space' || e.key === ' ') {
+          if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) return;
           e.preventDefault();
+
+          // Si modal de instrucciones está abierto, cerrarlo
+          if (this.dom.instructionsModal && !this.dom.instructionsModal.classList.contains('hidden')) {
+            this.dom.instructionsModal.classList.add('hidden');
+            return;
+          }
+
+          // Si modal de combinaciones está abierto, cerrarlo
+          if (this.dom.combinationsModal && !this.dom.combinationsModal.classList.contains('hidden')) {
+            this.dom.combinationsModal.classList.add('hidden');
+            return;
+          }
+
+          // Si modal de fin de partida (sin vidas) está abierto, reiniciar
+          if (this.dom.terminalBlockedModal && !this.dom.terminalBlockedModal.classList.contains('hidden')) {
+            this.reiniciarNuevaPartida();
+            return;
+          }
+
+          // Si modal popout de victoria está abierto
+          if (this.dom.winPopoutModal && !this.dom.winPopoutModal.classList.contains('hidden')) {
+            if (this.dom.flipCardInner && this.dom.flipCardInner.classList.contains('flipped')) {
+              this.reiniciarNuevaPartida();
+            } else if (this.dom.claimPrizeBtn) {
+              this.reclamarPremioYVoltearQR();
+            }
+            return;
+          }
+
+          // Durante el juego: girar los rodillos o detener hitbar
           this.handleSpinClick();
         }
       });
@@ -1995,7 +2059,7 @@
       if (aciertos === 5) {
         premioId = 'JACKPOT';
         if (this.dom.hitbarTitle) {
-          this.dom.hitbarTitle.innerHTML = '⭐ <span class="text-amber-300 font-extrabold animate-bounce">¡¡¡5 DE 5 ALINEADOS!!! ¡¡¡GRANIZADO GRATIS (JACKPOT)!!! ⭐⭐⭐</span>';
+          this.dom.hitbarTitle.innerHTML = '⭐ <span class="text-amber-300 font-extrabold animate-bounce">¡¡¡5 DE 5 ALINEADOS!!! ¡¡¡SUPER PROMO 2x1 EN GRANIZADOS (JACKPOT)!!! ⭐⭐⭐</span>';
         }
         soundManager.playHitBarSong();
         this.dispararConfeti(true);
@@ -2090,6 +2154,17 @@
     }
 
     async ejecutarGiro() {
+      if (this.vidasRestantes <= 0) {
+        this.bloquearTerminalActual();
+        this.mostrarBloqueoTerminal();
+        return;
+      }
+
+      // CADA INTENTO CONSUME EXACTAMENTE 1 VIDA DE FORMA INMEDIATA
+      this.vidasRestantes--;
+      this.guardarVidas();
+      this.actualizarVidasUI();
+
       this.estado = ESTADOS_JUEGO.SPINNING;
       this.limpiarResaltadoTorre();
       this.actualizarUIEstado();
@@ -2160,14 +2235,12 @@
         this.actualizarUIEstado();
       } else {
         // MOJARRO (Sin premio)
-        this.vidasRestantes--;
         this.intentoActual++;
         this.guardarVidas();
-        this.actualizarVidasUI();
 
         if (this.vidasRestantes > 0) {
           if (this.dom.statusTitle) {
-            this.dom.statusTitle.textContent = `Sin suerte. Te quedan ${this.vidasRestantes} ${this.vidasRestantes === 1 ? 'intento' : 'intentos'}.`;
+            this.dom.statusTitle.textContent = `Sin suerte. Te quedan ${this.vidasRestantes} ${this.vidasRestantes === 1 ? 'vida' : 'vidas'}.`;
           }
           setTimeout(() => {
             this.estado = ESTADOS_JUEGO.IDLE;
@@ -2316,20 +2389,21 @@
 
       // Actualizar texto del intento y vidas restantes
       if (this.dom.winPopoutAttemptInfo) {
-        if (this.intentoActual >= 3) {
-          this.dom.winPopoutAttemptInfo.innerHTML = `Obtenido en el <span class="font-bold text-amber-300">Intento 3 de 3 (Última Oportunidad)</span>. Este es tu premio definitivo.`;
+        if (this.intentoActual >= 3 || this.vidasRestantes <= 0) {
+          this.dom.winPopoutAttemptInfo.innerHTML = `Obtenido en el <span class="font-bold text-amber-300">Intento ${this.intentoActual} de 3 (Última Oportunidad)</span>. Este es tu premio definitivo.`;
         } else {
-          const vidasQuedan = this.vidasRestantes - 1;
+          const vidasQuedan = this.vidasRestantes;
           this.dom.winPopoutAttemptInfo.innerHTML = `Obtenido en el <span class="font-bold text-amber-300">Intento ${this.intentoActual} de 3</span>. ¿Deseas quedarte con este premio o cambiarlo? (Te ${vidasQuedan === 1 ? 'queda' : 'quedan'} ${vidasQuedan} ${vidasQuedan === 1 ? 'vida' : 'vidas'}).`;
         }
       }
 
       // En el intento 3 se oculta el botón de descartar
       if (this.dom.retrySpinBtn) {
-        if (this.intentoActual >= 3) {
+        if (this.intentoActual >= 3 || this.vidasRestantes <= 0) {
           this.dom.retrySpinBtn.classList.add('hidden');
         } else {
           this.dom.retrySpinBtn.classList.remove('hidden');
+          this.dom.retrySpinBtn.innerHTML = `<span>🔄</span> <span>Descartar y volver a tirar (-1 Vida • Quedan ${this.vidasRestantes})</span>`;
         }
       }
 
@@ -2398,16 +2472,14 @@
 
       this.vidasRestantes = 0;
       this.guardarVidas();
-      this.bloquearTerminalActual();
+      this.actualizarVidasUI();
     }
 
     descartarYVolverATirar() {
-      if (this.intentoActual >= 3) return;
+      if (this.intentoActual >= 3 || this.vidasRestantes <= 0) return;
 
-      this.vidasRestantes--;
       this.intentoActual++;
       this.guardarVidas();
-      this.actualizarVidasUI();
 
       if (this.dom.winPopoutModal) {
         this.dom.winPopoutModal.classList.add('hidden');
@@ -2423,19 +2495,11 @@
       this.actualizarUIEstado();
 
       if (this.dom.statusTitle) {
-        this.dom.statusTitle.textContent = `Premio descartado. ¡Gira tu intento ${this.intentoActual} de 3!`;
+        this.dom.statusTitle.textContent = `Premio descartado. ¡Gira tu intento ${this.intentoActual} de 3! (Quedan ${this.vidasRestantes} vidas)`;
       }
     }
 
     reiniciarNuevaPartida() {
-      if (isTerminalBlocked() || this.vidasRestantes <= 0) {
-        if (this.dom.winPopoutModal) {
-          this.dom.winPopoutModal.classList.add('hidden');
-        }
-        this.mostrarBloqueoTerminal();
-        return;
-      }
-
       this.vidasRestantes = 3;
       this.intentoActual = 1;
       this.guardarVidas();
@@ -2444,6 +2508,9 @@
       this.vidaHitBarMisterio = Math.floor(Math.random() * 3) + 1;
       this.actualizarVidasUI();
 
+      if (this.dom.terminalBlockedModal) {
+        this.dom.terminalBlockedModal.classList.add('hidden');
+      }
       if (this.dom.winPopoutModal) {
         this.dom.winPopoutModal.classList.add('hidden');
       }
@@ -2461,7 +2528,7 @@
       if (this.dom.life3) this.dom.life3.classList.toggle('lost', vidas < 3);
 
       if (this.dom.livesLabel) {
-        this.dom.livesLabel.textContent = `Intento ${Math.min(this.intentoActual, 3)} de 3`;
+        this.dom.livesLabel.textContent = `${Math.max(0, vidas)}/3`;
       }
     }
 
@@ -2723,5 +2790,12 @@
     const app = new GranizadosSlotApp();
     app.init();
     window.paradiceApp = app;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('demo') === 'instructions') {
+      setTimeout(() => {
+        if (app.dom.instructionsModal) app.dom.instructionsModal.classList.remove('hidden');
+      }, 300);
+    }
   });
 })();

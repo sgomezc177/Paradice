@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-[#040814]">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>BattleRound Paradice - Duelo Multijugador de Minas</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <!-- PeerJS (WebRTC P2P sin base de datos) -->
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Montserrat', 'system-ui', 'sans-serif'],
+            display: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            paradice: {
+              bg: '#040814',
+              surface: '#090f24',
+              cyan: '#00f0ff',
+              pink: '#ff007f',
+              purple: '#9333ea',
+              gold: '#facc15',
+              ice: '#38bdf8'
+            }
+          },
+          animation: {
+            'glow-pulse': 'glowPulse 1.5s ease-in-out infinite',
+            'glow-red': 'glowRed 1.2s ease-in-out infinite alternate',
+            'shake': 'shake 0.4s cubic-bezier(.36,.07,.19,.97) both',
+          },
+          keyframes: {
+            glowPulse: {
+              '0%, 100%': { boxShadow: '0 0 15px rgba(0, 240, 255, 0.4)' },
+              '50%': { boxShadow: '0 0 30px rgba(0, 240, 255, 0.85)' },
+            },
+            glowRed: {
+              '0%': { boxShadow: '0 0 15px rgba(244, 63, 94, 0.5)' },
+              '100%': { boxShadow: '0 0 35px rgba(244, 63, 94, 0.95)' },
+            },
+            shake: {
+              '10%, 90%': { transform: 'translate3d(-2px, 0, 0)' },
+              '20%, 80%': { transform: 'translate3d(3px, 0, 0)' },
+              '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
+              '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #040814;
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(244, 63, 94, 0.15) 0%, transparent 60%),
+        radial-gradient(circle at 100% 100%, rgba(0, 240, 255, 0.12) 0%, transparent 50%),
+        radial-gradient(circle at 0% 100%, rgba(147, 51, 234, 0.15) 0%, transparent 50%);
+      background-attachment: fixed;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Tablero de Batalla 6x6 */
+    .battle-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 6px;
+      perspective: 1000px;
+    }
+
+    @media (min-width: 640px) {
+      .battle-grid {
+        gap: 8px;
+      }
+    }
+
+    /* Casilla de Hielo 3D */
+    .battle-tile {
+      aspect-ratio: 1 / 1;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      cursor: pointer;
+    }
+
+    .battle-tile.revealed {
+      transform: rotateY(180deg);
+      cursor: default;
+    }
+
+    .battle-tile-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      border-radius: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Cara Frontal: Hielo Oculto */
+    .battle-tile-front {
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.22) 0%, rgba(2, 132, 199, 0.12) 100%);
+      border: 1.5px solid rgba(56, 189, 248, 0.35);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), inset 0 0 10px rgba(56, 189, 248, 0.2);
+    }
+
+    .battle-tile-front:hover:not(.revealed) {
+      border-color: rgba(0, 240, 255, 0.85);
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.5), inset 0 0 12px rgba(0, 240, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .battle-tile-front.mine-planted-by-me {
+      border-color: #f43f5e !important;
+      box-shadow: 0 0 15px rgba(244, 63, 94, 0.6), inset 0 0 8px rgba(244, 63, 94, 0.4) !important;
+    }
+
+    .battle-tile-front.planting-target {
+      animation: pulse 1s infinite;
+      border-color: #facc15 !important;
+      box-shadow: 0 0 20px rgba(250, 204, 21, 0.8) !important;
+    }
+
+    /* Cara Trasera */
+    .battle-tile-back {
+      transform: rotateY(180deg);
+    }
+
+    /* Destapado Seguro */
+    .battle-tile-safe {
+      background: linear-gradient(135deg, rgba(6, 78, 59, 0.85) 0%, rgba(4, 120, 87, 0.9) 100%);
+      border: 2px solid #34d399;
+      box-shadow: 0 0 20px rgba(52, 211, 153, 0.5), inset 0 0 12px rgba(52, 211, 153, 0.3);
+    }
+
+    /* Destapado Mina */
+    .battle-tile-mine {
+      background: linear-gradient(135deg, rgba(136, 19, 55, 0.95) 0%, rgba(225, 29, 72, 0.95) 100%);
+      border: 2px solid #f43f5e;
+      box-shadow: 0 0 25px rgba(244, 63, 94, 0.8), inset 0 0 15px rgba(244, 63, 94, 0.5);
+    }
+  </style>
+</head>
+
+<body class="min-h-screen text-slate-100 flex flex-col items-center justify-between p-2 sm:p-4 md:p-6 overflow-x-hidden">
+
+  <!-- BANNER FLOTANTE GAMEPLAY DEMO EN VIVO -->
+  <div id="preview-mode-banner" class="fixed top-12 left-1/2 transform -translate-x-1/2 z-40 bg-gradient-to-r from-amber-500/90 via-fuchsia-600/90 to-cyan-500/90 px-4 py-1.5 rounded-full shadow-[0_0_25px_rgba(250,204,21,0.7)] border-2 border-white/80 text-white font-black text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-2 pointer-events-auto cursor-pointer animate-pulse hidden">
+    <span>🎮</span>
+    <span>DEMO GAMEPLAY EN VIVO</span>
+    <span>🎮</span>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 1. HEADER OFICIAL PARADICE Y BARRA DE NAVEGACIÓN                          -->
+  <!-- ========================================================================= -->
+  <header class="w-full max-w-4xl flex items-center justify-between py-2 px-3 sm:px-5 bg-slate-900/80 border border-red-500/30 rounded-2xl sm:rounded-3xl backdrop-blur-md shadow-[0_0_25px_rgba(244,63,94,0.15)] mb-3 sm:mb-4">
+    
+    <!-- Logo Paradice con Efecto Rojo/Cian -->
+    <div class="flex items-center space-x-2 sm:space-x-3">
+      <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-rose-600 via-pink-500 to-amber-400 p-0.5 shadow-[0_0_15px_rgba(244,63,94,0.5)]">
+        <div class="w-full h-full bg-[#040814] rounded-[10px] sm:rounded-[14px] flex items-center justify-center text-xl sm:text-2xl">
+          💥
+        </div>
+      </div>
+      <div class="flex flex-col">
+        <div class="flex items-center gap-1.5">
+          <span class="font-display font-black text-sm sm:text-lg tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-white via-rose-200 to-red-400 drop-shadow-[0_0_8px_rgba(244,63,94,0.8)]">
+            PARAD<span class="text-cyan-400">ICE</span>
+          </span>
+          <span class="px-1.5 py-0.5 rounded text-[8px] sm:text-[9px] font-black uppercase tracking-widest bg-red-950 text-rose-300 border border-red-500/50">
+            BATTLEROUND
+          </span>
+        </div>
+        <span class="text-[9px] sm:text-[10px] text-rose-300 font-semibold tracking-tight -mt-0.5">Duelo Multijugador de Minas</span>
+      </div>
+    </div>
+
+    <!-- Controles de Audio & Juegos -->
+    <div class="flex items-center space-x-2 sm:space-x-3">
+      <!-- Indicador de Sala -->
+      <div id="header-room-badge" class="hidden flex items-center space-x-1 px-2.5 py-1 rounded-full bg-slate-950 border border-red-500/40 text-[10px] sm:text-xs font-bold text-rose-300">
+        <span>SALA:</span> <span id="header-room-code" class="font-mono text-cyan-300">---</span>
+      </div>
+
+      <button id="btn-sound-toggle" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-800 border border-slate-700 hover:border-red-400 text-xs text-slate-200 flex items-center justify-center transition shadow-sm" title="Sonido SFX">
+        <span id="sound-icon">🔊</span>
+      </button>
+
+      <!-- Botones de Música Eurodance y Playlist /music -->
+      <div class="flex items-center space-x-1">
+        <button id="btn-music-toggle" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-purple-950/80 border border-purple-500/50 hover:border-purple-300 text-xs text-purple-200 flex items-center justify-center transition shadow-sm" title="Reproducir / Pausar Música">
+          <span id="music-icon">🎵</span>
+        </button>
+        <button id="btn-music-next" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-purple-950/80 border border-purple-500/50 hover:border-purple-300 text-xs text-purple-200 flex items-center justify-center transition shadow-sm" title="Siguiente Canción">
+          <span>⏭️</span>
+        </button>
+        <span id="music-track-display" class="hidden xl:inline-block max-w-[120px] truncate text-[9px] text-rose-300 font-mono px-1.5 py-0.5 rounded bg-purple-950/60 border border-purple-500/30">🎵 Paradice Music</span>
+      </div>
+
+      <!-- Botón Instrucciones Cómo Jugar -->
+      <button id="btn-instructions" class="px-2 sm:px-2.5 py-1 rounded-xl bg-red-950/80 hover:bg-red-900 border border-red-500/50 hover:border-red-300 text-rose-300 hover:text-white flex items-center gap-1 text-[10px] sm:text-[11px] font-bold shadow-[0_0_10px_rgba(244,63,94,0.2)] transition cursor-pointer" title="Instrucciones de BattleRound">
+        <span>📖</span> <span class="hidden sm:inline">Reglas</span>
+      </button>
+
+      <!-- Enlaces de Retorno -->
+      <div class="hidden xs:flex items-center space-x-1.5">
+        <a href="minas.html" class="px-2 py-1 rounded-xl bg-slate-900 hover:bg-slate-800 border border-pink-500/40 text-pink-300 text-[10px] sm:text-[11px] font-bold transition flex items-center gap-1">
+          <span>💣</span> <span class="hidden sm:inline">Minas</span>
+        </a>
+        <a href="hitbar.html" class="px-2 py-1 rounded-xl bg-slate-900 hover:bg-slate-800 border border-amber-500/40 text-amber-300 text-[10px] sm:text-[11px] font-bold transition flex items-center gap-1">
+          <span>⚡</span> <span class="hidden sm:inline">Hit Bar</span>
+        </a>
+        <a href="dados.html" class="px-2 py-1 rounded-xl bg-slate-900 hover:bg-slate-800 border border-purple-500/40 text-purple-300 text-[10px] sm:text-[11px] font-bold transition flex items-center gap-1">
+          <span>🎲</span> <span class="hidden sm:inline">Dados</span>
+        </a>
+        <a href="ruleta.html" class="px-2 py-1 rounded-xl bg-slate-900 hover:bg-slate-800 border border-emerald-500/40 text-emerald-300 text-[10px] sm:text-[11px] font-bold transition flex items-center gap-1">
+          <span>🎡</span> <span class="hidden sm:inline">Ruleta</span>
+        </a>
+        <a href="tragamonedas.html" class="px-2 py-1 rounded-xl bg-slate-900 hover:bg-slate-800 border border-cyan-500/40 text-cyan-300 text-[10px] sm:text-[11px] font-bold transition flex items-center gap-1">
+          <span>🎰</span> <span class="hidden sm:inline">Slots</span>
+        </a>
+        <a href="index.html" class="px-2 py-1 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 text-[10px] sm:text-[11px] font-bold transition flex items-center gap-1">
+          <span>🏠</span> <span class="hidden sm:inline">Landing</span>
+        </a>
+      </div>
+    </div>
+
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- 2. VISTA DE LOBBY / CONEXIÓN SALA (INICIAL)                               -->
+  <!-- ========================================================================= -->
+  <div id="view-lobby" class="w-full max-w-md flex flex-col items-center my-auto space-y-4">
+    
+    <div class="w-full p-6 rounded-3xl bg-slate-900/90 border-2 border-red-500/50 shadow-[0_0_40px_rgba(244,63,94,0.3)] backdrop-blur-md flex flex-col items-center text-center">
+      
+      <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-rose-600 via-pink-500 to-amber-400 p-0.5 shadow-[0_0_20px_rgba(244,63,94,0.6)] mb-3 flex items-center justify-center">
+        <span class="text-3xl">🍻</span>
+      </div>
+
+      <h2 class="font-display font-black text-2xl text-white uppercase tracking-tight">
+        BATTLEROUND <span class="text-rose-400">PARADICE</span>
+      </h2>
+      <p class="text-xs text-slate-300 mt-1 mb-4 leading-relaxed">
+        Duelo multijugador en vivo entre celulares. Descubre granizados, siembra minas secretas, roba puntos a tus amigos y... <strong class="text-amber-300">¡el perdedor paga la ronda de tragos!</strong>
+      </p>
+
+      <!-- Registro de Perfil -->
+      <div class="w-full space-y-3 mb-5 text-left">
+        <div>
+          <label class="block text-[10px] font-black uppercase text-slate-400 tracking-wider mb-1">Tu Nombre o Apodo:</label>
+          <input id="input-player-name" type="text" maxlength="15" placeholder="Ej: Carlos, Sofi, Juancho..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 focus:border-cyan-400 text-white font-bold text-sm outline-none transition shadow-inner">
+        </div>
+
+        <div>
+          <label class="block text-[10px] font-black uppercase text-slate-400 tracking-wider mb-1">Elige tu Trago / Avatar:</label>
+          <div id="avatar-selector" class="flex items-center justify-between gap-1 p-1 rounded-xl bg-slate-950 border border-slate-800">
+            <button class="avatar-opt w-9 h-9 rounded-lg text-lg flex items-center justify-center bg-rose-600 text-white transition active:scale-95" data-avatar="🍹">🍹</button>
+            <button class="avatar-opt w-9 h-9 rounded-lg text-lg flex items-center justify-center hover:bg-slate-800 text-slate-400 transition active:scale-95" data-avatar="🥃">🥃</button>
+            <button class="avatar-opt w-9 h-9 rounded-lg text-lg flex items-center justify-center hover:bg-slate-800 text-slate-400 transition active:scale-95" data-avatar="🍧">🍧</button>
+            <button class="avatar-opt w-9 h-9 rounded-lg text-lg flex items-center justify-center hover:bg-slate-800 text-slate-400 transition active:scale-95" data-avatar="🍸">🍸</button>
+            <button class="avatar-opt w-9 h-9 rounded-lg text-lg flex items-center justify-center hover:bg-slate-800 text-slate-400 transition active:scale-95" data-avatar="🍺">🍺</button>
+            <button class="avatar-opt w-9 h-9 rounded-lg text-lg flex items-center justify-center hover:bg-slate-800 text-slate-400 transition active:scale-95" data-avatar="⚡">⚡</button>
+            <button class="avatar-opt w-9 h-9 rounded-lg text-lg flex items-center justify-center hover:bg-slate-800 text-slate-400 transition active:scale-95" data-avatar="👑">👑</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Opciones de Partida -->
+      <div class="w-full space-y-2.5">
+        <button id="btn-create-room" class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-rose-500 via-pink-600 to-rose-600 hover:from-rose-400 hover:to-pink-500 text-white font-black text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(244,63,94,0.5)] active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer">
+          <span>👑</span> <span>CREAR SALA Y GENERAR CÓDIGO / QR</span>
+        </button>
+
+        <div class="flex items-center gap-2">
+          <input id="input-room-code" type="text" placeholder="CÓDIGO DE SALA" class="w-2/3 px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-center uppercase font-mono font-bold text-cyan-300 text-xs tracking-wider outline-none focus:border-cyan-400">
+          <button id="btn-join-room" class="w-1/3 py-2.5 px-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-[0_0_15px_rgba(0,240,255,0.4)] active:scale-95 transition flex items-center justify-center gap-1 cursor-pointer">
+            <span>🔗</span> <span>UNIRME</span>
+          </button>
+        </div>
+
+        <div class="relative flex py-1 items-center">
+          <div class="flex-grow border-t border-slate-800"></div>
+          <span class="flex-shrink mx-3 text-[10px] text-slate-500 font-bold uppercase">O JUEGA EN SOLITARIO</span>
+          <div class="flex-grow border-t border-slate-800"></div>
+        </div>
+
+        <button id="btn-quick-play-bots" class="w-full py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 hover:text-white border border-amber-500/40 font-bold text-xs uppercase tracking-wider transition flex items-center justify-center gap-2 cursor-pointer">
+          <span>🤖</span> <span>PARTIDA RÁPIDA CONTRA BOTS (OFFLINE)</span>
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 3. SALA DE ESPERA / HOST LOBBY (CÓDIGO & QR)                              -->
+  <!-- ========================================================================= -->
+  <div id="view-room-waiting" class="hidden w-full max-w-md flex flex-col items-center my-auto space-y-4">
+    <div class="w-full p-5 sm:p-6 rounded-3xl bg-slate-900/90 border-2 border-cyan-500/50 shadow-[0_0_35px_rgba(0,240,255,0.25)] backdrop-blur-md flex flex-col items-center text-center">
+      
+      <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-cyan-950 text-cyan-300 border border-cyan-500/50 mb-2">
+        SALA CREADA • COMPARTE CON TUS AMIGOS
+      </span>
+
+      <div class="my-2">
+        <span class="text-xs text-slate-400 font-bold">Código de Sala:</span>
+        <div id="room-code-display" class="font-mono text-3xl font-black text-cyan-300 tracking-widest my-1 select-all">
+          ---
+        </div>
+      </div>
+
+      <!-- QR Code para unirse escaneando con la cámara del celular -->
+      <div class="p-3 bg-white rounded-2xl shadow-[0_0_20px_rgba(0,240,255,0.4)] my-2">
+        <div id="room-qrcode" class="w-[140px] h-[140px] flex items-center justify-center"></div>
+      </div>
+      <p class="text-[10px] text-slate-400">Escanea este código QR con el celular para unirte a la partida.</p>
+
+      <!-- Lista de Jugadores Conectados -->
+      <div class="w-full my-4">
+        <div class="flex items-center justify-between text-[11px] font-bold text-slate-400 border-b border-slate-800 pb-1 mb-2">
+          <span>Jugadores en la mesa:</span>
+          <span id="player-count-badge" class="text-cyan-400 font-mono">1/6</span>
+        </div>
+        <div id="room-players-list" class="space-y-1.5 max-h-36 overflow-y-auto pr-1 text-xs">
+          <!-- Jugadores agregados dinámicamente -->
+        </div>
+      </div>
+
+      <!-- Acciones del Host -->
+      <div class="w-full space-y-2">
+        <button id="btn-add-bot" class="w-full py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold text-xs uppercase transition flex items-center justify-center gap-1.5 cursor-pointer">
+          <span>🤖</span> <span>Añadir Bot de Prueba</span>
+        </button>
+
+        <button id="btn-start-game" class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wider shadow-[0_0_20px_rgba(52,211,153,0.6)] active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer animate-glow-pulse">
+          <span>🚀</span> <span>¡INICIAR DUELO DE HIELOS!</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 4. PANTALLA DE JUEGO PRINCIPAL (TABLERO 6x6 & SCOREBOARD)                  -->
+  <!-- ========================================================================= -->
+  <main id="view-game" class="hidden w-full max-w-4xl flex-1 flex flex-col lg:flex-row items-center lg:items-start justify-center gap-4 sm:gap-6 my-auto">
+    
+    <!-- COLUMNA IZQUIERDA: TABLERO 6x6 -->
+    <div id="app-container" class="w-full max-w-[440px] flex flex-col items-center relative">
+      
+      <!-- Banner de Turno & Notificación de Emboscada -->
+      <div class="w-full flex items-center justify-between p-2.5 rounded-2xl bg-slate-900/90 border border-red-500/40 mb-2.5 backdrop-blur-sm text-xs">
+        <div class="flex items-center space-x-2">
+          <span class="text-rose-400 font-black text-xs">TURNO:</span>
+          <span id="current-turn-badge" class="px-2.5 py-0.5 rounded-full bg-rose-950 text-rose-200 border border-rose-500/50 font-black text-xs truncate max-w-[150px]">
+            Tu Turno
+          </span>
+        </div>
+
+        <!-- Inventario de Minas del Jugador -->
+        <div id="mine-inventory-box" class="flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-slate-950 border border-amber-500/50 text-amber-300 font-bold text-xs">
+          <span>💣 Minas:</span>
+          <span id="player-mines-count" class="font-mono text-cyan-300 font-black">0</span>
+        </div>
+      </div>
+
+      <!-- Banner de Alerta / Siembra de Mina -->
+      <div id="action-banner-prompt" class="w-full py-1.5 px-3 rounded-xl bg-cyan-950/80 border border-cyan-400/50 text-cyan-200 text-[11px] font-bold text-center mb-2.5 shadow-[0_0_15px_rgba(0,240,255,0.2)]">
+        👉 Toca una casilla oculta para destapar un granizado.
+      </div>
+
+      <!-- Tablero de Hielos 6x6 -->
+      <div id="battle-grid" class="battle-grid w-full p-2.5 rounded-3xl bg-slate-950/80 border-2 border-cyan-500/30 shadow-[0_0_30px_rgba(0,240,255,0.2)]">
+        <!-- 36 Casillas generadas dinámicamente -->
+      </div>
+
+      <p class="text-[10px] text-slate-400 mt-2 text-center">
+        🍧 +100 | 🍹 +250 | 🥃 +500 | 💣 Siembra minas secretas para robar los puntos del rival.
+      </p>
+
+    </div>
+
+    <!-- COLUMNA DERECHA: MARCADOR EN VIVO Y FEED DE EVENTOS -->
+    <div class="w-full max-w-[360px] flex flex-col space-y-3">
+      
+      <!-- Tabla de Clasificación en Vivo -->
+      <div class="p-3.5 rounded-2xl bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 border-2 border-red-500/40 shadow-[0_0_25px_rgba(244,63,94,0.2)]">
+        <div class="flex items-center justify-between pb-2 border-b border-slate-800 text-xs font-black uppercase tracking-wider text-rose-300">
+          <span>Marcador en Vivo</span>
+          <span class="text-[10px] text-amber-400">👑 Ronda de Tragos</span>
+        </div>
+
+        <div id="live-scoreboard" class="space-y-1.5 pt-2.5 text-xs">
+          <!-- Clasificación en vivo -->
+        </div>
+      </div>
+
+      <!-- Feed de Emboscadas y Eventos en Vivo -->
+      <div class="p-3 rounded-2xl bg-slate-900/80 border border-slate-800 backdrop-blur-md flex flex-col">
+        <div class="flex items-center justify-between pb-1.5 border-b border-slate-800 text-[10px] font-black uppercase tracking-wider text-slate-400">
+          <span>Registro de Emboscadas</span>
+          <span class="text-rose-400 animate-pulse">● EN VIVO</span>
+        </div>
+        <div id="battle-log" class="space-y-1 pt-2 max-h-36 overflow-y-auto text-[11px] pr-1">
+          <div class="text-slate-500 text-[10px] italic">¡Comienza la ronda! Que caiga el que menos aguante.</div>
+        </div>
+      </div>
+
+      <!-- Regla de Oro -->
+      <div class="p-3 rounded-2xl bg-amber-950/40 border border-amber-500/40 text-center">
+        <span class="text-xs font-black text-amber-300 uppercase">🍻 REGLA DE ORO DE PARADICE 🍸</span>
+        <p class="text-[10px] text-amber-200/80 mt-0.5 leading-tight">
+          El jugador que termine con menos puntos al agotarse el hielo paga la ronda de granizados para todos.
+        </p>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- 5. MODAL FINAL: PODIO Y RETO DEL PERDEDOR (PAGA LA RONDA)                 -->
+  <!-- ========================================================================= -->
+  <div id="modal-game-over" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-4 hidden">
+    <div class="w-full max-w-md bg-gradient-to-b from-slate-900 via-rose-950/40 to-slate-900 border-2 border-red-500 rounded-3xl p-6 shadow-[0_0_50px_rgba(244,63,94,0.6)] flex flex-col items-center text-center">
+      
+      <div class="w-16 h-16 rounded-full bg-rose-950 border border-rose-400 flex items-center justify-center text-3xl mb-2 animate-bounce">
+        🍻
+      </div>
+
+      <span class="px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-red-950 text-rose-300 border border-red-500/50 mb-1">
+        ¡RONDA FINALIZADA!
+      </span>
+
+      <h2 class="text-2xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-200 to-rose-400 uppercase tracking-tight">
+        PODIO DE BATALLA
+      </h2>
+
+      <!-- Ganador 1er Lugar -->
+      <div class="w-full my-3 p-3 rounded-2xl bg-emerald-950/40 border border-emerald-500/50 flex items-center justify-between">
+        <div class="flex items-center space-x-2.5">
+          <span class="text-2xl">👑</span>
+          <div class="text-left">
+            <span class="text-[10px] uppercase font-black text-emerald-400">1er Lugar • Campeón</span>
+            <div id="winner-name-display" class="font-black text-white text-sm">---</div>
+          </div>
+        </div>
+        <div id="winner-score-display" class="font-mono font-black text-emerald-300 text-sm">0 pts</div>
+      </div>
+
+      <!-- El Perdedor Paga la Ronda -->
+      <div class="w-full my-1.5 p-4 rounded-2xl bg-gradient-to-r from-rose-950/80 via-red-900/60 to-rose-950/80 border-2 border-rose-500 shadow-[0_0_25px_rgba(244,63,94,0.5)] flex flex-col items-center animate-glow-red">
+        <span class="text-[11px] font-black uppercase tracking-wider text-rose-300 flex items-center gap-1">
+          <span>💀</span> <span>EL PERDEDOR DE LA NOCHE</span> <span>💀</span>
+        </span>
+        <div id="loser-name-display" class="text-xl font-black text-white my-1">
+          ---
+        </div>
+        <p class="text-xs text-rose-200 font-bold">
+          ¡LE TOCA PAGAR LA RONDA DE GRANIZADOS EN PARADICE! 🍸🍻
+        </p>
+      </div>
+
+      <!-- Acciones Finales -->
+      <div class="w-full space-y-2 mt-4">
+        <a id="btn-share-whatsapp" href="#" target="_blank" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(52,211,153,0.5)] active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer">
+          <span>📱</span> <span>COBRAR LA RONDA POR WHATSAPP</span>
+        </a>
+
+        <button id="btn-play-again" class="w-full py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs uppercase tracking-wider transition cursor-pointer">
+          🔄 JUGAR OTRA PARTIDA
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Modal Instrucciones de BattleRound -->
+  <div id="modal-instructions" class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-[#040814]/85 backdrop-blur-md hidden">
+    <div class="w-full max-w-lg bg-slate-950/95 border-2 border-red-500/60 rounded-3xl p-5 sm:p-6 shadow-[0_0_40px_rgba(244,63,94,0.4)] relative flex flex-col max-h-[90vh]">
+      
+      <!-- Botón Cerrar -->
+      <button id="close-instructions-btn" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-900 border border-slate-700 hover:border-red-400 text-slate-300 hover:text-white flex items-center justify-center text-sm transition cursor-pointer">
+        ✕
+      </button>
+
+      <!-- Encabezado -->
+      <div class="flex items-center gap-3 mb-4 border-b border-red-500/30 pb-3">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-rose-600 via-pink-500 to-amber-400 p-0.5 shadow-[0_0_15px_rgba(244,63,94,0.5)] flex-shrink-0">
+          <div class="w-full h-full bg-[#040814] rounded-[14px] flex items-center justify-center text-2xl">
+            💥
+          </div>
+        </div>
+        <div>
+          <h3 class="font-display font-black text-lg sm:text-xl text-white uppercase tracking-tight">
+            ¿CÓMO SE JUEGA A BATTLEROUND?
+          </h3>
+          <p class="text-[11px] text-rose-300 font-medium">Duelo Multijugador en Vivo</p>
+        </div>
+      </div>
+
+      <div class="space-y-2.5 overflow-y-auto pr-1 text-xs">
+        <div class="p-3 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-start gap-3">
+          <div class="w-7 h-7 rounded-xl bg-red-950 text-rose-300 border border-red-500/40 flex items-center justify-center font-black flex-shrink-0">1</div>
+          <div>
+            <h4 class="font-bold text-white text-xs">Conéctate con tu parche</h4>
+            <p class="text-[11px] text-slate-400 mt-0.5">
+              Uno crea la sala y muestra el QR. Todos escanean desde su celular y entran a la misma partida en tiempo real vía WebRTC (¡sin crear cuentas ni base de datos!).
+            </p>
+          </div>
+        </div>
+
+        <div class="p-3 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-start gap-3">
+          <div class="w-7 h-7 rounded-xl bg-cyan-950 text-cyan-300 border border-cyan-500/40 flex items-center justify-center font-black flex-shrink-0">2</div>
+          <div>
+            <h4 class="font-bold text-white text-xs">Destapa y Acumula Puntos</h4>
+            <p class="text-[11px] text-slate-400 mt-0.5">
+              En tu turno, toca un hielo oculto. Consigue 🍧 Granizados (+100), 🍹 Vasos Dobles (+250) o 🥃 Shots de Tequila (+500).
+            </p>
+          </div>
+        </div>
+
+        <div class="p-3 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-start gap-3">
+          <div class="w-7 h-7 rounded-xl bg-purple-950 text-purple-300 border border-purple-500/40 flex items-center justify-center font-black flex-shrink-0">3</div>
+          <div>
+            <h4 class="font-bold text-white text-xs">Siembra Minas Trampa</h4>
+            <p class="text-[11px] text-slate-400 mt-0.5">
+              Cada acierto te da 1 Mina Trampa 💣. Plántala en secreto en cualquier casilla oculta. Solo tú sabes dónde está.
+            </p>
+          </div>
+        </div>
+
+        <div class="p-3 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-start gap-3">
+          <div class="w-7 h-7 rounded-xl bg-amber-950 text-amber-300 border border-amber-500/40 flex items-center justify-center font-black flex-shrink-0">4</div>
+          <div>
+            <h4 class="font-bold text-white text-xs">Emboscada y Robo de Puntos</h4>
+            <p class="text-[11px] text-slate-400 mt-0.5">
+              Si un rival pisa tu mina: ¡BOOM! Pierde todos sus puntos acumulados y <strong>tú te los robas de inmediato</strong>.
+            </p>
+          </div>
+        </div>
+
+        <div class="p-3 rounded-2xl bg-emerald-950 text-emerald-300 border border-emerald-500/40 flex items-start gap-3">
+          <div class="w-7 h-7 rounded-xl bg-emerald-900 text-emerald-200 border border-emerald-400/50 flex items-center justify-center font-black flex-shrink-0">5</div>
+          <div>
+            <h4 class="font-bold text-white text-xs">El Perdedor Paga la Ronda</h4>
+            <p class="text-[11px] text-emerald-200 mt-0.5 font-semibold">
+              El que termine con menos puntos al destapar el tablero le toca invitar la ronda de granizados con licor para todo el parche.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4 pt-3 border-t border-slate-800">
+        <button id="btn-close-instructions-bottom" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-rose-600 via-pink-600 to-rose-600 hover:from-rose-500 hover:to-pink-500 text-white font-black text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(244,63,94,0.4)] transition cursor-pointer">
+          ¡ENTENDIDO, A COMPETIR!
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SERVICIOS COMPARTIDOS Y LIBRERÍAS CORE -->
+  <script src="js/libs/qrcode.min.js"></script>
+  <script src="js/core/StorageService.js"></script>
+  <script src="js/core/AudioManager.js"></script>
+  <script src="js/core/TimerService.js"></script>
+
+  <!-- LÓGICA DE JUEGO BATTLEROUND -->
+  <script>
+    (function () {
+      'use strict';
+
+      // 1. Estado Global del Juego
+      const state = {
+        peer: null,
+        peerId: null,
+        roomCode: null,
+        isHost: false,
+        myPlayerId: null,
+        myPlayerName: 'Jugador',
+        myAvatar: '🍹',
+        players: [], // { id, name, avatar, score, isBot, conn }
+        currentTurnIndex: 0,
+        board: [], // 36 casillas: { index, type: 'GRANIZADO'|'DOBLE'|'SHOT'|'HIELO', points: 100, revealed: false, mineBy: null }
+        myMinesCount: 0,
+        isPlantingMode: false,
+        isGameOver: false,
+        botsList: [
+          { name: 'Mateo', avatar: '🥃' },
+          { name: 'Valentina', avatar: '🍧' },
+          { name: 'DJ Santi', avatar: '⚡' },
+          { name: 'Camila', avatar: '🍸' }
+        ],
+        connections: [] // Conexiones activas en caso de host
+      };
+
+      // 2. Referencias DOM
+      const dom = {
+        viewLobby: document.getElementById('view-lobby'),
+        viewRoomWaiting: document.getElementById('view-room-waiting'),
+        viewGame: document.getElementById('view-game'),
+        inputPlayerName: document.getElementById('input-player-name'),
+        inputRoomCode: document.getElementById('input-room-code'),
+        btnCreateRoom: document.getElementById('btn-create-room'),
+        btnJoinRoom: document.getElementById('btn-join-room'),
+        btnQuickPlayBots: document.getElementById('btn-quick-play-bots'),
+        avatarOptions: document.querySelectorAll('.avatar-opt'),
+        // Waiting Room
+        roomCodeDisplay: document.getElementById('room-code-display'),
+        roomQrcode: document.getElementById('room-qrcode'),
+        playerCountBadge: document.getElementById('player-count-badge'),
+        roomPlayersList: document.getElementById('room-players-list'),
+        btnAddBot: document.getElementById('btn-add-bot'),
+        btnStartGame: document.getElementById('btn-start-game'),
+        headerRoomBadge: document.getElementById('header-room-badge'),
+        headerRoomCode: document.getElementById('header-room-code'),
+        // Game Board
+        battleGrid: document.getElementById('battle-grid'),
+        currentTurnBadge: document.getElementById('current-turn-badge'),
+        playerMinesCount: document.getElementById('player-mines-count'),
+        actionBannerPrompt: document.getElementById('action-banner-prompt'),
+        liveScoreboard: document.getElementById('live-scoreboard'),
+        battleLog: document.getElementById('battle-log'),
+        // Modal Game Over
+        modalGameOver: document.getElementById('modal-game-over'),
+        winnerNameDisplay: document.getElementById('winner-name-display'),
+        winnerScoreDisplay: document.getElementById('winner-score-display'),
+        loserNameDisplay: document.getElementById('loser-name-display'),
+        btnShareWhatsapp: document.getElementById('btn-share-whatsapp'),
+        btnPlayAgain: document.getElementById('btn-play-again'),
+        // Modal Instrucciones
+        modalInstructions: document.getElementById('modal-instructions'),
+        btnInstructions: document.getElementById('btn-instructions'),
+        closeInstructionsBtn: document.getElementById('close-instructions-btn'),
+        closeInstructionsBtnBottom: document.getElementById('btn-close-instructions-bottom'),
+        // Audio Controls
+        btnSoundToggle: document.getElementById('btn-sound-toggle'),
+        soundIcon: document.getElementById('sound-icon'),
+        btnMusicToggle: document.getElementById('btn-music-toggle'),
+        musicIcon: document.getElementById('music-icon'),
+        btnMusicNext: document.getElementById('btn-music-next'),
+        musicTrackDisplay: document.getElementById('music-track-display')
+      };
+
+      const audio = window.audioManager || window.ParadiceAudio;
+
+      let demoInterval = null;
+
+      function iniciarGameplayDemoSimulado() {
+        if (state.roomCode || (state.players.length > 0 && !state.isDemoMode)) return;
+
+        state.isDemoMode = true;
+        dom.viewLobby.classList.add('hidden');
+        dom.viewRoomWaiting.classList.add('hidden');
+        dom.viewGame.classList.remove('hidden');
+
+        // Configurar 2 bots para el gameplay demo
+        state.players = [
+          { id: 'bot-1', name: 'Mateo', avatar: '🥃', score: 300, isBot: true },
+          { id: 'bot-2', name: 'Valentina', avatar: '🍧', score: 200, isBot: true }
+        ];
+        state.myPlayerId = 'bot-1';
+        generarTableroBatalla();
+        renderTableroVisual();
+        actualizarScoreboard();
+
+        // Plantar una mina simulada en casilla 14
+        if (state.board[14]) state.board[14].mineBy = 'bot-2';
+
+        let step = 0;
+        if (demoInterval) clearInterval(demoInterval);
+        demoInterval = setInterval(() => {
+          if (!state.isDemoMode) {
+            clearInterval(demoInterval);
+            return;
+          }
+
+          const eligibleTiles = state.board.filter(t => !t.isExplosion && (!t.revealedTo || t.revealedTo.length === 0));
+          if (eligibleTiles.length === 0) {
+            generarTableroBatalla();
+            renderTableroVisual();
+            if (state.board[14]) state.board[14].mineBy = 'bot-2';
+            step = 0;
+            return;
+          }
+
+          const activeBot = state.players[step % 2];
+          step++;
+
+          let targetTile;
+          if (step === 3 && state.board[14] && !state.board[14].isExplosion) {
+            targetTile = state.board[14]; // Provocar explosión con Mateo
+          } else {
+            targetTile = eligibleTiles[Math.floor(Math.random() * eligibleTiles.length)];
+          }
+
+          if (targetTile) {
+            procesarClicCasilla(targetTile.index, activeBot.id);
+          }
+        }, 1600);
+      }
+
+      function detenerGameplayDemoSimulado() {
+        state.isDemoMode = false;
+        if (demoInterval) {
+          clearInterval(demoInterval);
+          demoInterval = null;
+        }
+
+        // Restaurar pantalla de lobby si no está en sala real
+        if (!state.roomCode) {
+          dom.viewGame.classList.add('hidden');
+          dom.viewRoomWaiting.classList.add('hidden');
+          dom.viewLobby.classList.remove('hidden');
+          state.players = [];
+          state.board = [];
+        }
+      }
+
+      // 3. Inicialización
+      function init() {
+        bindEvents();
+        checkUrlParams();
+        updateAudioUI();
+
+        window.addEventListener('audiotrackchange', (e) => {
+          if (dom.musicTrackDisplay) {
+            dom.musicTrackDisplay.textContent = `🎵 ${e.detail.title}`;
+          }
+        });
+
+        // Inicializar Gameplay Demo universal desde el arranque
+        if (window.TimerService && window.TimerService.initGameplayDemo) {
+          window.TimerService.initGameplayDemo(
+            () => iniciarGameplayDemoSimulado(),
+            () => detenerGameplayDemoSimulado()
+          );
+        }
+      }
+
+      function updateAudioUI() {
+        if (!audio) return;
+        if (dom.soundIcon) dom.soundIcon.textContent = audio.isSfxMuted() ? '🔇' : '🔊';
+        if (dom.musicIcon) dom.musicIcon.textContent = audio.isMusicMuted() ? '🔇' : '🎵';
+        if (dom.musicTrackDisplay) dom.musicTrackDisplay.textContent = `🎵 ${audio.getTrackTitle()}`;
+      }
+
+      function checkUrlParams() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const room = urlParams.get('room');
+        if (room && dom.inputRoomCode) {
+          dom.inputRoomCode.value = room.toUpperCase();
+        }
+      }
+
+      function bindEvents() {
+        // Selector de avatar
+        dom.avatarOptions.forEach(btn => {
+          btn.addEventListener('click', () => {
+            dom.avatarOptions.forEach(b => {
+              b.classList.remove('bg-rose-600', 'text-white');
+              b.classList.add('text-slate-400');
+            });
+            btn.classList.add('bg-rose-600', 'text-white');
+            btn.classList.remove('text-slate-400');
+            state.myAvatar = btn.dataset.avatar;
+          });
+        });
+
+        // Crear Sala
+        dom.btnCreateRoom.addEventListener('click', () => {
+          setupPlayerProfile();
+          iniciarHostRoom();
+        });
+
+        // Unirse a Sala
+        dom.btnJoinRoom.addEventListener('click', () => {
+          setupPlayerProfile();
+          const code = dom.inputRoomCode.value.trim().toUpperCase();
+          if (!code) {
+            alert('Por favor ingresa un código de sala válido.');
+            return;
+          }
+          unirseComoGuest(code);
+        });
+
+        // Partida Rápida vs Bots
+        dom.btnQuickPlayBots.addEventListener('click', () => {
+          setupPlayerProfile();
+          iniciarPartidaBots();
+        });
+
+        // Agregar Bot en Sala de Espera
+        dom.btnAddBot.addEventListener('click', () => {
+          if (state.players.length >= 6) {
+            alert('Máximo 6 jugadores por sala.');
+            return;
+          }
+          const availableBot = state.botsList.find(b => !state.players.some(p => p.name === b.name)) || {
+            name: `Bot ${state.players.length + 1}`,
+            avatar: '🤖'
+          };
+          const botPlayer = {
+            id: `bot-${Date.now()}-${Math.random()}`,
+            name: availableBot.name,
+            avatar: availableBot.avatar,
+            score: 0,
+            isBot: true,
+            mines: 0
+          };
+          state.players.push(botPlayer);
+          renderWaitingPlayers();
+          broadcast({ type: 'UPDATE_PLAYERS', players: state.players });
+        });
+
+        // Iniciar Partida
+        dom.btnStartGame.addEventListener('click', () => {
+          if (state.players.length < 2) {
+            alert('Se necesitan al menos 2 jugadores. ¡Puedes pulsar "Añadir Bot de Prueba" para probar ya mismo!');
+            return;
+          }
+          generarTableroBatalla();
+          state.currentTurnIndex = 0;
+          state.isGameOver = false;
+
+          const gameStartData = {
+            type: 'START_GAME',
+            board: state.board.map(t => ({ index: t.index, revealed: false })),
+            players: state.players,
+            turnIndex: state.currentTurnIndex
+          };
+
+          broadcast(gameStartData);
+          iniciarPantallaJuego();
+        });
+
+        // Reiniciar / Jugar otra
+        dom.btnPlayAgain.addEventListener('click', () => {
+          dom.modalGameOver.classList.add('hidden');
+          if (state.isHost) {
+            dom.btnStartGame.click();
+          } else {
+            dom.viewGame.classList.add('hidden');
+            dom.viewLobby.classList.remove('hidden');
+          }
+        });
+
+        // Controles de audio
+        dom.btnSoundToggle.addEventListener('click', () => {
+          if (audio) {
+            audio.toggleSfx();
+            updateAudioUI();
+          }
+        });
+
+        dom.btnMusicToggle.addEventListener('click', () => {
+          if (audio) {
+            audio.toggleMusic();
+            updateAudioUI();
+          }
+        });
+
+        dom.btnMusicNext.addEventListener('click', () => {
+          if (audio) {
+            audio.nextTrack();
+            updateAudioUI();
+          }
+        });
+
+        // Instrucciones
+        dom.btnInstructions.addEventListener('click', () => dom.modalInstructions.classList.remove('hidden'));
+        dom.closeInstructionsBtn.addEventListener('click', () => dom.modalInstructions.classList.add('hidden'));
+        dom.closeInstructionsBtnBottom.addEventListener('click', () => dom.modalInstructions.classList.add('hidden'));
+      }
+
+      function setupPlayerProfile() {
+        const nameVal = dom.inputPlayerName.value.trim();
+        state.myPlayerName = nameVal || `Jugador ${Math.floor(Math.random() * 900 + 100)}`;
+        state.myPlayerId = `p-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      }
+
+      // =========================================================================
+      // 4. Conexión P2P con PeerJS (WebRTC Directo)
+      // =========================================================================
+      function iniciarHostRoom() {
+        const randomCode = Math.floor(Math.random() * 900 + 100).toString();
+        const fullPeerId = `paradice-battle-${randomCode}`;
+        state.roomCode = randomCode;
+        state.isHost = true;
+
+        dom.viewLobby.classList.add('hidden');
+        dom.viewRoomWaiting.classList.remove('hidden');
+        dom.roomCodeDisplay.textContent = randomCode;
+        dom.headerRoomBadge.classList.remove('hidden');
+        dom.headerRoomCode.textContent = randomCode;
+
+        // Renderizar Código QR
+        const joinUrl = `${window.location.origin}${window.location.pathname}?room=${randomCode}`;
+        dom.roomQrcode.innerHTML = '';
+        if (typeof QRCode !== 'undefined') {
+          new QRCode(dom.roomQrcode, {
+            text: joinUrl,
+            width: 140,
+            height: 140,
+            colorDark: '#040814',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.M
+          });
+        }
+
+        // Agregar al host como jugador 1
+        state.players = [{
+          id: state.myPlayerId,
+          name: state.myPlayerName,
+          avatar: state.myAvatar,
+          score: 0,
+          isBot: false,
+          mines: 0
+        }];
+        renderWaitingPlayers();
+
+        // Inicializar PeerJS Broker
+        try {
+          state.peer = new Peer(fullPeerId);
+          
+          state.peer.on('open', (id) => {
+            console.log('Host PeerJS conectado con ID:', id);
+          });
+
+          state.peer.on('connection', (conn) => {
+            state.connections.push(conn);
+            conn.on('data', (data) => handlePeerMessage(data, conn));
+            conn.on('close', () => {
+              state.connections = state.connections.filter(c => c !== conn);
+            });
+          });
+
+          state.peer.on('error', (err) => {
+            console.warn('PeerJS warning:', err);
+            // Si el código ya existe o hay problemas de red, se puede continuar con bots
+          });
+        } catch (e) {
+          console.error('Error inicializando PeerJS:', e);
+        }
+      }
+
+      function unirseComoGuest(code) {
+        state.roomCode = code;
+        state.isHost = false;
+        const hostPeerId = `paradice-battle-${code}`;
+
+        dom.viewLobby.classList.add('hidden');
+        dom.viewRoomWaiting.classList.remove('hidden');
+        dom.roomCodeDisplay.textContent = code;
+        dom.btnAddBot.classList.add('hidden');
+        dom.btnStartGame.classList.add('hidden');
+        dom.headerRoomBadge.classList.remove('hidden');
+        dom.headerRoomCode.textContent = code;
+
+        const myGuestId = `guest-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+        state.myPlayerId = myGuestId;
+
+        try {
+          state.peer = new Peer(myGuestId);
+
+          state.peer.on('open', () => {
+            const conn = state.peer.connect(hostPeerId);
+            conn.on('open', () => {
+              state.hostConnection = conn;
+              conn.send({
+                type: 'PLAYER_JOIN',
+                player: {
+                  id: state.myPlayerId,
+                  name: state.myPlayerName,
+                  avatar: state.myAvatar,
+                  score: 0,
+                  isBot: false,
+                  mines: 0
+                }
+              });
+            });
+
+            conn.on('data', (data) => handlePeerMessage(data));
+          });
+
+          state.peer.on('error', (err) => {
+            alert('No se pudo conectar a la sala. Verifica que el código sea correcto o inicia en modo Bots.');
+            console.error('Peer error:', err);
+          });
+        } catch (e) {
+          console.error('Peer join error:', e);
+        }
+      }
+
+      function broadcast(msg) {
+        if (!state.isHost) {
+          if (state.hostConnection && state.hostConnection.open) {
+            state.hostConnection.send(msg);
+          }
+          return;
+        }
+        state.connections.forEach(conn => {
+          if (conn.open) conn.send(msg);
+        });
+      }
+
+      function handlePeerMessage(msg, connSender) {
+        if (msg.type === 'PLAYER_JOIN' && state.isHost) {
+          if (state.players.length >= 6) return;
+          state.players.push(msg.player);
+          renderWaitingPlayers();
+          broadcast({ type: 'UPDATE_PLAYERS', players: state.players });
+        } else if (msg.type === 'UPDATE_PLAYERS') {
+          state.players = msg.players;
+          renderWaitingPlayers();
+        } else if (msg.type === 'START_GAME') {
+          state.players = msg.players;
+          state.currentTurnIndex = msg.turnIndex;
+          iniciarPantallaJuego();
+        } else if (msg.type === 'TILE_CLICK') {
+          procesarClicCasilla(msg.tileIndex, msg.playerId);
+        } else if (msg.type === 'MINE_PLANTED' || msg.type === 'MINE_PLANTED_SYNC') {
+          registrarMinaPlantada(msg.tileIndex, msg.planterId);
+        } else if (msg.type === 'CLEAN_TILE_RESULT' && msg.playerId === state.myPlayerId) {
+          const tile = state.board[msg.tileIndex];
+          if (tile) {
+            if (!tile.revealedTo) tile.revealedTo = [];
+            if (!tile.revealedTo.includes(state.myPlayerId)) tile.revealedTo.push(state.myPlayerId);
+            actualizarTileVisual(msg.tileIndex);
+            state.myMinesCount = Math.max(1, state.myMinesCount);
+            dom.playerMinesCount.textContent = state.myMinesCount;
+            if (audio && audio.playCoinWin) audio.playCoinWin();
+            mostrarOpcionesCuboLimpio(msg.tileIndex);
+          }
+        } else if (msg.type === 'TILE_EXPLODED') {
+          const tile = state.board[msg.tileIndex];
+          if (tile) {
+            tile.isExplosion = true;
+            tile.publiclyRevealed = true;
+            tile.victimAvatar = msg.victimAvatar;
+            tile.victimName = msg.victimName;
+            tile.pointsLabel = `-${msg.stolenPoints} pts`;
+            actualizarTileVisual(msg.tileIndex);
+          }
+          state.players = msg.players;
+          actualizarScoreboard();
+          if (audio && audio.playExplosion) audio.playExplosion();
+          dom.battleGrid.classList.add('animate-shake');
+          setTimeout(() => dom.battleGrid.classList.remove('animate-shake'), 500);
+          const victim = state.players.find(p => p.id === msg.victimId);
+          const planter = state.players.find(p => p.id === msg.planterId);
+          logEvent(`💥 <strong>¡EMBOSCADA!</strong> ${victim ? victim.name : 'Un rival'} pisó la mina secreta de <strong>${planter ? planter.name : 'un rival'}</strong>. ¡${planter ? planter.name : 'Rival'} le robó ${msg.stolenPoints} pts!`);
+        } else if (msg.type === 'PLAYER_EXPLORED_CLEAN') {
+          state.players = msg.players;
+          actualizarScoreboard();
+          const p = state.players.find(x => x.id === msg.playerId);
+          if (p && p.id !== state.myPlayerId) {
+            logEvent(`❄️ ${p.name} exploró una casilla de hielo.`);
+          }
+        } else if (msg.type === 'GAME_SYNC') {
+          state.players = msg.players;
+          state.currentTurnIndex = msg.turnIndex;
+          actualizarScoreboard();
+          actualizarTurnoUI();
+        }
+      }
+
+      function renderWaitingPlayers() {
+        dom.playerCountBadge.textContent = `${state.players.length}/6`;
+        dom.roomPlayersList.innerHTML = '';
+        state.players.forEach(p => {
+          const item = document.createElement('div');
+          item.className = 'flex items-center justify-between p-2 rounded-xl bg-slate-950/80 border border-slate-800';
+          item.innerHTML = `
+            <div class="flex items-center space-x-2">
+              <span class="text-base">${p.avatar}</span>
+              <span class="font-bold text-white">${p.name}</span>
+            </div>
+            <span class="text-[10px] font-black uppercase ${p.id === state.myPlayerId ? 'text-cyan-400' : 'text-slate-500'}">
+              ${p.id === state.myPlayerId ? 'TÚ' : (p.isBot ? 'BOT' : 'RIVAL')}
+            </span>
+          `;
+          dom.roomPlayersList.appendChild(item);
+        });
+      }
+
+      function iniciarPartidaBots() {
+        state.isHost = true;
+        state.roomCode = 'LOCAL-BOTS';
+        state.players = [
+          { id: state.myPlayerId, name: state.myPlayerName, avatar: state.myAvatar, score: 0, isBot: false, mines: 0 },
+          { id: 'bot-1', name: 'Mateo', avatar: '🥃', score: 0, isBot: true, mines: 0 },
+          { id: 'bot-2', name: 'Valentina', avatar: '🍧', score: 0, isBot: true, mines: 0 }
+        ];
+        generarTableroBatalla();
+        state.currentTurnIndex = 0;
+        iniciarPantallaJuego();
+      }
+
+      // =========================================================================
+      // 5. Lógica del Tablero 6x6 y Batalla
+      // =========================================================================
+      function generarTableroBatalla() {
+        state.board = [];
+        // 36 Casillas distribuidas:
+        // 8 Granizados (+100)
+        // 6 Vasos Dobles (+250)
+        // 3 Tequila Shots (+500)
+        // 19 Hielos Comunes (+50)
+        const items = [
+          ...Array(8).fill({ type: 'GRANIZADO', icon: '🍧', name: 'Granizado', points: 100 }),
+          ...Array(6).fill({ type: 'DOBLE', icon: '🍹', name: 'Vaso Doble', points: 250 }),
+          ...Array(3).fill({ type: 'SHOT', icon: '🥃', name: 'Tequila Shot', points: 500 }),
+          ...Array(19).fill({ type: 'HIELO', icon: '🧊', name: 'Hielo Frío', points: 50 })
+        ];
+
+        // Barajar aleatoriamente (Fisher-Yates)
+        for (let i = items.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [items[i], items[j]] = [items[j], items[i]];
+        }
+
+        for (let idx = 0; idx < 36; idx++) {
+          state.board.push({
+            index: idx,
+            type: items[idx].type,
+            icon: items[idx].icon,
+            name: items[idx].name,
+            points: items[idx].points,
+            revealedTo: [], // Jugadores que lo han explorado en privado
+            publiclyRevealed: false,
+            isExplosion: false,
+            mineBy: null, // ID del jugador que plantó la mina aquí (secreto)
+            pointsLabel: ''
+          });
+        }
+      }
+
+      function iniciarPantallaJuego() {
+        dom.viewLobby.classList.add('hidden');
+        dom.viewRoomWaiting.classList.add('hidden');
+        dom.viewGame.classList.remove('hidden');
+
+        renderTableroVisual();
+        actualizarScoreboard();
+        actualizarTurnoUI();
+      }
+
+      function renderTableroVisual() {
+        dom.battleGrid.innerHTML = '';
+        for (let idx = 0; idx < 36; idx++) {
+          const el = document.createElement('div');
+          el.className = 'battle-tile select-none';
+          el.dataset.index = idx;
+
+          el.innerHTML = `
+            <!-- Cara Frontal (Hielo) -->
+            <div class="battle-tile-face battle-tile-front">
+              <span class="tile-front-icon text-xl sm:text-2xl">🧊</span>
+              <span class="text-[9px] font-mono text-cyan-300/60 mt-0.5">${idx + 1}</span>
+            </div>
+
+            <!-- Cara Trasera (Revelado / Seguro / Mina) -->
+            <div class="battle-tile-face battle-tile-back battle-tile-safe">
+              <span class="tile-back-icon text-2xl sm:text-3xl">🧊</span>
+              <span class="text-[9px] font-black text-white mt-0.5 uppercase tracking-wider"></span>
+            </div>
+          `;
+
+          el.addEventListener('click', () => onTileUserClick(idx));
+          dom.battleGrid.appendChild(el);
+          actualizarTileVisual(idx);
+        }
+      }
+
+      function onTileUserClick(tileIndex) {
+        if (state.isGameOver) return;
+        const currentActivePlayer = state.players[state.currentTurnIndex];
+        if (!currentActivePlayer) return;
+
+        // Si estamos en modo de siembra de mina
+        if (state.isPlantingMode) {
+          const tile = state.board[tileIndex];
+          if (!tile || tile.isExplosion) {
+            alert('No puedes sembrar en una casilla destruida.');
+            return;
+          }
+          plantarMina(tileIndex, state.myPlayerId);
+          return;
+        }
+
+        // Si es el turno del usuario local
+        if (currentActivePlayer.id !== state.myPlayerId) {
+          return;
+        }
+
+        const tile = state.board[tileIndex];
+        if (tile && (tile.isExplosion || (tile.revealedTo && tile.revealedTo.includes(state.myPlayerId)))) {
+          return;
+        }
+
+        if (state.isHost) {
+          procesarClicCasilla(tileIndex, state.myPlayerId);
+        } else {
+          broadcast({ type: 'TILE_CLICK', tileIndex, playerId: state.myPlayerId });
+        }
+      }
+
+      function procesarClicCasilla(tileIndex, playerId) {
+        const tile = state.board[tileIndex];
+        if (!tile || tile.isExplosion) return;
+
+        const player = state.players.find(p => p.id === playerId);
+        if (!player) return;
+
+        // 1. ¿Había una mina plantada aquí por otro rival?
+        if (tile.mineBy && tile.mineBy !== playerId) {
+          const planter = state.players.find(p => p.id === tile.mineBy);
+          const stolenPoints = player.score; // Le roba todos los puntos
+          player.score = 0;
+          if (planter) planter.score += Math.max(stolenPoints, 250);
+
+          tile.isExplosion = true;
+          tile.publiclyRevealed = true;
+          tile.displayIcon = '💥';
+          tile.victimAvatar = player.avatar;
+          tile.victimName = player.name;
+          tile.pointsLabel = `-${stolenPoints} pts`;
+
+          if (audio && audio.playExplosion) audio.playExplosion();
+          else if (audio && audio.playFailSound) audio.playFailSound();
+
+          logEvent(`💥 <strong>¡EMBOSCADA!</strong> ${player.name} pisó la mina secreta de <strong>${planter ? planter.name : 'un rival'}</strong>. ¡${planter ? planter.name : 'Rival'} le robó ${stolenPoints} pts!`);
+
+          // Shake animation en el tablero
+          dom.battleGrid.classList.add('animate-shake');
+          setTimeout(() => dom.battleGrid.classList.remove('animate-shake'), 500);
+
+          actualizarTileVisual(tileIndex);
+          actualizarScoreboard();
+
+          broadcast({
+            type: 'TILE_EXPLODED',
+            tileIndex,
+            victimId: player.id,
+            victimAvatar: player.avatar,
+            victimName: player.name,
+            planterId: tile.mineBy,
+            stolenPoints,
+            players: state.players
+          });
+
+          pasarSiguienteTurno();
+          return;
+        }
+
+        // 2. Destapado seguro (NO hay mina de rival)
+        if (!tile.revealedTo) tile.revealedTo = [];
+        if (!tile.revealedTo.includes(playerId)) {
+          tile.revealedTo.push(playerId);
+        }
+
+        const puntosGanados = tile.points;
+        if (puntosGanados > 0) {
+          player.score += puntosGanados;
+          tile.points = 0; // Premio reclamado
+        }
+
+        // Otorga 1 mina disponible
+        state.myMinesCount = Math.max(1, state.myMinesCount);
+        dom.playerMinesCount.textContent = state.myMinesCount;
+
+        actualizarScoreboard();
+
+        // Si es el jugador local
+        if (playerId === state.myPlayerId) {
+          // El cubo se revela LIMPIO exclusivamente para este jugador
+          actualizarTileVisual(tileIndex);
+
+          if (audio && audio.playCoinWin) audio.playCoinWin();
+          else if (audio && audio.playSuccessBeep) audio.playSuccessBeep();
+
+          logEvent(`🍧 ¡Descubriste <strong>${tile.name}</strong> (+${puntosGanados} pts)! El cubo está <strong>Limpio</strong>.`);
+
+          // Ofrecerle sembrar una mina aquí en secreto, en otro hielo o pasar turno
+          mostrarOpcionesCuboLimpio(tileIndex);
+
+          // A los rivales NO se les revela el contenido del cubo
+          broadcast({
+            type: 'PLAYER_EXPLORED_CLEAN',
+            playerId: state.myPlayerId,
+            players: state.players
+          });
+        } else if (player.isBot) {
+          // El bot juega: 70% probabilidad de plantar en este cubo limpio sin que el jugador lo sepa
+          if (Math.random() < 0.70) {
+            tile.mineBy = player.id;
+          } else {
+            simularSiembraBot(player.id);
+          }
+          logEvent(`❄️ ${player.name} exploró una casilla de hielo.`);
+          pasarSiguienteTurno();
+        } else {
+          // Es un guest humano en otra pantalla
+          logEvent(`❄️ ${player.name} exploró una casilla de hielo.`);
+          if (state.isHost) {
+            broadcast({
+              type: 'CLEAN_TILE_RESULT',
+              tileIndex,
+              playerId
+            });
+          }
+        }
+      }
+
+      function mostrarOpcionesCuboLimpio(tileIndex) {
+        state.isPlantingMode = true;
+        state.lastCleanTileIndex = tileIndex;
+
+        dom.actionBannerPrompt.className = 'w-full py-2 px-3 rounded-xl bg-gradient-to-r from-emerald-950 via-slate-900 to-emerald-950 border-2 border-emerald-400 text-white text-[11px] shadow-[0_0_20px_rgba(52,211,153,0.5)] flex flex-col sm:flex-row items-center justify-between gap-2 mb-2.5';
+        
+        dom.actionBannerPrompt.innerHTML = `
+          <div class="flex items-center gap-1.5 min-w-0">
+            <span class="text-base">✨</span>
+            <div class="text-left leading-tight">
+              <span class="font-black text-emerald-300">¡Cubo Limpio Asegurado!</span>
+              <span class="text-[10px] text-slate-300 block">Puedes sembrar una mina trampa en este cubo o en otro hielo sin que los rivales lo sepan.</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5 flex-shrink-0">
+            <button id="btn-plant-current-clean" class="px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-black text-[11px] shadow-[0_0_10px_rgba(244,63,94,0.7)] cursor-pointer transition active:scale-95">
+              💣 SEMBRAR AQUÍ
+            </button>
+            <button id="btn-plant-other-tile" class="px-2 py-1 rounded-lg bg-cyan-800 hover:bg-cyan-700 text-cyan-200 font-bold text-[10px] cursor-pointer transition">
+              🧊 OTRO HIELO
+            </button>
+            <button id="btn-skip-plant-turn" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 font-bold text-[10px] cursor-pointer transition">
+              PASAR
+            </button>
+          </div>
+        `;
+
+        // Resaltar la casilla limpia actual
+        const tileEl = dom.battleGrid.querySelector(`.battle-tile[data-index="${tileIndex}"]`);
+        if (tileEl) {
+          tileEl.classList.add('planting-target');
+        }
+
+        document.getElementById('btn-plant-current-clean')?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          plantarMina(tileIndex, state.myPlayerId);
+        });
+
+        document.getElementById('btn-plant-other-tile')?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          activarModoSiembraCualquierHielo();
+        });
+
+        document.getElementById('btn-skip-plant-turn')?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          state.isPlantingMode = false;
+          if (tileEl) tileEl.classList.remove('planting-target');
+          dom.actionBannerPrompt.className = 'w-full py-1.5 px-3 rounded-xl bg-slate-900 border border-slate-700 text-slate-300 text-[11px] font-bold text-center mb-2.5';
+          dom.actionBannerPrompt.innerHTML = '✅ Turno completado sin sembrar mina.';
+          pasarSiguienteTurno();
+        });
+      }
+
+      function activarModoSiembraCualquierHielo() {
+        state.isPlantingMode = true;
+        dom.actionBannerPrompt.className = 'w-full py-1.5 px-3 rounded-xl bg-gradient-to-r from-amber-500 to-rose-500 text-slate-950 text-[11px] font-black text-center mb-2.5 shadow-[0_0_20px_rgba(250,204,21,0.6)] animate-pulse';
+        dom.actionBannerPrompt.innerHTML = '💣 Toca cualquier cubo de hielo del tablero para sembrar tu mina trampa en secreto.';
+
+        const allTiles = dom.battleGrid.querySelectorAll('.battle-tile:not(.revealed) .battle-tile-front');
+        allTiles.forEach(t => t.classList.add('planting-target'));
+      }
+
+      function plantarMina(tileIndex, planterId) {
+        state.isPlantingMode = false;
+        state.myMinesCount = Math.max(0, state.myMinesCount - 1);
+        dom.playerMinesCount.textContent = state.myMinesCount;
+
+        // Remover resaltados de siembra
+        dom.battleGrid.querySelectorAll('.planting-target').forEach(el => el.classList.remove('planting-target'));
+
+        registrarMinaPlantada(tileIndex, planterId);
+
+        // Notificar sincronización sin revelar la mina visualmente a los rivales
+        broadcast({ type: 'MINE_PLANTED_SYNC', tileIndex, planterId });
+
+        dom.actionBannerPrompt.className = 'w-full py-1.5 px-3 rounded-xl bg-cyan-950/90 border border-cyan-400/60 text-cyan-200 text-[11px] font-bold text-center mb-2.5';
+        dom.actionBannerPrompt.innerHTML = '✅ ¡Mina trampa sembrada en secreto! Espera tu siguiente turno.';
+
+        logEvent(`💣 Sembraste una mina trampa secreta en el cubo <strong>#${tileIndex + 1}</strong>.`);
+
+        pasarSiguienteTurno();
+      }
+
+      function registrarMinaPlantada(tileIndex, planterId) {
+        const tile = state.board[tileIndex];
+        if (tile) {
+          tile.mineBy = planterId;
+          actualizarTileVisual(tileIndex);
+        }
+      }
+
+      function simularSiembraBot(botId) {
+        const elegibles = state.board.filter(t => !t.isExplosion && !t.mineBy);
+        if (elegibles.length > 0) {
+          const randTile = elegibles[Math.floor(Math.random() * elegibles.length)];
+          randTile.mineBy = botId;
+        }
+      }
+
+      function actualizarTileVisual(tileIndex) {
+        const tileData = state.board[tileIndex];
+        const tileEl = dom.battleGrid.querySelector(`.battle-tile[data-index="${tileIndex}"]`);
+        if (!tileEl || !tileData) return;
+
+        const isExploded = tileData.isExplosion || tileData.publiclyRevealed;
+        const isRevealedToMe = tileData.revealedTo && tileData.revealedTo.includes(state.myPlayerId);
+        const isMinePlantedByMe = tileData.mineBy === state.myPlayerId;
+
+        const back = tileEl.querySelector('.battle-tile-back');
+        const iconEl = tileEl.querySelector('.tile-back-icon');
+        const labelEl = back ? back.querySelector('span:last-child') : null;
+        const front = tileEl.querySelector('.battle-tile-front');
+        const frontIcon = front ? front.querySelector('.tile-front-icon') : null;
+
+        if (isExploded) {
+          tileEl.classList.add('revealed');
+          if (back) back.className = 'battle-tile-face battle-tile-back battle-tile-mine border-2 border-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.9)]';
+          if (iconEl) iconEl.innerHTML = `<div class="flex items-center justify-center gap-0.5 text-xs sm:text-sm leading-none"><span class="text-sm sm:text-base">${tileData.victimAvatar || '👤'}</span><span>💀</span><span class="text-sm sm:text-base">💥</span></div>`;
+          if (labelEl) labelEl.innerHTML = `<span class="text-[9px] sm:text-[10px] text-rose-200 font-extrabold tracking-tight">${tileData.victimName ? tileData.victimName : (tileData.pointsLabel || '¡BOOM!')}</span>`;
+        } else if (isRevealedToMe) {
+          // Destapado exclusivamente para mí (cubo limpio verificado)
+          tileEl.classList.add('revealed');
+          if (isMinePlantedByMe) {
+            if (back) back.className = 'battle-tile-face battle-tile-back battle-tile-safe border-2 border-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.85)]';
+            if (iconEl) iconEl.textContent = '💣';
+            if (labelEl) labelEl.textContent = 'MINA SECRETA';
+          } else {
+            if (back) back.className = 'battle-tile-face battle-tile-back battle-tile-safe';
+            if (iconEl) iconEl.textContent = tileData.icon || '🧊';
+            if (labelEl) labelEl.textContent = 'LIMPIO ✨';
+          }
+        } else {
+          // No revelado para mí: sigue viéndose como hielo cubierto
+          tileEl.classList.remove('revealed');
+          if (isMinePlantedByMe) {
+            if (front) front.classList.add('mine-planted-by-me');
+            if (frontIcon) frontIcon.textContent = '💣';
+          } else {
+            if (front) front.classList.remove('mine-planted-by-me');
+            if (frontIcon) frontIcon.textContent = '🧊';
+          }
+        }
+      }
+
+      function actualizarTileUI(tileIndex) {
+        actualizarTileVisual(tileIndex);
+      }
+
+      function pasarSiguienteTurno() {
+        // La partida finaliza cuando todas las casillas han explotado o han sido exploradas
+        const quedanOcultas = state.board.some(t => !t.isExplosion && (!t.revealedTo || t.revealedTo.length === 0));
+        if (!quedanOcultas) {
+          finalizarPartida();
+          return;
+        }
+
+        state.currentTurnIndex = (state.currentTurnIndex + 1) % state.players.length;
+        actualizarTurnoUI();
+
+        broadcast({
+          type: 'GAME_SYNC',
+          players: state.players,
+          turnIndex: state.currentTurnIndex
+        });
+
+        // Si el siguiente turno es de un Bot
+        const nextPlayer = state.players[state.currentTurnIndex];
+        if (nextPlayer && nextPlayer.isBot && state.isHost) {
+          setTimeout(() => ejecutarTurnoBot(nextPlayer), 1200);
+        }
+      }
+
+      function ejecutarTurnoBot(bot) {
+        if (state.isGameOver) return;
+        const elegibles = state.board.filter(t => !t.isExplosion && (!t.revealedTo || !t.revealedTo.includes(bot.id)));
+        if (elegibles.length === 0) {
+          finalizarPartida();
+          return;
+        }
+
+        const chosenTile = elegibles[Math.floor(Math.random() * elegibles.length)];
+        procesarClicCasilla(chosenTile.index, bot.id);
+      }
+
+      function actualizarTurnoUI() {
+        const currentActive = state.players[state.currentTurnIndex];
+        if (!currentActive) return;
+
+        const isMe = currentActive.id === state.myPlayerId;
+        dom.currentTurnBadge.textContent = isMe ? '👉 ¡TU TURNO!' : `Turno: ${currentActive.name}`;
+        dom.currentTurnBadge.className = isMe 
+          ? 'px-2.5 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-400 font-black text-xs animate-pulse truncate max-w-[150px]'
+          : 'px-2.5 py-0.5 rounded-full bg-slate-900 text-slate-400 border border-slate-700 font-bold text-xs truncate max-w-[150px]';
+
+        if (!state.isPlantingMode) {
+          dom.actionBannerPrompt.textContent = isMe 
+            ? '👉 Es tu turno: Toca un hielo oculto para sumar puntos.' 
+            : `⏳ Esperando a que ${currentActive.name} elija una casilla...`;
+        }
+      }
+
+      function actualizarScoreboard() {
+        const sorted = [...state.players].sort((a, b) => b.score - a.score);
+        dom.liveScoreboard.innerHTML = '';
+
+        sorted.forEach((p, rank) => {
+          const isMe = p.id === state.myPlayerId;
+          const medal = rank === 0 ? '👑' : (rank === sorted.length - 1 ? '💀' : `${rank + 1}.`);
+          const row = document.createElement('div');
+          row.className = `flex items-center justify-between p-2 rounded-xl text-xs transition ${
+            isMe ? 'bg-gradient-to-r from-red-950/90 to-rose-950/70 border border-red-500/60 shadow-sm' : 'bg-slate-950/60 border border-slate-800'
+          }`;
+
+          row.innerHTML = `
+            <div class="flex items-center space-x-2 truncate">
+              <span class="font-bold ${rank === 0 ? 'text-amber-300' : (rank === sorted.length - 1 ? 'text-rose-400' : 'text-slate-400')}">${medal}</span>
+              <span>${p.avatar}</span>
+              <span class="font-bold text-white truncate max-w-[120px]">${p.name}</span>
+            </div>
+            <div class="font-mono font-black text-cyan-300">${p.score} pts</div>
+          `;
+          dom.liveScoreboard.appendChild(row);
+        });
+      }
+
+      function logEvent(htmlMsg) {
+        const item = document.createElement('div');
+        item.className = 'text-[11px] text-slate-300 border-b border-slate-800/60 pb-1 leading-snug';
+        item.innerHTML = htmlMsg;
+        dom.battleLog.prepend(item);
+      }
+
+      function finalizarPartida() {
+        state.isGameOver = true;
+        const sorted = [...state.players].sort((a, b) => b.score - a.score);
+        const winner = sorted[0];
+        const loser = sorted[sorted.length - 1];
+
+        if (window.confetti) {
+          window.confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+        }
+        if (audio && audio.playJackpot) audio.playJackpot();
+
+        dom.winnerNameDisplay.textContent = `${winner.avatar} ${winner.name}`;
+        dom.winnerScoreDisplay.textContent = `${winner.score} pts`;
+        dom.loserNameDisplay.textContent = `${loser.avatar} ${loser.name} (${loser.score} pts)`;
+
+        // URL de WhatsApp para cobrar la ronda
+        const waMsg = encodeURIComponent(
+          `🍻 ¡Ronda finalizada en BattleRound Paradice!\n\n` +
+          `👑 Ganador: ${winner.name} con ${winner.score} pts.\n` +
+          `💀 Perdedor: ${loser.name} con ${loser.score} pts.\n\n` +
+          `🍸 ¡A ${loser.name} le toca pagar la ronda de granizados en Paradice! Nos vemos allá.`
+        );
+        dom.btnShareWhatsapp.href = `https://wa.me/?text=${waMsg}`;
+
+        dom.modalGameOver.classList.remove('hidden');
+      }
+
+      // Arrancar juego al cargar
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+
+    })();
+  </script>
+
+</body>
+</html>

@@ -247,15 +247,31 @@ html, body {
   border-right: none;
 }
 
-.reel-track {
+.reel-track,
+.reel-strip {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  width: 100%;
   will-change: transform, filter;
   transition-property: transform;
 }
 
-.reel-spinning {
+.reel-spinning,
+.reel-strip-spinning,
+.spinning-blur {
+  animation: reelFluidLoop 0.26s linear infinite !important;
   filter: blur(2.5px);
+  will-change: transform, filter;
+}
+
+@keyframes reelFluidLoop {
+  0% {
+    transform: translateY(0px);
+  }
+  100% {
+    transform: translateY(-544px);
+  }
 }
 
 /* Giro Ultra Rápido para Evento HIT BAR */
@@ -271,6 +287,45 @@ html, body {
 .reel-fast-spin-active {
   animation: reelFastInfiniteSpin 0.22s linear infinite !important;
   filter: blur(3.5px) brightness(1.35) drop-shadow(0 0 12px rgba(0, 240, 255, 0.75)) !important;
+  will-change: transform, filter;
+}
+
+/* Modo Hit Bar: Arranque de Súper Velocidad (Hyper Spin Rush) */
+.reel-hitbar-hyper {
+  animation: reelFluidLoop 0.10s linear infinite !important;
+  filter: blur(3.5px) brightness(1.3) drop-shadow(0 0 12px rgba(0, 240, 255, 0.85)) !important;
+  will-change: transform, filter;
+}
+
+/* Modo Hit Bar: Giro Estabilizado Moderado para Inicio de Paradas */
+.reel-hitbar-stable {
+  animation: reelFluidLoop 0.58s linear infinite !important;
+  filter: blur(0.5px) brightness(1.1) drop-shadow(0 0 8px rgba(250, 204, 21, 0.6)) !important;
+  will-change: transform, filter;
+}
+
+/* Modo Hit Bar: Aceleración Progresiva al Conectar Aciertos */
+.reel-hitbar-speed-1 {
+  animation: reelFluidLoop 0.44s linear infinite !important;
+  filter: blur(1px) brightness(1.15) drop-shadow(0 0 10px rgba(250, 204, 21, 0.75)) !important;
+  will-change: transform, filter;
+}
+
+.reel-hitbar-speed-2 {
+  animation: reelFluidLoop 0.33s linear infinite !important;
+  filter: blur(1.5px) brightness(1.22) drop-shadow(0 0 14px rgba(250, 204, 21, 0.85)) !important;
+  will-change: transform, filter;
+}
+
+.reel-hitbar-speed-3 {
+  animation: reelFluidLoop 0.23s linear infinite !important;
+  filter: blur(2.2px) brightness(1.3) drop-shadow(0 0 18px rgba(250, 204, 21, 0.95)) !important;
+  will-change: transform, filter;
+}
+
+.reel-hitbar-speed-4 {
+  animation: reelFluidLoop 0.14s linear infinite !important;
+  filter: blur(3.5px) brightness(1.45) drop-shadow(0 0 24px rgba(255, 0, 127, 0.95)) !important;
   will-change: transform, filter;
 }
 
@@ -610,4 +665,28 @@ html, body {
 @keyframes cellHitPulse {
   0% { transform: scale(1); filter: brightness(1.1); }
   100% { transform: scale(1.08); filter: brightness(1.6); }
+}
+
+/* ==========================================================
+   12. EFECTO DE TENSIÓN Y PELIGRO ÚLTIMOS 10s
+   ========================================================== */
+.tension-danger-overlay::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+  box-shadow: inset 0 0 70px rgba(239, 68, 68, 0.75), inset 0 0 140px rgba(225, 29, 72, 0.45);
+  animation: tensionDangerPulse 0.7s infinite alternate ease-in-out;
+}
+
+@keyframes tensionDangerPulse {
+  0% {
+    opacity: 0.35;
+    box-shadow: inset 0 0 50px rgba(239, 68, 68, 0.6), inset 0 0 100px rgba(225, 29, 72, 0.3);
+  }
+  100% {
+    opacity: 0.95;
+    box-shadow: inset 0 0 90px rgba(239, 68, 68, 0.9), inset 0 0 160px rgba(225, 29, 72, 0.65);
+  }
 }

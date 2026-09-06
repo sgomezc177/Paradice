@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-950 overflow-hidden"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Paradice - Premios Granizados</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              cyan: '#00f0ff',
+              blue: '#0284c7',
+              pink: '#ff007f',
+              purple: '#9333ea',
+              gold: '#facc15'
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Canvas Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <!-- Estilos Custom Oficiales -->
+  <link rel="stylesheet" href="css/style.css">
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.pointer-events-none{pointer-events:none}.pointer-events-auto{pointer-events:auto}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.inset-0{inset:0px}.-bottom-12{bottom:-3rem}.-left-12{left:-3rem}.-right-10{right:-2.5rem}.-right-12{right:-3rem}.-top-10{top:-2.5rem}.-top-12{top:-3rem}.left-0{left:0px}.left-1\/2{left:50%}.right-0{right:0px}.right-4{right:1rem}.top-12{top:3rem}.top-4{top:1rem}.top-\[68px\]{top:68px}.bottom-0\.5{bottom:0.125rem}.right-1{right:0.25rem}.z-10{z-index:10}.z-20{z-index:20}.z-30{z-index:30}.z-40{z-index:40}.z-50{z-index:50}.mx-1\.5{margin-left:0.375rem;margin-right:0.375rem}.mx-auto{margin-left:auto;margin-right:auto}.my-0\.5{margin-top:0.125rem;margin-bottom:0.125rem}.my-1{margin-top:0.25rem;margin-bottom:0.25rem}.my-1\.5{margin-top:0.375rem;margin-bottom:0.375rem}.my-2\.5{margin-top:0.625rem;margin-bottom:0.625rem}.-mt-0\.5{margin-top:-0.125rem}.mb-0\.5{margin-bottom:0.125rem}.mb-1{margin-bottom:0.25rem}.mb-3{margin-bottom:0.75rem}.ml-0\.5{margin-left:0.125rem}.mt-0\.5{margin-top:0.125rem}.mt-1{margin-top:0.25rem}.mt-2{margin-top:0.5rem}.mt-4{margin-top:1rem}.mb-2{margin-bottom:0.5rem}.mb-4{margin-bottom:1rem}.flex{display:flex}.grid{display:grid}.hidden{display:none}.h-full{height:100%}.h-12{height:3rem}.h-28{height:7rem}.h-32{height:8rem}.h-6{height:1.5rem}.h-7{height:1.75rem}.h-8{height:2rem}.h-\[120px\]{height:120px}.h-\[68px\]{height:68px}.h-\[76px\]{height:76px}.h-\[88px\]{height:88px}.h-16{height:4rem}.max-h-\[88vh\]{max-height:88vh}.max-h-\[90vh\]{max-height:90vh}.max-h-24{max-height:6rem}.w-full{width:100%}.w-12{width:3rem}.w-28{width:7rem}.w-32{width:8rem}.w-5{width:1.25rem}.w-6{width:1.5rem}.w-7{width:1.75rem}.w-8{width:2rem}.w-\[120px\]{width:120px}.w-\[68\%\]{width:68%}.w-\[72\%\]{width:72%}.w-\[74\%\]{width:74%}.w-\[76\%\]{width:76%}.w-\[76px\]{width:76px}.w-\[80\%\]{width:80%}.w-\[82\%\]{width:82%}.w-\[84\%\]{width:84%}.w-\[88\%\]{width:88%}.w-\[88px\]{width:88px}.w-\[92\%\]{width:92%}.w-\[96\%\]{width:96%}.w-16{width:4rem}.max-w-\[120px\]{max-width:120px}.max-w-\[170px\]{max-width:170px}.max-w-\[320px\]{max-width:320px}.max-w-md{max-width:28rem}.max-w-sm{max-width:24rem}.max-w-xs{max-width:20rem}.flex-1{flex:1 1 0%}.flex-shrink-0{flex-shrink:0}.-translate-x-1\/2{--tw-translate-x:-50%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.transform{transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}@keyframes bounce{0%, 100%{transform:translateY(-25%);animation-timing-function:cubic-bezier(0.8,0,1,1)}50%{transform:none;animation-timing-function:cubic-bezier(0,0,0.2,1)}}.animate-bounce{animation:bounce 1s infinite}@keyframes pulse{50%{opacity:.5}}.animate-pulse{animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite}.cursor-pointer{cursor:pointer}.select-none{-webkit-user-select:none;user-select:none}.grid-cols-5{grid-template-columns:repeat(5, minmax(0, 1fr))}.flex-col{flex-direction:column}.items-start{align-items:flex-start}.items-center{align-items:center}.justify-end{justify-content:flex-end}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1{gap:0.25rem}.gap-1\.5{gap:0.375rem}.gap-2{gap:0.5rem}.gap-3{gap:0.75rem}.space-x-1 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.25rem * var(--tw-space-x-reverse));margin-left:calc(0.25rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-1\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.375rem * var(--tw-space-x-reverse));margin-left:calc(0.375rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-2 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.5rem * var(--tw-space-x-reverse));margin-left:calc(0.5rem * calc(1 - var(--tw-space-x-reverse)))}.space-y-0\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.125rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.125rem * var(--tw-space-y-reverse))}.space-y-1\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.375rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.375rem * var(--tw-space-y-reverse))}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-3 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.75rem * var(--tw-space-y-reverse))}.space-y-1 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.25rem * var(--tw-space-y-reverse))}.overflow-hidden{overflow:hidden}.overflow-y-auto{overflow-y:auto}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rounded{border-radius:0.25rem}.rounded-2xl{border-radius:1rem}.rounded-3xl{border-radius:1.5rem}.rounded-\[14px\]{border-radius:14px}.rounded-full{border-radius:9999px}.rounded-md{border-radius:0.375rem}.rounded-xl{border-radius:0.75rem}.rounded-lg{border-radius:0.5rem}.rounded-t-xl{border-top-left-radius:0.75rem;border-top-right-radius:0.75rem}.border{border-width:1px}.border-2{border-width:2px}.border-y-2{border-top-width:2px;border-bottom-width:2px}.border-b{border-bottom-width:1px}.border-t{border-top-width:1px}.border-r{border-right-width:1px}.border-amber-300{--tw-border-opacity:1;border-color:rgb(252 211 77 / var(--tw-border-opacity, 1))}.border-amber-400{--tw-border-opacity:1;border-color:rgb(251 191 36 / var(--tw-border-opacity, 1))}.border-amber-400\/50{border-color:rgb(251 191 36 / 0.5)}.border-amber-400\/70{border-color:rgb(251 191 36 / 0.7)}.border-amber-500\/40{border-color:rgb(245 158 11 / 0.4)}.border-amber-500\/50{border-color:rgb(245 158 11 / 0.5)}.border-cyan-400\/50{border-color:rgb(34 211 238 / 0.5)}.border-cyan-400\/70{border-color:rgb(34 211 238 / 0.7)}.border-cyan-500\/30{border-color:rgb(6 182 212 / 0.3)}.border-cyan-500\/40{border-color:rgb(6 182 212 / 0.4)}.border-emerald-300{--tw-border-opacity:1;border-color:rgb(110 231 183 / var(--tw-border-opacity, 1))}.border-emerald-400\/70{border-color:rgb(52 211 153 / 0.7)}.border-emerald-500\/40{border-color:rgb(16 185 129 / 0.4)}.border-fuchsia-300{--tw-border-opacity:1;border-color:rgb(240 171 252 / var(--tw-border-opacity, 1))}.border-orange-400{--tw-border-opacity:1;border-color:rgb(251 146 60 / var(--tw-border-opacity, 1))}.border-pink-400\/70{border-color:rgb(244 114 182 / 0.7)}.border-purple-400{--tw-border-opacity:1;border-color:rgb(192 132 252 / var(--tw-border-opacity, 1))}.border-purple-400\/70{border-color:rgb(192 132 252 / 0.7)}.border-purple-500\/30{border-color:rgb(168 85 247 / 0.3)}.border-purple-500\/40{border-color:rgb(168 85 247 / 0.4)}.border-red-400{--tw-border-opacity:1;border-color:rgb(248 113 113 / var(--tw-border-opacity, 1))}.border-red-500\/70{border-color:rgb(239 68 68 / 0.7)}.border-rose-300{--tw-border-opacity:1;border-color:rgb(253 164 175 / var(--tw-border-opacity, 1))}.border-rose-500\/40{border-color:rgb(244 63 94 / 0.4)}.border-rose-500\/50{border-color:rgb(244 63 94 / 0.5)}.border-sky-300{--tw-border-opacity:1;border-color:rgb(125 211 252 / var(--tw-border-opacity, 1))}.border-sky-400{--tw-border-opacity:1;border-color:rgb(56 189 248 / var(--tw-border-opacity, 1))}.border-sky-400\/40{border-color:rgb(56 189 248 / 0.4)}.border-sky-400\/60{border-color:rgb(56 189 248 / 0.6)}.border-sky-400\/70{border-color:rgb(56 189 248 / 0.7)}.border-sky-500\/30{border-color:rgb(14 165 233 / 0.3)}.border-sky-500\/40{border-color:rgb(14 165 233 / 0.4)}.border-sky-500\/50{border-color:rgb(14 165 233 / 0.5)}.border-slate-700{--tw-border-opacity:1;border-color:rgb(51 65 85 / var(--tw-border-opacity, 1))}.border-slate-800{--tw-border-opacity:1;border-color:rgb(30 41 59 / var(--tw-border-opacity, 1))}.border-white\/80{border-color:rgb(255 255 255 / 0.8)}.border-yellow-300{--tw-border-opacity:1;border-color:rgb(253 224 71 / var(--tw-border-opacity, 1))}.border-yellow-500{--tw-border-opacity:1;border-color:rgb(234 179 8 / var(--tw-border-opacity, 1))}.border-amber-400\/60{border-color:rgb(251 191 36 / 0.6)}.border-amber-500\/30{border-color:rgb(245 158 11 / 0.3)}.border-amber-600\/50{border-color:rgb(217 119 6 / 0.5)}.border-cyan-400{--tw-border-opacity:1;border-color:rgb(34 211 238 / var(--tw-border-opacity, 1))}.border-cyan-500{--tw-border-opacity:1;border-color:rgb(6 182 212 / var(--tw-border-opacity, 1))}.border-cyan-500\/50{border-color:rgb(6 182 212 / 0.5)}.border-emerald-600{--tw-border-opacity:1;border-color:rgb(5 150 105 / var(--tw-border-opacity, 1))}.border-fuchsia-500\/30{border-color:rgb(217 70 239 / 0.3)}.border-fuchsia-500\/50{border-color:rgb(217 70 239 / 0.5)}.border-orange-500\/40{border-color:rgb(249 115 22 / 0.4)}.border-orange-500\/50{border-color:rgb(249 115 22 / 0.5)}.border-purple-500\/50{border-color:rgb(168 85 247 / 0.5)}.border-red-500\/50{border-color:rgb(239 68 68 / 0.5)}.border-rose-400{--tw-border-opacity:1;border-color:rgb(251 113 133 / var(--tw-border-opacity, 1))}.border-rose-500\/30{border-color:rgb(244 63 94 / 0.3)}.border-rose-500\/70{border-color:rgb(244 63 94 / 0.7)}.border-rose-800{--tw-border-opacity:1;border-color:rgb(159 18 57 / var(--tw-border-opacity, 1))}.border-slate-800\/80{border-color:rgb(30 41 59 / 0.8)}.border-yellow-400\/50{border-color:rgb(250 204 21 / 0.5)}.border-yellow-500\/40{border-color:rgb(234 179 8 / 0.4)}.border-yellow-600\/50{border-color:rgb(202 138 4 / 0.5)}.border-sky-500\/20{border-color:rgb(14 165 233 / 0.2)}.border-slate-200\/60{border-color:rgb(226 232 240 / 0.6)}.bg-slate-950{--tw-bg-opacity:1;background-color:rgb(2 6 23 / var(--tw-bg-opacity, 1))}.bg-\[\#040814\]{--tw-bg-opacity:1;background-color:rgb(4 8 20 / var(--tw-bg-opacity, 1))}.bg-\[\#040814\]\/85{background-color:rgb(4 8 20 / 0.85)}.bg-amber-400\/20{background-color:rgb(251 191 36 / 0.2)}.bg-amber-500{--tw-bg-opacity:1;background-color:rgb(245 158 11 / var(--tw-bg-opacity, 1))}.bg-amber-500\/20{background-color:rgb(245 158 11 / 0.2)}.bg-amber-500\/70{background-color:rgb(245 158 11 / 0.7)}.bg-amber-950{--tw-bg-opacity:1;background-color:rgb(69 26 3 / var(--tw-bg-opacity, 1))}.bg-amber-950\/90{background-color:rgb(69 26 3 / 0.9)}.bg-cyan-950{--tw-bg-opacity:1;background-color:rgb(8 51 68 / var(--tw-bg-opacity, 1))}.bg-emerald-950{--tw-bg-opacity:1;background-color:rgb(2 44 34 / var(--tw-bg-opacity, 1))}.bg-pink-950{--tw-bg-opacity:1;background-color:rgb(80 7 36 / var(--tw-bg-opacity, 1))}.bg-purple-950{--tw-bg-opacity:1;background-color:rgb(59 7 100 / var(--tw-bg-opacity, 1))}.bg-purple-950\/60{background-color:rgb(59 7 100 / 0.6)}.bg-purple-950\/90{background-color:rgb(59 7 100 / 0.9)}.bg-red-950{--tw-bg-opacity:1;background-color:rgb(69 10 10 / var(--tw-bg-opacity, 1))}.bg-sky-500\/20{background-color:rgb(14 165 233 / 0.2)}.bg-sky-950{--tw-bg-opacity:1;background-color:rgb(8 47 73 / var(--tw-bg-opacity, 1))}.bg-slate-800{--tw-bg-opacity:1;background-color:rgb(30 41 59 / var(--tw-bg-opacity, 1))}.bg-slate-900{--tw-bg-opacity:1;background-color:rgb(15 23 42 / var(--tw-bg-opacity, 1))}.bg-slate-900\/80{background-color:rgb(15 23 42 / 0.8)}.bg-slate-900\/90{background-color:rgb(15 23 42 / 0.9)}.bg-slate-950\/85{background-color:rgb(2 6 23 / 0.85)}.bg-slate-950\/90{background-color:rgb(2 6 23 / 0.9)}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-amber-400{--tw-bg-opacity:1;background-color:rgb(251 191 36 / var(--tw-bg-opacity, 1))}.bg-amber-600{--tw-bg-opacity:1;background-color:rgb(217 119 6 / var(--tw-bg-opacity, 1))}.bg-amber-800{--tw-bg-opacity:1;background-color:rgb(146 64 14 / var(--tw-bg-opacity, 1))}.bg-amber-950\/80{background-color:rgb(69 26 3 / 0.8)}.bg-cyan-950\/40{background-color:rgb(8 51 68 / 0.4)}.bg-cyan-950\/80{background-color:rgb(8 51 68 / 0.8)}.bg-emerald-950\/70{background-color:rgb(2 44 34 / 0.7)}.bg-fuchsia-700{--tw-bg-opacity:1;background-color:rgb(162 28 175 / var(--tw-bg-opacity, 1))}.bg-orange-600{--tw-bg-opacity:1;background-color:rgb(234 88 12 / var(--tw-bg-opacity, 1))}.bg-orange-700{--tw-bg-opacity:1;background-color:rgb(194 65 12 / var(--tw-bg-opacity, 1))}.bg-purple-700{--tw-bg-opacity:1;background-color:rgb(126 34 206 / var(--tw-bg-opacity, 1))}.bg-purple-900{--tw-bg-opacity:1;background-color:rgb(88 28 135 / var(--tw-bg-opacity, 1))}.bg-red-700{--tw-bg-opacity:1;background-color:rgb(185 28 28 / var(--tw-bg-opacity, 1))}.bg-rose-600{--tw-bg-opacity:1;background-color:rgb(225 29 72 / var(--tw-bg-opacity, 1))}.bg-rose-950\/60{background-color:rgb(76 5 25 / 0.6)}.bg-rose-950\/80{background-color:rgb(76 5 25 / 0.8)}.bg-sky-600{--tw-bg-opacity:1;background-color:rgb(2 132 199 / var(--tw-bg-opacity, 1))}.bg-slate-950\/80{background-color:rgb(2 6 23 / 0.8)}.bg-slate-950\/95{background-color:rgb(2 6 23 / 0.95)}.bg-yellow-500{--tw-bg-opacity:1;background-color:rgb(234 179 8 / var(--tw-bg-opacity, 1))}.bg-yellow-600{--tw-bg-opacity:1;background-color:rgb(202 138 4 / var(--tw-bg-opacity, 1))}.bg-yellow-700{--tw-bg-opacity:1;background-color:rgb(161 98 7 / var(--tw-bg-opacity, 1))}.bg-slate-900\/60{background-color:rgb(15 23 42 / 0.6)}.bg-slate-950\/15{background-color:rgb(2 6 23 / 0.15)}.bg-white\/95{background-color:rgb(255 255 255 / 0.95)}.bg-gradient-to-b{background-image:linear-gradient(to bottom, var(--tw-gradient-stops))}.bg-gradient-to-r{background-image:linear-gradient(to right, var(--tw-gradient-stops))}.bg-gradient-to-tr{background-image:linear-gradient(to top right, var(--tw-gradient-stops))}.bg-gradient-to-br{background-image:linear-gradient(to bottom right, var(--tw-gradient-stops))}.from-\[\#0a0f1d\]{--tw-gradient-from:#0a0f1d var(--tw-gradient-from-position);--tw-gradient-to:rgb(10 15 29 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-amber-500{--tw-gradient-from:#f59e0b var(--tw-gradient-from-position);--tw-gradient-to:rgb(245 158 11 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-amber-500\/25{--tw-gradient-from:rgb(245 158 11 / 0.25) var(--tw-gradient-from-position);--tw-gradient-to:rgb(245 158 11 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-amber-500\/90{--tw-gradient-from:rgb(245 158 11 / 0.9) var(--tw-gradient-from-position);--tw-gradient-to:rgb(245 158 11 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-amber-700{--tw-gradient-from:#b45309 var(--tw-gradient-from-position);--tw-gradient-to:rgb(180 83 9 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-amber-950\/40{--tw-gradient-from:rgb(69 26 3 / 0.4) var(--tw-gradient-from-position);--tw-gradient-to:rgb(69 26 3 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-cyan-200{--tw-gradient-from:#a5f3fc var(--tw-gradient-from-position);--tw-gradient-to:rgb(165 243 252 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-cyan-500{--tw-gradient-from:#06b6d4 var(--tw-gradient-from-position);--tw-gradient-to:rgb(6 182 212 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-emerald-500{--tw-gradient-from:#10b981 var(--tw-gradient-from-position);--tw-gradient-to:rgb(16 185 129 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-fuchsia-600{--tw-gradient-from:#c026d3 var(--tw-gradient-from-position);--tw-gradient-to:rgb(192 38 211 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-orange-600{--tw-gradient-from:#ea580c var(--tw-gradient-from-position);--tw-gradient-to:rgb(234 88 12 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-purple-700{--tw-gradient-from:#7e22ce var(--tw-gradient-from-position);--tw-gradient-to:rgb(126 34 206 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-red-600{--tw-gradient-from:#dc2626 var(--tw-gradient-from-position);--tw-gradient-to:rgb(220 38 38 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-red-700{--tw-gradient-from:#b91c1c var(--tw-gradient-from-position);--tw-gradient-to:rgb(185 28 28 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-rose-600{--tw-gradient-from:#e11d48 var(--tw-gradient-from-position);--tw-gradient-to:rgb(225 29 72 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-rose-950\/60{--tw-gradient-from:rgb(76 5 25 / 0.6) var(--tw-gradient-from-position);--tw-gradient-to:rgb(76 5 25 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-sky-500{--tw-gradient-from:#0ea5e9 var(--tw-gradient-from-position);--tw-gradient-to:rgb(14 165 233 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-sky-600{--tw-gradient-from:#0284c7 var(--tw-gradient-from-position);--tw-gradient-to:rgb(2 132 199 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-sky-950\/90{--tw-gradient-from:rgb(8 47 73 / 0.9) var(--tw-gradient-from-position);--tw-gradient-to:rgb(8 47 73 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-slate-900{--tw-gradient-from:#0f172a var(--tw-gradient-from-position);--tw-gradient-to:rgb(15 23 42 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-slate-950{--tw-gradient-from:#020617 var(--tw-gradient-from-position);--tw-gradient-to:rgb(2 6 23 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-white{--tw-gradient-from:#fff var(--tw-gradient-from-position);--tw-gradient-to:rgb(255 255 255 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-emerald-600{--tw-gradient-from:#059669 var(--tw-gradient-from-position);--tw-gradient-to:rgb(5 150 105 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-rose-500{--tw-gradient-from:#f43f5e var(--tw-gradient-from-position);--tw-gradient-to:rgb(244 63 94 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-amber-300{--tw-gradient-from:#fcd34d var(--tw-gradient-from-position);--tw-gradient-to:rgb(252 211 77 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-amber-400{--tw-gradient-from:#fbbf24 var(--tw-gradient-from-position);--tw-gradient-to:rgb(251 191 36 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-amber-600{--tw-gradient-from:#d97706 var(--tw-gradient-from-position);--tw-gradient-to:rgb(217 119 6 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-emerald-400{--tw-gradient-from:#34d399 var(--tw-gradient-from-position);--tw-gradient-to:rgb(52 211 153 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-fuchsia-500{--tw-gradient-from:#d946ef var(--tw-gradient-from-position);--tw-gradient-to:rgb(217 70 239 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-orange-500{--tw-gradient-from:#f97316 var(--tw-gradient-from-position);--tw-gradient-to:rgb(249 115 22 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-pink-500{--tw-gradient-from:#ec4899 var(--tw-gradient-from-position);--tw-gradient-to:rgb(236 72 153 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-purple-500{--tw-gradient-from:#a855f7 var(--tw-gradient-from-position);--tw-gradient-to:rgb(168 85 247 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-sky-400{--tw-gradient-from:#38bdf8 var(--tw-gradient-from-position);--tw-gradient-to:rgb(56 189 248 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.via-fuchsia-600\/90{--tw-gradient-to:rgb(192 38 211 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), rgb(192 38 211 / 0.9) var(--tw-gradient-via-position), var(--tw-gradient-to)}.via-sky-100{--tw-gradient-to:rgb(224 242 254 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), #e0f2fe var(--tw-gradient-via-position), var(--tw-gradient-to)}.via-sky-400{--tw-gradient-to:rgb(56 189 248 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), #38bdf8 var(--tw-gradient-via-position), var(--tw-gradient-to)}.via-sky-500{--tw-gradient-to:rgb(14 165 233 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), #0ea5e9 var(--tw-gradient-via-position), var(--tw-gradient-to)}.via-slate-900{--tw-gradient-to:rgb(15 23 42 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), #0f172a var(--tw-gradient-via-position), var(--tw-gradient-to)}.via-slate-900\/90{--tw-gradient-to:rgb(15 23 42 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), rgb(15 23 42 / 0.9) var(--tw-gradient-via-position), var(--tw-gradient-to)}.via-slate-950{--tw-gradient-to:rgb(2 6 23 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), #020617 var(--tw-gradient-via-position), var(--tw-gradient-to)}.via-yellow-400{--tw-gradient-to:rgb(250 204 21 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), #facc15 var(--tw-gradient-via-position), var(--tw-gradient-to)}.via-yellow-400\/35{--tw-gradient-to:rgb(250 204 21 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), rgb(250 204 21 / 0.35) var(--tw-gradient-via-position), var(--tw-gradient-to)}.via-pink-600{--tw-gradient-to:rgb(219 39 119 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), #db2777 var(--tw-gradient-via-position), var(--tw-gradient-to)}.via-rose-950\/30{--tw-gradient-to:rgb(76 5 25 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), rgb(76 5 25 / 0.3) var(--tw-gradient-via-position), var(--tw-gradient-to)}.to-\[\#040814\]{--tw-gradient-to:#040814 var(--tw-gradient-to-position)}.to-amber-500{--tw-gradient-to:#f59e0b var(--tw-gradient-to-position)}.to-amber-500\/25{--tw-gradient-to:rgb(245 158 11 / 0.25) var(--tw-gradient-to-position)}.to-amber-600{--tw-gradient-to:#d97706 var(--tw-gradient-to-position)}.to-blue-500{--tw-gradient-to:#3b82f6 var(--tw-gradient-to-position)}.to-blue-600{--tw-gradient-to:#2563eb var(--tw-gradient-to-position)}.to-blue-950\/80{--tw-gradient-to:rgb(23 37 84 / 0.8) var(--tw-gradient-to-position)}.to-cyan-400{--tw-gradient-to:#22d3ee var(--tw-gradient-to-position)}.to-cyan-500\/90{--tw-gradient-to:rgb(6 182 212 / 0.9) var(--tw-gradient-to-position)}.to-fuchsia-700{--tw-gradient-to:#a21caf var(--tw-gradient-to-position)}.to-green-600{--tw-gradient-to:#16a34a var(--tw-gradient-to-position)}.to-orange-700{--tw-gradient-to:#c2410c var(--tw-gradient-to-position)}.to-pink-600{--tw-gradient-to:#db2777 var(--tw-gradient-to-position)}.to-pink-950\/40{--tw-gradient-to:rgb(80 7 36 / 0.4) var(--tw-gradient-to-position)}.to-rose-800{--tw-gradient-to:#9f1239 var(--tw-gradient-to-position)}.to-sky-300{--tw-gradient-to:#7dd3fc var(--tw-gradient-to-position)}.to-slate-900{--tw-gradient-to:#0f172a var(--tw-gradient-to-position)}.to-slate-950{--tw-gradient-to:#020617 var(--tw-gradient-to-position)}.to-yellow-600{--tw-gradient-to:#ca8a04 var(--tw-gradient-to-position)}.to-yellow-800{--tw-gradient-to:#854d0e var(--tw-gradient-to-position)}.to-yellow-950\/30{--tw-gradient-to:rgb(66 32 6 / 0.3) var(--tw-gradient-to-position)}.to-rose-600{--tw-gradient-to:#e11d48 var(--tw-gradient-to-position)}.to-teal-600{--tw-gradient-to:#0d9488 var(--tw-gradient-to-position)}.to-indigo-700{--tw-gradient-to:#4338ca var(--tw-gradient-to-position)}.to-yellow-500{--tw-gradient-to:#eab308 var(--tw-gradient-to-position)}.to-yellow-700{--tw-gradient-to:#a16207 var(--tw-gradient-to-position)}.bg-clip-text{-webkit-background-clip:text;background-clip:text}.p-0{padding:0px}.p-0\.5{padding:0.125rem}.p-1\.5{padding:0.375rem}.p-2{padding:0.5rem}.p-3{padding:0.75rem}.p-4{padding:1rem}.p-2\.5{padding:0.625rem}.p-6{padding:1.5rem}.p-1{padding:0.25rem}.px-1\.5{padding-left:0.375rem;padding-right:0.375rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-4{padding-left:1rem;padding-right:1rem}.py-0\.5{padding-top:0.125rem;padding-bottom:0.125rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-2\.5{padding-top:0.625rem;padding-bottom:0.625rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.pb-1{padding-bottom:0.25rem}.pb-1\.5{padding-bottom:0.375rem}.pb-2{padding-bottom:0.5rem}.pb-3{padding-bottom:0.75rem}.pr-1{padding-right:0.25rem}.pt-1{padding-top:0.25rem}.pt-1\.5{padding-top:0.375rem}.pt-3{padding-top:0.75rem}.pt-2{padding-top:0.5rem}.pb-5{padding-bottom:1.25rem}.text-left{text-align:left}.text-center{text-align:center}.font-mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}.text-2xl{font-size:1.5rem;line-height:2rem}.text-5xl{font-size:3rem;line-height:1}.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}.text-\[8px\]{font-size:8px}.text-\[9px\]{font-size:9px}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xs{font-size:0.75rem;line-height:1rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-base{font-size:1rem;line-height:1.5rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.font-black{font-weight:900}.font-bold{font-weight:700}.font-extrabold{font-weight:800}.font-medium{font-weight:500}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.leading-none{line-height:1}.leading-relaxed{line-height:1.625}.leading-tight{line-height:1.25}.tracking-tight{letter-spacing:-0.025em}.tracking-wide{letter-spacing:0.025em}.tracking-wider{letter-spacing:0.05em}.tracking-widest{letter-spacing:0.1em}.text-amber-100{--tw-text-opacity:1;color:rgb(254 243 199 / var(--tw-text-opacity, 1))}.text-amber-100\/90{color:rgb(254 243 199 / 0.9)}.text-amber-200{--tw-text-opacity:1;color:rgb(253 230 138 / var(--tw-text-opacity, 1))}.text-amber-300{--tw-text-opacity:1;color:rgb(252 211 77 / var(--tw-text-opacity, 1))}.text-amber-400{--tw-text-opacity:1;color:rgb(251 191 36 / var(--tw-text-opacity, 1))}.text-cyan-300{--tw-text-opacity:1;color:rgb(103 232 249 / var(--tw-text-opacity, 1))}.text-emerald-300{--tw-text-opacity:1;color:rgb(110 231 183 / var(--tw-text-opacity, 1))}.text-pink-300{--tw-text-opacity:1;color:rgb(249 168 212 / var(--tw-text-opacity, 1))}.text-purple-300{--tw-text-opacity:1;color:rgb(216 180 254 / var(--tw-text-opacity, 1))}.text-red-300{--tw-text-opacity:1;color:rgb(252 165 165 / var(--tw-text-opacity, 1))}.text-rose-200{--tw-text-opacity:1;color:rgb(254 205 211 / var(--tw-text-opacity, 1))}.text-rose-300{--tw-text-opacity:1;color:rgb(253 164 175 / var(--tw-text-opacity, 1))}.text-sky-300{--tw-text-opacity:1;color:rgb(125 211 252 / var(--tw-text-opacity, 1))}.text-sky-400{--tw-text-opacity:1;color:rgb(56 189 248 / var(--tw-text-opacity, 1))}.text-slate-200{--tw-text-opacity:1;color:rgb(226 232 240 / var(--tw-text-opacity, 1))}.text-slate-300{--tw-text-opacity:1;color:rgb(203 213 225 / var(--tw-text-opacity, 1))}.text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184 / var(--tw-text-opacity, 1))}.text-slate-950{--tw-text-opacity:1;color:rgb(2 6 23 / var(--tw-text-opacity, 1))}.text-transparent{color:transparent}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-cyan-200{--tw-text-opacity:1;color:rgb(165 243 252 / var(--tw-text-opacity, 1))}.text-cyan-400{--tw-text-opacity:1;color:rgb(34 211 238 / var(--tw-text-opacity, 1))}.text-emerald-200{--tw-text-opacity:1;color:rgb(167 243 208 / var(--tw-text-opacity, 1))}.text-emerald-400{--tw-text-opacity:1;color:rgb(52 211 153 / var(--tw-text-opacity, 1))}.text-fuchsia-300{--tw-text-opacity:1;color:rgb(240 171 252 / var(--tw-text-opacity, 1))}.text-orange-200{--tw-text-opacity:1;color:rgb(254 215 170 / var(--tw-text-opacity, 1))}.text-orange-300{--tw-text-opacity:1;color:rgb(253 186 116 / var(--tw-text-opacity, 1))}.text-pink-400{--tw-text-opacity:1;color:rgb(244 114 182 / var(--tw-text-opacity, 1))}.text-purple-200{--tw-text-opacity:1;color:rgb(233 213 255 / var(--tw-text-opacity, 1))}.text-rose-400{--tw-text-opacity:1;color:rgb(251 113 133 / var(--tw-text-opacity, 1))}.text-slate-500{--tw-text-opacity:1;color:rgb(100 116 139 / var(--tw-text-opacity, 1))}.text-slate-600{--tw-text-opacity:1;color:rgb(71 85 105 / var(--tw-text-opacity, 1))}.text-yellow-200{--tw-text-opacity:1;color:rgb(254 240 138 / var(--tw-text-opacity, 1))}.text-yellow-300{--tw-text-opacity:1;color:rgb(253 224 71 / var(--tw-text-opacity, 1))}.text-amber-500{--tw-text-opacity:1;color:rgb(245 158 11 / var(--tw-text-opacity, 1))}.text-slate-800{--tw-text-opacity:1;color:rgb(30 41 59 / var(--tw-text-opacity, 1))}.underline{-webkit-text-decoration-line:underline;text-decoration-line:underline}.opacity-75{opacity:0.75}.shadow-\[0_0_12px_rgba\(56\2c 189\2c 248\2c 0\.3\)\]{--tw-shadow:0 0 12px rgba(56,189,248,0.3);--tw-shadow-colored:0 0 12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_12px_rgba\(56\2c 189\2c 248\2c 0\.4\)\2c inset_0_0_8px_rgba\(186\2c 230\2c 253\2c 0\.18\)\]{--tw-shadow:0 0 12px rgba(56,189,248,0.4),inset 0 0 8px rgba(186,230,253,0.18);--tw-shadow-colored:0 0 12px var(--tw-shadow-color), inset 0 0 8px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_15px_rgba\(0\2c 240\2c 255\2c 0\.5\)\]{--tw-shadow:0 0 15px rgba(0,240,255,0.5);--tw-shadow-colored:0 0 15px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_15px_rgba\(56\2c 189\2c 248\2c 0\.5\)\]{--tw-shadow:0 0 15px rgba(56,189,248,0.5);--tw-shadow-colored:0 0 15px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_20px_rgba\(0\2c 240\2c 255\2c 0\.4\)\]{--tw-shadow:0 0 20px rgba(0,240,255,0.4);--tw-shadow-colored:0 0 20px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_20px_rgba\(250\2c 204\2c 21\2c 0\.4\)\]{--tw-shadow:0 0 20px rgba(250,204,21,0.4);--tw-shadow-colored:0 0 20px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_20px_rgba\(250\2c 204\2c 21\2c 0\.5\)\]{--tw-shadow:0 0 20px rgba(250,204,21,0.5);--tw-shadow-colored:0 0 20px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_25px_rgba\(250\2c 204\2c 21\2c 0\.7\)\]{--tw-shadow:0 0 25px rgba(250,204,21,0.7);--tw-shadow-colored:0 0 25px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_25px_rgba\(250\2c 204\2c 21\2c 0\.85\)\]{--tw-shadow:0 0 25px rgba(250,204,21,0.85);--tw-shadow-colored:0 0 25px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_25px_rgba\(56\2c 189\2c 248\2c 0\.4\)\]{--tw-shadow:0 0 25px rgba(56,189,248,0.4);--tw-shadow-colored:0 0 25px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_35px_rgba\(0\2c 240\2c 255\2c 0\.35\)\]{--tw-shadow:0 0 35px rgba(0,240,255,0.35);--tw-shadow-colored:0 0 35px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_35px_rgba\(56\2c 189\2c 248\2c 0\.4\)\]{--tw-shadow:0 0 35px rgba(56,189,248,0.4);--tw-shadow-colored:0 0 35px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_50px_rgba\(250\2c 204\2c 21\2c 0\.55\)\]{--tw-shadow:0 0 50px rgba(250,204,21,0.55);--tw-shadow-colored:0 0 50px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_50px_rgba\(56\2c 189\2c 248\2c 0\.5\)\]{--tw-shadow:0 0 50px rgba(56,189,248,0.5);--tw-shadow-colored:0 0 50px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_8px_rgba\(0\2c 240\2c 255\2c 0\.4\)\]{--tw-shadow:0 0 8px rgba(0,240,255,0.4);--tw-shadow-colored:0 0 8px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_8px_rgba\(147\2c 51\2c 234\2c 0\.4\)\]{--tw-shadow:0 0 8px rgba(147,51,234,0.4);--tw-shadow-colored:0 0 8px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_8px_rgba\(168\2c 85\2c 247\2c 0\.4\)\]{--tw-shadow:0 0 8px rgba(168,85,247,0.4);--tw-shadow-colored:0 0 8px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_8px_rgba\(239\2c 68\2c 68\2c 0\.4\)\]{--tw-shadow:0 0 8px rgba(239,68,68,0.4);--tw-shadow-colored:0 0 8px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_8px_rgba\(244\2c 63\2c 94\2c 0\.3\)\]{--tw-shadow:0 0 8px rgba(244,63,94,0.3);--tw-shadow-colored:0 0 8px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_8px_rgba\(250\2c 204\2c 21\2c 0\.3\)\]{--tw-shadow:0 0 8px rgba(250,204,21,0.3);--tw-shadow-colored:0 0 8px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_8px_rgba\(250\2c 204\2c 21\2c 0\.4\)\]{--tw-shadow:0 0 8px rgba(250,204,21,0.4);--tw-shadow-colored:0 0 8px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_8px_rgba\(251\2c 191\2c 36\2c 0\.4\)\]{--tw-shadow:0 0 8px rgba(251,191,36,0.4);--tw-shadow-colored:0 0 8px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_8px_rgba\(255\2c 0\2c 127\2c 0\.4\)\]{--tw-shadow:0 0 8px rgba(255,0,127,0.4);--tw-shadow-colored:0 0 8px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_8px_rgba\(52\2c 211\2c 153\2c 0\.4\)\]{--tw-shadow:0 0 8px rgba(52,211,153,0.4);--tw-shadow-colored:0 0 8px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_8px_rgba\(56\2c 189\2c 248\2c 0\.4\)\]{--tw-shadow:0 0 8px rgba(56,189,248,0.4);--tw-shadow-colored:0 0 8px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_10px_rgba\(244\2c 63\2c 94\2c 0\.3\)\]{--tw-shadow:0 0 10px rgba(244,63,94,0.3);--tw-shadow-colored:0 0 10px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_10px_rgba\(250\2c 204\2c 21\2c 0\.2\)\]{--tw-shadow:0 0 10px rgba(250,204,21,0.2);--tw-shadow-colored:0 0 10px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_12px_rgba\(250\2c 204\2c 21\2c 0\.3\)\]{--tw-shadow:0 0 12px rgba(250,204,21,0.3);--tw-shadow-colored:0 0 12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_20px_rgba\(0\2c 240\2c 255\2c 0\.6\)\]{--tw-shadow:0 0 20px rgba(0,240,255,0.6);--tw-shadow-colored:0 0 20px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_20px_rgba\(244\2c 63\2c 94\2c 0\.5\)\]{--tw-shadow:0 0 20px rgba(244,63,94,0.5);--tw-shadow-colored:0 0 20px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_25px_rgba\(0\2c 240\2c 255\2c 0\.7\)\]{--tw-shadow:0 0 25px rgba(0,240,255,0.7);--tw-shadow-colored:0 0 25px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_40px_rgba\(244\2c 63\2c 94\2c 0\.5\)\]{--tw-shadow:0 0 40px rgba(244,63,94,0.5);--tw-shadow-colored:0 0 40px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_0_50px_rgba\(0\2c 240\2c 255\2c 0\.5\)\]{--tw-shadow:0 0 50px rgba(0,240,255,0.5);--tw-shadow-colored:0 0 50px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_4px_12px_rgba\(0\2c 0\2c 0\2c 0\.05\)\]{--tw-shadow:0 4px 12px rgba(0,0,0,0.05);--tw-shadow-colored:0 4px 12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-md{--tw-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.blur-2xl{--tw-blur:blur(40px);filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.blur-xl{--tw-blur:blur(24px);filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.drop-shadow{--tw-drop-shadow:drop-shadow(0 1px 2px rgb(0 0 0 / 0.1)) drop-shadow(0 1px 1px rgb(0 0 0 / 0.06));filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.drop-shadow-\[0_0_10px_\#00f0ff\]{--tw-drop-shadow:drop-shadow(0 0 10px #00f0ff);filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.drop-shadow-\[0_0_15px_rgba\(250\2c 204\2c 21\2c 0\.9\)\]{--tw-drop-shadow:drop-shadow(0 0 15px rgba(250,204,21,0.9));filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.drop-shadow-\[0_0_6px_rgba\(244\2c 63\2c 94\2c 0\.8\)\]{--tw-drop-shadow:drop-shadow(0 0 6px rgba(244,63,94,0.8));filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.drop-shadow-\[0_0_6px_rgba\(56\2c 189\2c 248\2c 0\.9\)\]{--tw-drop-shadow:drop-shadow(0 0 6px rgba(56,189,248,0.9));filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.drop-shadow-\[0_0_6px_rgba\(74\2c 222\2c 128\2c 0\.8\)\]{--tw-drop-shadow:drop-shadow(0 0 6px rgba(74,222,128,0.8));filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.drop-shadow-\[0_0_8px_rgba\(56\2c 189\2c 248\2c 0\.9\)\]{--tw-drop-shadow:drop-shadow(0 0 8px rgba(56,189,248,0.9));filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.drop-shadow-\[0_2px_4px_rgba\(0\2c 0\2c 0\2c 0\.8\)\]{--tw-drop-shadow:drop-shadow(0 2px 4px rgba(0,0,0,0.8));filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.filter{filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.backdrop-blur-md{--tw-backdrop-blur:blur(12px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.backdrop-blur-lg{--tw-backdrop-blur:blur(16px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.backdrop-blur-sm{--tw-backdrop-blur:blur(4px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.backdrop-blur-\[0\.5px\]{--tw-backdrop-blur:blur(0.5px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition{transition-property:color, background-color, border-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-opacity{transition-property:opacity;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-300{transition-duration:300ms}.duration-200{transition-duration:200ms}.selection\:bg-cyan-500 *::selection{--tw-bg-opacity:1;background-color:rgb(6 182 212 / var(--tw-bg-opacity, 1))}.selection\:text-slate-950 *::selection{--tw-text-opacity:1;color:rgb(2 6 23 / var(--tw-text-opacity, 1))}.selection\:bg-cyan-500::selection{--tw-bg-opacity:1;background-color:rgb(6 182 212 / var(--tw-bg-opacity, 1))}.selection\:text-slate-950::selection{--tw-text-opacity:1;color:rgb(2 6 23 / var(--tw-text-opacity, 1))}.last\:border-r-0:last-child{border-right-width:0px}.hover\:scale-105:hover{--tw-scale-x:1.05;--tw-scale-y:1.05;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.hover\:border-cyan-400:hover{--tw-border-opacity:1;border-color:rgb(34 211 238 / var(--tw-border-opacity, 1))}.hover\:bg-slate-700:hover{--tw-bg-opacity:1;background-color:rgb(51 65 85 / var(--tw-bg-opacity, 1))}.hover\:bg-emerald-900:hover{--tw-bg-opacity:1;background-color:rgb(6 78 59 / var(--tw-bg-opacity, 1))}.hover\:bg-rose-900:hover{--tw-bg-opacity:1;background-color:rgb(136 19 55 / var(--tw-bg-opacity, 1))}.hover\:from-amber-400:hover{--tw-gradient-from:#fbbf24 var(--tw-gradient-from-position);--tw-gradient-to:rgb(251 191 36 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.hover\:from-cyan-400:hover{--tw-gradient-from:#22d3ee var(--tw-gradient-from-position);--tw-gradient-to:rgb(34 211 238 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.hover\:from-sky-400:hover{--tw-gradient-from:#38bdf8 var(--tw-gradient-from-position);--tw-gradient-to:rgb(56 189 248 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.hover\:from-emerald-500:hover{--tw-gradient-from:#10b981 var(--tw-gradient-from-position);--tw-gradient-to:rgb(16 185 129 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.hover\:from-rose-400:hover{--tw-gradient-from:#fb7185 var(--tw-gradient-from-position);--tw-gradient-to:rgb(251 113 133 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.hover\:to-blue-400:hover{--tw-gradient-to:#60a5fa var(--tw-gradient-to-position)}.hover\:to-blue-500:hover{--tw-gradient-to:#3b82f6 var(--tw-gradient-to-position)}.hover\:to-yellow-300:hover{--tw-gradient-to:#fde047 var(--tw-gradient-to-position)}.hover\:to-pink-500:hover{--tw-gradient-to:#ec4899 var(--tw-gradient-to-position)}.hover\:to-teal-500:hover{--tw-gradient-to:#14b8a6 var(--tw-gradient-to-position)}.hover\:text-sky-300:hover{--tw-text-opacity:1;color:rgb(125 211 252 / var(--tw-text-opacity, 1))}.hover\:text-white:hover{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.hover\:text-cyan-300:hover{--tw-text-opacity:1;color:rgb(103 232 249 / var(--tw-text-opacity, 1))}.hover\:text-pink-300:hover{--tw-text-opacity:1;color:rgb(249 168 212 / var(--tw-text-opacity, 1))}.active\:scale-95:active{--tw-scale-x:.95;--tw-scale-y:.95;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}@media (min-width: 640px){.sm\:top-\[72px\]{top:72px}.sm\:inline{display:inline}.sm\:h-7{height:1.75rem}.sm\:h-\[72px\]{height:72px}.sm\:h-14{height:3.5rem}.sm\:w-6{width:1.5rem}.sm\:w-7{width:1.75rem}.sm\:w-\[80\%\]{width:80%}.sm\:w-14{width:3.5rem}.sm\:max-w-\[420px\]{max-width:420px}.sm\:space-x-2 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.5rem * var(--tw-space-x-reverse));margin-left:calc(0.5rem * calc(1 - var(--tw-space-x-reverse)))}.sm\:rounded-3xl{border-radius:1.5rem}.sm\:border{border-width:1px}.sm\:border-sky-400\/40{border-color:rgb(56 189 248 / 0.4)}.sm\:p-2{padding:0.5rem}.sm\:p-4{padding:1rem}.sm\:p-5{padding:1.25rem}.sm\:px-2{padding-left:0.5rem;padding-right:0.5rem}.sm\:py-3{padding-top:0.75rem;padding-bottom:0.75rem}.sm\:pb-6{padding-bottom:1.5rem}.sm\:text-3xl{font-size:1.875rem;line-height:2.25rem}.sm\:text-6xl{font-size:3.75rem;line-height:1}.sm\:text-\[10px\]{font-size:10px}.sm\:text-\[11px\]{font-size:11px}.sm\:text-base{font-size:1rem;line-height:1.5rem}.sm\:text-sm{font-size:0.875rem;line-height:1.25rem}.sm\:text-xl{font-size:1.25rem;line-height:1.75rem}.sm\:text-xs{font-size:0.75rem;line-height:1rem}.sm\:text-2xl{font-size:1.5rem;line-height:2rem}.sm\:shadow-\[0_0_35px_rgba\(56\2c 189\2c 248\2c 0\.3\)\]{--tw-shadow:0 0 35px rgba(56,189,248,0.3);--tw-shadow-colored:0 0 35px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}}@media (min-width: 768px){.md\:inline{display:inline}}@media (min-width: 1024px){.lg\:inline-block{display:inline-block}}</style></head>
+
+<body class="h-full w-full flex flex-col items-center justify-center p-0 sm:p-2 relative overflow-hidden selection:bg-cyan-500 selection:text-slate-950">
+
+  <!-- Canvas para Confeti en Premios -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- 1. ELEMENTOS DE FONDO (Sunburst Rayos, Estrellas y Resplandor Azul) -->
+  <div class="bg-stage-elements">
+    <div class="sunburst-glow"></div>
+    <div class="stars-field"></div>
+  </div>
+
+  <!-- BANNER FLOTANTE GAMEPLAY DEMO EN VIVO -->
+  <div id="preview-mode-banner" class="fixed top-12 left-1/2 transform -translate-x-1/2 z-40 bg-gradient-to-r from-amber-500/90 via-fuchsia-600/90 to-cyan-500/90 px-4 py-1.5 rounded-full shadow-[0_0_25px_rgba(250,204,21,0.7)] border-2 border-white/80 text-white font-black text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-2 pointer-events-auto cursor-pointer animate-pulse"><span>🎮</span> <span>DEMO GAMEPLAY EN VIVO</span> <span>🎮</span></div>
+
+  <!-- Contenedor Principal (100dvh Exacto: Todo Encaja Sin Cortes) -->
+  <div id="app-container" class="app-container w-full sm:max-w-[420px] flex flex-col justify-between relative z-10 sm:rounded-3xl sm:border sm:border-sky-400/40 sm:shadow-[0_0_35px_rgba(56,189,248,0.3)] overflow-hidden px-2 pt-1.5 pb-2 bg-slate-950/85 backdrop-blur-md">
+    
+    <!-- BARRA SUPERIOR: PARADICE, Música de fondo aleatoria, Combinaciones y Supervisor -->
+    <!-- BARRA SUPERIOR: PARADICE, Vidas, Música, Combinaciones y Supervisor -->
+    <header class="w-full flex-shrink-0 flex items-center justify-between py-1 px-1.5 text-[10px] text-slate-300 border-b border-sky-500/30 bg-slate-950/90 rounded-t-xl">
+      <div class="flex items-center space-x-1.5 sm:space-x-2">
+        <!-- Logo Paradice con Granizado y Diseño Glacial de Frío -->
+        <div class="paradice-frost-logo flex items-center space-x-1.5 px-2 py-0.5 rounded-xl bg-gradient-to-r from-sky-950/90 via-slate-900/90 to-blue-950/80 border border-sky-400/60 shadow-[0_0_12px_rgba(56,189,248,0.4),inset_0_0_8px_rgba(186,230,253,0.18)] relative overflow-hidden">
+          
+          <!-- Granizado Helado 3D -->
+          <div class="w-5 h-6 sm:w-6 sm:h-7 flex-shrink-0 filter drop-shadow-[0_0_6px_rgba(56,189,248,0.9)]">
+            <svg viewBox="0 0 32 38" class="w-full h-full" fill="none">
+              <defs>
+                <linearGradient id="cupSlushGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#38bdf8"></stop>
+                  <stop offset="35%" stop-color="#7dd3fc"></stop>
+                  <stop offset="70%" stop-color="#0284c7"></stop>
+                  <stop offset="100%" stop-color="#0369a1"></stop>
+                </linearGradient>
+                <radialGradient id="slushSnowDome" cx="45%" cy="30%" r="65%">
+                  <stop offset="0%" stop-color="#ffffff"></stop>
+                  <stop offset="35%" stop-color="#bae6fd"></stop>
+                  <stop offset="75%" stop-color="#00f0ff"></stop>
+                  <stop offset="100%" stop-color="#0284c7"></stop>
+                </radialGradient>
+              </defs>
+              
+              <!-- Pajilla / Sorbete Helado Bicolor -->
+              <line x1="17" y1="2" x2="23" y2="15" stroke="#f43f5e" stroke-width="2.5" stroke-linecap="round"></line>
+              <line x1="17" y1="2" x2="23" y2="15" stroke="#ffffff" stroke-width="2.5" stroke-dasharray="2,2" stroke-linecap="round"></line>
+              
+              <!-- Cúpula de Nieve de Granizado Raspado -->
+              <ellipse cx="16" cy="15" rx="10" ry="7" fill="url(#slushSnowDome)" stroke="#ffffff" stroke-width="0.8"></ellipse>
+              <path d="M7,15 Q16,3 25,15 Z" fill="url(#slushSnowDome)"></path>
+              
+              <!-- Cristales y Destellos de Escarcha -->
+              <polygon points="16,5 17.5,9 21,9 18,11 19,15 16,12 13,15 14,11 11,9 14.5,9" fill="#ffffff" opacity="0.95"></polygon>
+              <circle cx="11" cy="11" r="1.2" fill="#ffffff"></circle>
+              <circle cx="21" cy="12" r="1.2" fill="#ffffff"></circle>
+
+              <!-- Vaso de Granizado Translúcido con Frío -->
+              <path d="M8,15 L11,33 Q16,36 21,33 L24,15 Z" fill="url(#cupSlushGrad)" stroke="#bae6fd" stroke-width="1"></path>
+              <!-- Escarcha y reflejo de cristal -->
+              <path d="M10,16 L12.5,32 Q16,34 19.5,32 L22,16 Z" fill="none" stroke="#ffffff" stroke-width="0.7" opacity="0.65"></path>
+              <line x1="11.5" y1="17" x2="13.5" y2="31" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" opacity="0.9"></line>
+              <!-- Gotas de condensación helada -->
+              <circle cx="18" cy="21" r="0.8" fill="#ffffff" opacity="0.85"></circle>
+              <circle cx="15.5" cy="26" r="0.7" fill="#ffffff" opacity="0.75"></circle>
+              <circle cx="18.5" cy="28" r="0.6" fill="#ffffff" opacity="0.85"></circle>
+            </svg>
+          </div>
+
+          <!-- Texto PARADICE con Diseño de Frío Glacial -->
+          <div class="flex flex-col">
+            <span class="font-black text-xs sm:text-sm tracking-wide text-transparent bg-clip-text bg-gradient-to-b from-white via-sky-100 to-sky-300 drop-shadow-[0_0_8px_rgba(56,189,248,0.9)] flex items-center leading-tight">
+              PARAD<span class="text-transparent bg-clip-text bg-gradient-to-b from-cyan-200 to-cyan-400 font-black drop-shadow-[0_0_10px_#00f0ff]">ICE</span>
+            </span>
+          </div>
+
+        </div>
+
+        <!-- Indicador de 3 Vidas / Intentos -->
+        <div id="lives-container" class="flex items-center space-x-1 px-2 py-0.5 rounded-full bg-slate-900 border border-rose-500/40 shadow-[0_0_8px_rgba(244,63,94,0.3)]">
+          <span id="life-1" class="life-heart text-xs">❤️</span>
+          <span id="life-2" class="life-heart text-xs">❤️</span>
+          <span id="life-3" class="life-heart text-xs">❤️</span>
+          <span id="lives-label" class="text-[9px] font-bold text-rose-300 ml-0.5">3/3</span>
+        </div>
+
+        <!-- Temporizador de Tiro 30s (Activo tras perder la 1ra vida) -->
+        <div id="shot-timer-container" class="hidden flex items-center space-x-1 px-2 py-0.5 rounded-full bg-slate-900 border border-amber-500/50 shadow-[0_0_8px_rgba(250,204,21,0.3)] text-[9px] font-bold text-amber-300">
+          <span>⏱️</span> <span id="shot-timer-display" class="timer-val font-mono">30s</span>
+        </div>
+      </div>
+
+      <!-- Controles de Audio, Combinaciones, Landing y Supervisor -->
+      <div class="flex items-center space-x-1.5">
+        <!-- Enlace a la Landing Oficial -->
+        <a href="index.html" class="px-1.5 sm:px-2 py-1 rounded-full bg-cyan-950 border border-cyan-400/70 text-cyan-300 hover:text-white flex items-center gap-1 text-[9px] sm:text-[10px] font-bold shadow-[0_0_8px_rgba(0,240,255,0.4)] transition-all" title="Ir a la Landing Oficial de Paradice">
+          <span>🏠</span> <span class="hidden sm:inline">Landing</span>
+        </a>
+
+        <!-- Enlace a Minas Paradice -->
+        <a href="minas.html" class="px-1.5 sm:px-2 py-1 rounded-full bg-pink-950 border border-pink-400/70 text-pink-300 hover:text-white flex items-center gap-1 text-[9px] sm:text-[10px] font-bold shadow-[0_0_8px_rgba(255,0,127,0.4)] transition-all" title="Jugar a Minas Paradice">
+          <span>💣</span> <span class="hidden xs:inline">Minas</span>
+        </a>
+
+        <!-- Enlace a Hit Bar Rush -->
+        <a href="hitbar.html" class="px-1.5 sm:px-2 py-1 rounded-full bg-amber-950 border border-amber-400/70 text-amber-300 hover:text-white flex items-center gap-1 text-[9px] sm:text-[10px] font-bold shadow-[0_0_8px_rgba(250,204,21,0.4)] transition-all" title="Jugar a Hit Bar Rush 2.0">
+          <span>⚡</span> <span class="hidden md:inline">Hit Bar</span>
+        </a>
+
+        <!-- Enlace a Dice Battle -->
+        <a href="dados.html" class="px-1.5 sm:px-2 py-1 rounded-full bg-purple-950 border border-purple-400/70 text-purple-300 hover:text-white flex items-center gap-1 text-[9px] sm:text-[10px] font-bold shadow-[0_0_8px_rgba(147,51,234,0.4)] transition-all" title="Jugar a Dice Battle">
+          <span>🎲</span> <span class="hidden md:inline">Dados</span>
+        </a>
+
+        <!-- Enlace a Ruleta Paradice -->
+        <a href="ruleta.html" class="px-1.5 sm:px-2 py-1 rounded-full bg-emerald-950 border border-emerald-400/70 text-emerald-300 hover:text-white flex items-center gap-1 text-[9px] sm:text-[10px] font-bold shadow-[0_0_8px_rgba(52,211,153,0.4)] transition-all" title="Jugar a Ruleta Paradice">
+          <span>🎡</span> <span class="hidden md:inline">Ruleta</span>
+        </a>
+
+        <!-- Enlace a BattleRound (Multijugador) -->
+        <a href="battleround.html" class="px-1.5 sm:px-2 py-1 rounded-full bg-red-950 border border-red-500/70 text-red-300 hover:text-white flex items-center gap-1 text-[9px] sm:text-[10px] font-bold shadow-[0_0_8px_rgba(239,68,68,0.4)] transition-all" title="Jugar a BattleRound Multijugador">
+          <span>💥</span> <span class="hidden md:inline">BattleRound</span>
+        </a>
+
+        <!-- Botón Cómo Jugar -->
+        <button id="instructions-btn" class="px-2 py-1 rounded-full bg-amber-950/90 border border-amber-400/70 text-amber-300 hover:text-white flex items-center gap-1 text-[9px] sm:text-[10px] font-bold shadow-[0_0_8px_rgba(251,191,36,0.4)] transition-all cursor-pointer" title="Instrucciones &amp; Cómo Jugar">
+          <span>📖</span> <span class="hidden xs:inline">Ayuda</span>
+        </button>
+
+        <!-- Botón para ver combinaciones de premios -->
+        <button id="combinations-btn" class="px-2 py-1 rounded-full bg-sky-950 border border-sky-400/70 text-sky-300 hover:text-white flex items-center gap-1 text-[9px] sm:text-[10px] font-bold shadow-[0_0_8px_rgba(56,189,248,0.4)] transition-all" title="Ver Combinaciones Ganadoras">
+          <span>📜</span> <span class="hidden xs:inline">Premios</span>
+        </button>
+
+        <!-- Botón de Música (Playlist de 116 canciones aleatorias en /music) -->
+        <div class="flex items-center space-x-1">
+          <button id="music-btn" class="px-2 py-1 rounded-full bg-purple-950/90 border border-purple-400/70 text-purple-300 hover:text-white flex items-center gap-1 text-[9px] sm:text-[10px] font-bold shadow-[0_0_8px_rgba(168,85,247,0.4)] transition-all" title="Reproducir / Pausar Música">
+            <span id="music-icon">🎵</span>
+          </button>
+          <button id="music-next-btn" class="w-6 h-6 rounded-full bg-purple-950/90 border border-purple-400/70 text-purple-300 hover:text-white flex items-center justify-center text-[10px] font-bold shadow-[0_0_8px_rgba(168,85,247,0.4)] transition-all" title="Siguiente Canción">
+            <span>⏭️</span>
+          </button>
+          <span id="music-track-display" class="hidden lg:inline-block max-w-[120px] truncate text-[9px] text-purple-300 font-mono px-1.5 py-0.5 rounded bg-purple-950/60 border border-purple-500/30">🎵 Paradice Music</span>
+        </div>
+
+        <!-- Silenciar / Activar SFX -->
+        <button id="mute-btn" class="w-6 h-6 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center text-xs text-slate-300" title="Sonido SFX">
+          <span id="mute-icon">🔊</span>
+        </button>
+
+        <!-- Panel de Supervisor -->
+        <button id="supervisor-btn" class="w-6 h-6 rounded-full bg-slate-900 border border-sky-500/50 text-sky-400 flex items-center justify-center text-xs font-bold" title="Panel de Supervisor">
+          🛡️
+        </button>
+      </div>
+    </header>
+
+    <!-- 2. TORRE PIRAMIDAL "PREMIOS GRANIZADOS" (Más angosta, de abajo hacia arriba y sin enumeración) -->
+    <section class="w-full flex-shrink-0 my-0.5 relative flex flex-col items-center">
+      
+      <!-- Salpicadura Líquida 3D Izquierda (Chorro Rojo Fresa) -->
+      <svg class="splash-stream-left" viewBox="0 0 50 180" fill="none">
+        <path d="M45,0 Q10,40 35,90 Q8,135 25,180" stroke="#f43f5e" stroke-width="8" stroke-linecap="round" opacity="0.9"></path>
+        <path d="M45,0 Q10,40 35,90 Q8,135 25,180" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.8"></path>
+        <circle cx="12" cy="55" r="3.5" fill="#e11d48"></circle>
+        <circle cx="8" cy="110" r="4" fill="#fb7185"></circle>
+        <circle cx="18" cy="150" r="3" fill="#be123c"></circle>
+      </svg>
+
+      <!-- Salpicadura Líquida 3D Derecha (Chorro Amarillo Mango) -->
+      <svg class="splash-stream-right" viewBox="0 0 50 180" fill="none">
+        <path d="M5,0 Q40,40 15,90 Q42,135 25,180" stroke="#f59e0b" stroke-width="8" stroke-linecap="round" opacity="0.9"></path>
+        <path d="M5,0 Q40,40 15,90 Q42,135 25,180" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.8"></path>
+        <circle cx="38" cy="55" r="3.5" fill="#facc15"></circle>
+        <circle cx="42" cy="110" r="4" fill="#fbbf24"></circle>
+        <circle cx="32" cy="150" r="3" fill="#d97706"></circle>
+      </svg>
+
+      <!-- Encabezado de la Pirámide con Vasitos Verde y Rojo (Más Angosto) -->
+      <div class="relative w-[82%] sm:w-[80%] max-w-[320px] mx-auto flex items-center justify-between mb-0.5 z-20">
+        
+        <!-- Vasito Verde Izquierdo -->
+        <div class="w-6 h-6 sm:w-7 sm:h-7 flex-shrink-0 filter drop-shadow-[0_0_6px_rgba(74,222,128,0.8)]">
+          <svg viewBox="0 0 100 100" class="w-full h-full">
+            <path d="M26,30 Q50,15 74,30 L66,86 Q50,92 34,86 Z" fill="#22c55e"></path>
+            <ellipse cx="50" cy="30" rx="24" ry="7" fill="#86efac"></ellipse>
+            <path d="M24,28 L33,88 Q50,94 67,88 L76,28 Z" fill="rgba(255,255,255,0.2)" stroke="#ffffff" stroke-width="2"></path>
+            <rect x="52" y="8" width="5" height="24" fill="#ffffff" transform="rotate(15 52 8)"></rect>
+          </svg>
+        </div>
+
+        <!-- Cartel Central 3D: PREMIOS GRANIZADOS -->
+        <div class="premios-banner-box flex-1 mx-1.5 py-0.5 px-3 flex flex-col items-center justify-center">
+          <span class="premios-3d-text text-[11px] sm:text-xs font-black tracking-wider uppercase">PREMIOS</span>
+          <span class="premios-3d-text text-[10px] sm:text-[11px] font-black tracking-widest uppercase -mt-0.5">GRANIZADOS</span>
+        </div>
+
+        <!-- Vasito Rojo Derecho -->
+        <div class="w-6 h-6 sm:w-7 sm:h-7 flex-shrink-0 filter drop-shadow-[0_0_6px_rgba(244,63,94,0.8)]">
+          <svg viewBox="0 0 100 100" class="w-full h-full">
+            <path d="M26,30 Q50,15 74,30 L66,86 Q50,92 34,86 Z" fill="#e11d48"></path>
+            <ellipse cx="50" cy="30" rx="24" ry="7" fill="#fda4af"></ellipse>
+            <path d="M24,28 L33,88 Q50,94 67,88 L76,28 Z" fill="rgba(255,255,255,0.2)" stroke="#ffffff" stroke-width="2"></path>
+            <rect x="52" y="8" width="5" height="24" fill="#ffffff" transform="rotate(-15 52 8)"></rect>
+          </svg>
+        </div>
+
+      </div>
+
+      <!-- Cuerpo Piramidal de la Torre (Más Angosto, Centrado y Sin Enumeración) -->
+      <div class="premios-tower-trapezoid w-[82%] sm:w-[80%] max-w-[320px] mx-auto pt-1 pb-1.5 px-2 flex flex-col items-center">
+        
+        <!-- Filas de la Torre con Anchos Graduados y Texto Centrado -->
+        <div id="paytable-tower" class="w-full space-y-0.5 text-xs flex flex-col items-center">
+          
+          <!-- Nivel 13 (Cúspide, más ancha 100%): Super Promo 2x1 -->
+          <div class="pill-row w-full mx-auto flex items-center justify-center text-center px-3 py-0.5 rounded-full bg-gradient-to-r from-emerald-500 to-green-600 text-white font-bold border border-emerald-300 text-[10px]" data-nivel-id="JACKPOT" data-ladder-index="9">
+            <span class="font-extrabold tracking-wide">⭐ ¡Super Promo 2x1! ⭐</span>
+          </div>
+
+          <!-- Nivel 12 (96%): 2 Granizados dobles x23k -->
+          <div class="pill-row w-[96%] mx-auto flex items-center justify-center text-center px-3 py-0.5 rounded-full bg-gradient-to-r from-purple-700 to-fuchsia-700 text-white font-bold border border-purple-400 text-[10px]" data-nivel-id="NIVEL_12" data-ladder-index="8">
+            <span class="font-bold tracking-wide">2 Granizados dobles x23k</span>
+          </div>
+
+          <!-- Nivel 11 (92%): Granizado doble x13k -->
+          <div class="pill-row w-[92%] mx-auto flex items-center justify-center text-center px-3 py-0.5 rounded-full bg-gradient-to-r from-sky-600 to-blue-600 text-white font-bold border border-sky-300 text-[10px]" data-nivel-id="NIVEL_11" data-ladder-index="7">
+            <span class="font-bold tracking-wide">Granizado doble x13k</span>
+          </div>
+
+          <!-- Nivel 10 (88%): -1000 -->
+          <div class="pill-row w-[88%] mx-auto flex items-center justify-center text-center px-3 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-yellow-600 text-slate-950 font-black border border-yellow-300 text-[10px]" data-nivel-id="NIVEL_10" data-ladder-index="6">
+            <span class="font-black">-1000</span>
+          </div>
+
+          <!-- Nivel 9 (84%): -900 -->
+          <div class="pill-row w-[84%] mx-auto flex items-center justify-center text-center px-3 py-0.5 rounded-full bg-gradient-to-r from-orange-600 to-amber-600 text-white font-bold border border-orange-400 text-[10px]" data-nivel-id="NIVEL_9" data-ladder-index="5">
+            <span class="font-bold">-900</span>
+          </div>
+
+          <!-- Nivel 8 (80%): -600 -->
+          <div class="pill-row w-[80%] mx-auto flex items-center justify-center text-center px-3 py-0.5 rounded-full bg-gradient-to-r from-red-600 to-orange-700 text-white font-bold border border-red-400 text-[10px]" data-nivel-id="NIVEL_8" data-ladder-index="4">
+            <span class="font-bold">-600</span>
+          </div>
+
+          <!-- Bonus Alcohol (76%): Jeringa de alcohol -->
+          <div class="pill-row w-[76%] mx-auto flex items-center justify-center text-center px-3 py-0.5 rounded-full bg-gradient-to-r from-fuchsia-600 to-pink-600 text-white font-black border border-fuchsia-300 text-[10px] animate-pulse" data-nivel-id="BONUS_ALCOHOL" data-ladder-index="3">
+            <span class="font-black">Jeringa de alcohol</span>
+          </div>
+
+          <!-- Bonus Vida (74%): +1 Vida Extra -->
+          <div class="pill-row w-[74%] mx-auto flex items-center justify-center text-center px-3 py-0.5 rounded-full bg-gradient-to-r from-rose-600 to-pink-600 text-white font-black border border-rose-300 text-[10px] animate-pulse" data-nivel-id="BONUS_VIDA" data-ladder-index="2">
+            <span class="font-black">💖 +1 Vida Extra</span>
+          </div>
+
+          <!-- Nivel 7 (72%): -800 -->
+          <div class="pill-row w-[72%] mx-auto flex items-center justify-center text-center px-3 py-0.5 rounded-full bg-gradient-to-r from-red-700 to-rose-800 text-white font-bold border border-red-400 text-[10px] pill-row-climbing" data-nivel-id="NIVEL_7" data-ladder-index="1">
+            <span class="font-bold">-800</span>
+          </div>
+
+          <!-- Nivel 5 (Base, más delgada 68%): -600 -->
+          <div class="pill-row w-[68%] mx-auto flex items-center justify-center text-center px-3 py-0.5 rounded-full bg-gradient-to-r from-amber-700 to-yellow-800 text-amber-100 font-bold border border-yellow-500 text-[10px]" data-nivel-id="NIVEL_5" data-ladder-index="0">
+            <span class="font-bold">-600</span>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 3. VIEWPORT DE RODILLOS (5 Columnas x 3 Filas Perfectamente Alineadas) -->
+    <main class="relative w-full flex-shrink-0 my-1 flex flex-col justify-center items-center">
+      <!-- Banner en Vivo de Evento HIT BAR (Directo en el panel principal) -->
+      <div id="hitbar-live-banner" class="hidden w-full mb-1 py-1 px-3 rounded-xl bg-gradient-to-r from-amber-500/25 via-yellow-400/35 to-amber-500/25 border border-amber-400 shadow-[0_0_20px_rgba(250,204,21,0.5)] flex items-center justify-between text-[10px] sm:text-xs font-black uppercase text-amber-300 animate-pulse z-20">
+        <span id="hitbar-live-title" class="flex items-center gap-1">⚡ <span>HIT BAR: ¡DETÉN LA CASILLA 1 DE 5!</span></span>
+        <span id="hitbar-live-score" class="text-white font-black bg-amber-500/70 px-2 py-0.5 rounded-md border border-amber-300">0 / 5 Acertados</span>
+      </div>
+
+      <div class="reels-viewport-casino w-full relative flex">
+        <!-- Línea Guía de Juego Central (Encuadra con precisión milimétrica la fila del centro) -->
+        <div id="main-payline-guide" class="absolute top-[68px] sm:top-[72px] left-0 right-0 h-[68px] sm:h-[72px] border-y-2 border-sky-400/40 pointer-events-none z-10 shadow-[0_0_12px_rgba(56,189,248,0.3)] transition-all duration-300"></div>
+
+        <!-- Contenedor de Rodillos -->
+        <div id="reels-container" class="w-full h-full flex"><div class="reel-column flex-1 h-full relative overflow-hidden bg-slate-900/60 border-r border-sky-500/20 last:border-r-0"><div class="reel-strip flex flex-col items-center w-full transition-transform reel-strip-spinning" style="transform: translateY(0px); transition: none;"><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_LIMON">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-yellow-500 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍋</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍃</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_NARANJA">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍊</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">✨</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_COPA_AZUL">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-sky-400 to-blue-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍧</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍒</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_COPA_VERDE">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-green-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍹</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍈</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_SHOT">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-amber-600 to-yellow-700 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🥃</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🧊</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_COCTEL_ROJO">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍸</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍓</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_VODKA">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-700 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍷</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍇</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_CORAZON">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">💖</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">❤️</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_BONUS">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-fuchsia-500 to-pink-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🫗</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">💉</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_GRATIS">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-amber-300 via-yellow-400 to-amber-500 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">⭐</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍧</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_LIMON">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-yellow-500 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍋</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍃</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_NARANJA">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍊</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">✨</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_COPA_AZUL">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-sky-400 to-blue-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍧</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍒</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_COPA_VERDE">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-green-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍹</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍈</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_SHOT">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-amber-600 to-yellow-700 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🥃</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🧊</span>
+        </div>
+      </div></div></div><div class="reel-column flex-1 h-full relative overflow-hidden bg-slate-900/60 border-r border-sky-500/20 last:border-r-0"><div class="reel-strip flex flex-col items-center w-full transition-transform reel-strip-spinning" style="transform: translateY(0px); transition: none;"><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_NARANJA">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍊</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">✨</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_COPA_AZUL">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-sky-400 to-blue-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍧</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍒</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_COPA_VERDE">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-green-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍹</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍈</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_SHOT">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-amber-600 to-yellow-700 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🥃</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🧊</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_COCTEL_ROJO">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍸</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍓</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_VODKA">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-700 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍷</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍇</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_CORAZON">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">💖</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">❤️</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_BONUS">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-fuchsia-500 to-pink-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🫗</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">💉</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_GRATIS">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-amber-300 via-yellow-400 to-amber-500 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">⭐</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍧</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_LIMON">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-yellow-500 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍋</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍃</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_NARANJA">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍊</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">✨</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_COPA_AZUL">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-sky-400 to-blue-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍧</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍒</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_COPA_VERDE">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-green-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍹</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍈</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_SHOT">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-amber-600 to-yellow-700 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🥃</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🧊</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_COCTEL_ROJO">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍸</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍓</span>
+        </div>
+      </div></div></div><div class="reel-column flex-1 h-full relative overflow-hidden bg-slate-900/60 border-r border-sky-500/20 last:border-r-0"><div class="reel-strip flex flex-col items-center w-full transition-transform reel-strip-spinning" style="transform: translateY(0px); transition: none;"><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_COPA_AZUL">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-sky-400 to-blue-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍧</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍒</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_COPA_VERDE">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-green-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍹</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍈</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_SHOT">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-amber-600 to-yellow-700 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🥃</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🧊</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_COCTEL_ROJO">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍸</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍓</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_VODKA">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-700 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍷</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍇</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_CORAZON">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">💖</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">❤️</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_BONUS">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-fuchsia-500 to-pink-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🫗</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">💉</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_GRATIS">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-amber-300 via-yellow-400 to-amber-500 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">⭐</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍧</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_LIMON">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-yellow-500 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍋</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍃</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_NARANJA">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍊</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">✨</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_COPA_AZUL">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-sky-400 to-blue-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍧</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍒</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_COPA_VERDE">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-green-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍹</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍈</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_SHOT">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-amber-600 to-yellow-700 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🥃</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🧊</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_COCTEL_ROJO">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍸</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍓</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_VODKA">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-700 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍷</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍇</span>
+        </div>
+      </div></div></div><div class="reel-column flex-1 h-full relative overflow-hidden bg-slate-900/60 border-r border-sky-500/20 last:border-r-0"><div class="reel-strip flex flex-col items-center w-full transition-transform reel-strip-spinning" style="transform: translateY(0px); transition: none;"><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_COPA_VERDE">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-green-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍹</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍈</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_SHOT">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-amber-600 to-yellow-700 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🥃</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🧊</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_COCTEL_ROJO">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍸</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍓</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_VODKA">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-700 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍷</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍇</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_CORAZON">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">💖</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">❤️</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_BONUS">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-fuchsia-500 to-pink-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🫗</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">💉</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_GRATIS">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-amber-300 via-yellow-400 to-amber-500 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">⭐</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍧</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_LIMON">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-yellow-500 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍋</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍃</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_NARANJA">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍊</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">✨</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_COPA_AZUL">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-sky-400 to-blue-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍧</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍒</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_COPA_VERDE">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-green-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍹</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍈</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_SHOT">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-amber-600 to-yellow-700 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🥃</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🧊</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_COCTEL_ROJO">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍸</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍓</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_VODKA">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-700 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍷</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍇</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_CORAZON">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">💖</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">❤️</span>
+        </div>
+      </div></div></div><div class="reel-column flex-1 h-full relative overflow-hidden bg-slate-900/60 border-r border-sky-500/20 last:border-r-0"><div class="reel-strip flex flex-col items-center w-full transition-transform reel-strip-spinning" style="transform: translateY(0px); transition: none;"><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_SHOT">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-amber-600 to-yellow-700 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🥃</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🧊</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_COCTEL_ROJO">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍸</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍓</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_VODKA">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-700 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍷</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍇</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_CORAZON">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">💖</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">❤️</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_BONUS">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-fuchsia-500 to-pink-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🫗</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">💉</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_GRATIS">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-amber-300 via-yellow-400 to-amber-500 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">⭐</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍧</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_LIMON">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-yellow-500 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍋</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍃</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_NARANJA">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍊</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">✨</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_COPA_AZUL">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-sky-400 to-blue-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍧</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍒</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_COPA_VERDE">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-green-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍹</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍈</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_SHOT">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-amber-600 to-yellow-700 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🥃</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🧊</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_COCTEL_ROJO">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍸</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍓</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_VODKA">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-700 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🍷</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">🍇</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_CORAZON">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">💖</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">❤️</span>
+        </div>
+      </div><div class="symbol-cell w-full h-[68px] sm:h-[72px] flex flex-col items-center justify-center p-1 select-none flex-shrink-0" data-symbol-id="SYM_BONUS">
+        <div class="symbol-inner relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-fuchsia-500 to-pink-600 p-0.5 shadow-md flex items-center justify-center transform transition-all duration-200">
+          <span class="text-2xl sm:text-3xl filter drop-shadow">🫗</span>
+          <span class="absolute bottom-0.5 right-1 text-[9px] opacity-75 font-bold">💉</span>
+        </div>
+      </div></div></div></div>
+      </div>
+    </main>
+
+    <!-- 4. CONTROLES INFERIORES: Botón Circular Gigante Centrado y Limpio -->
+    <footer class="w-full flex-shrink-0 flex items-center justify-center pt-1 pb-1 relative z-30">
+      
+      <!-- BOTÓN CIRCULAR GIGANTE DE GIRO NEÓN -->
+      <div class="relative flex items-center justify-center">
+        <!-- Aro de luz exterior decorativo -->
+        <div class="absolute w-[88px] h-[88px] rounded-full border border-sky-400/40 animate-pulse pointer-events-none"></div>
+
+        <button id="spin-btn" class="spin-main-button w-[76px] h-[76px]" title="Girar Rodillos">
+          <!-- Texto circular perimetral estilizado -->
+          <svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100">
+            <path id="spinTextPath" d="M 50, 50 m -38, 0 a 38,38 0 1,1 76,0 a 38,38 0 1,1 -76,0" fill="none"></path>
+            <text font-size="5.8" font-family="system-ui, Arial, sans-serif" font-weight="900" fill="#94a3b8" letter-spacing="1.2">
+              <textPath href="#spinTextPath" startOffset="50%" text-anchor="middle">
+                MANTENER PRESIONADO PARA AUTO JUEGO
+              </textPath>
+            </text>
+          </svg>
+
+          <!-- Flechas de giro en el centro -->
+          <div class="flex flex-col items-center justify-center z-10">
+            <span id="spin-btn-icon" class="text-2xl text-white font-black leading-none filter drop-shadow">🔄</span>
+            <span id="spin-btn-text" class="text-[8px] font-black uppercase tracking-wider text-sky-300 mt-0.5">GIRAR</span>
+          </div>
+        </button>
+      </div>
+
+    </footer>
+
+    <!-- Elementos ocultos para retrocompatibilidad segura -->
+    <div class="hidden" aria-hidden="true">
+      <div id="status-badge"></div>
+      <div id="status-title"></div>
+      <button id="auto-spin-btn"></button>
+      <button id="bet-btn"></button>
+    </div>
+
+  <div id="gameplay-start-prompt" class="absolute inset-0 z-40 rounded-2xl sm:rounded-3xl flex flex-col items-center justify-end pb-5 sm:pb-6 bg-slate-950/15 backdrop-blur-[0.5px] cursor-pointer select-none transition-opacity duration-200">
+        <div class="px-4 py-2 rounded-full bg-white/95 text-slate-800 font-semibold text-xs tracking-wide shadow-[0_4px_12px_rgba(0,0,0,0.05)] border border-slate-200/60 flex items-center gap-1.5 transition-transform hover:scale-105 active:scale-95">
+          <span class="text-sm">👆</span>
+          <span class="text-[11px] sm:text-xs">Toca la pantalla para iniciar</span>
+          <span class="text-xs text-amber-500">✨</span>
+        </div>
+      </div></div>
+
+  <!-- 5. MODAL POPOUT DE PREMIO CON GIRO 3D Y QR DE VERIFICACIÓN -->
+  <div id="win-popout-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-4 hidden">
+    <div class="flip-card-container">
+      <div id="flip-card-inner" class="flip-card-inner">
+        
+        <!-- CARA FRONTAL: CELEBRACIÓN Y DECISIÓN (Reclamar vs Volver a Tirar) -->
+        <div class="flip-card-front bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 border-2 border-amber-400 rounded-3xl p-4 sm:p-5 shadow-[0_0_50px_rgba(250,204,21,0.55)] flex flex-col justify-between items-center text-center overflow-hidden">
+          
+          <!-- Contenido Superior -->
+          <div class="flex flex-col items-center w-full">
+            <!-- Resplandores decorativos de fondo -->
+            <div class="absolute -top-12 -left-12 w-32 h-32 bg-amber-500/20 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="absolute -bottom-12 -right-12 w-32 h-32 bg-sky-500/20 rounded-full blur-2xl pointer-events-none"></div>
+
+            <!-- Icono Trofeo / Estrella animado -->
+            <div id="win-popout-icon" class="text-5xl sm:text-6xl my-1 filter drop-shadow-[0_0_15px_rgba(250,204,21,0.9)] animate-bounce">
+              ⭐
+            </div>
+
+            <!-- Título de Victoria -->
+            <h3 id="win-popout-title" class="text-2xl sm:text-3xl font-black text-amber-300 tracking-wider uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+              ¡GANASTE!
+            </h3>
+            
+            <!-- Nivel Alcanzado -->
+            <div id="win-popout-tier" class="mt-1 px-3 py-0.5 rounded-full bg-amber-400/20 border border-amber-400/50 text-[10px] font-bold text-amber-200 tracking-wider uppercase">
+              Nivel 13 - Jackpot
+            </div>
+
+            <!-- Premio Ganado Destacado -->
+            <div id="win-popout-prize" class="my-2.5 py-2.5 px-4 rounded-2xl bg-slate-900/90 border border-amber-400/70 text-lg sm:text-xl font-black text-white tracking-tight shadow-[0_0_20px_rgba(250,204,21,0.4)] w-full">
+              ¡Super Promo 2x1 en Granizados!
+            </div>
+
+            <!-- Información del Intento y Vidas -->
+            <p id="win-popout-attempt-info" class="text-[11px] text-slate-300 px-2 leading-relaxed">
+              Obtenido en el <span class="font-bold text-amber-300">Intento 1 de 3</span>. ¿Deseas quedarte con este premio o cambiarlo?
+            </p>
+          </div>
+
+          <!-- Acciones de Decisión del Jugador (Abajo) -->
+          <div class="w-full space-y-2 mt-2">
+            <!-- Botón 1: Reclamar Premio (Gira la tarjeta al QR) -->
+            <button id="claim-prize-btn" class="w-full py-2.5 sm:py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-black text-xs uppercase tracking-wider border-2 border-yellow-300 shadow-[0_0_25px_rgba(250,204,21,0.85)] animate-glow-pulse active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+              <span>✓</span> <span>Reclamar este Premio</span>
+            </button>
+
+            <!-- Botón 2: Volver a Tirar (Gasta 1 vida) -->
+            <button id="retry-spin-btn" class="w-full py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-rose-300 hover:text-white border border-rose-500/50 font-bold text-[11px] uppercase tracking-wide transition-all flex items-center justify-center gap-1 cursor-pointer">
+              <span>🔄</span> <span>Descartar y Volver a Tirar (-1 Vida)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- CARA TRASERA: CÓDIGO QR DE SEGURIDAD Y VOUCHER -->
+        <div class="flip-card-back bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 border-2 border-sky-400 rounded-3xl p-4 sm:p-5 shadow-[0_0_50px_rgba(56,189,248,0.5)] flex flex-col justify-between items-center text-center overflow-hidden">
+          
+          <!-- Contenido Superior -->
+          <div class="flex flex-col items-center w-full">
+            <!-- Resplandor cian -->
+            <div class="absolute -top-10 -right-10 w-28 h-28 bg-sky-500/20 rounded-full blur-xl pointer-events-none"></div>
+
+            <!-- Encabezado Voucher -->
+            <div class="flex items-center space-x-1.5 mb-1">
+              <span class="text-amber-400 text-sm sm:text-base">⚡</span>
+              <span class="font-black text-sky-400 text-xs tracking-wider uppercase">TICKET OFICIAL PARADICE</span>
+            </div>
+
+            <!-- Caja del Código QR -->
+            <div class="p-1.5 bg-white rounded-2xl shadow-[0_0_25px_rgba(56,189,248,0.4)] border border-sky-300 my-1 flex items-center justify-center">
+              <div id="qrcode-box" class="w-[120px] h-[120px] flex items-center justify-center"></div>
+            </div>
+
+            <p class="text-[10px] text-slate-300 mt-0.5">
+              📱 Escanea con la cámara para verificar en caja
+            </p>
+
+            <!-- Resumen de Datos del Ticket -->
+            <div class="w-full my-1.5 p-2 rounded-xl bg-slate-900/90 border border-slate-800 text-[10px] space-y-0.5 text-left">
+              <div class="flex justify-between">
+                <span class="text-slate-400">Premio:</span>
+                <span id="qr-summary-prize" class="font-bold text-emerald-300 truncate max-w-[170px]">-</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Intento:</span>
+                <span id="qr-summary-attempt" class="font-bold text-amber-300">-</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Hora:</span>
+                <span id="qr-summary-time" class="text-slate-200">-</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Terminal:</span>
+                <span id="qr-summary-terminal" class="font-mono text-sky-300">-</span>
+              </div>
+            </div>
+
+            <!-- Enlace de prueba directa -->
+            <a id="qr-direct-link" href="#" target="_blank" class="text-[10px] text-sky-400 hover:text-sky-300 underline font-medium">
+              🔗 Abrir verificación en esta pantalla
+            </a>
+          </div>
+
+          <!-- Botón Cerrar y Nueva Partida (Abajo) -->
+          <button id="close-win-popout-btn" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-black text-xs uppercase tracking-wider shadow-[0_0_15px_rgba(56,189,248,0.5)] active:scale-95 transition-all cursor-pointer mt-1">
+            ✓ Finalizar y Nueva Partida
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE INSTRUCCIONES / CÓMO JUGAR -->
+  <div id="instructions-modal" class="fixed inset-0 bg-[#040814]/85 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-4 hidden">
+    <div class="w-full max-w-md bg-gradient-to-b from-[#0a0f1d] to-[#040814] border border-cyan-400/50 rounded-3xl p-4 sm:p-5 shadow-[0_0_35px_rgba(0,240,255,0.35)] relative flex flex-col max-h-[90vh] overflow-hidden">
+      
+      <!-- Botón Cerrar -->
+      <button id="close-instructions-modal" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-900 border border-slate-700 hover:border-cyan-400 text-slate-300 hover:text-white flex items-center justify-center text-sm transition cursor-pointer">
+        ✕
+      </button>
+
+      <!-- Encabezado -->
+      <div class="flex items-center gap-3 mb-3 border-b border-cyan-500/30 pb-3">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-500 via-sky-500 to-blue-600 p-0.5 shadow-[0_0_15px_rgba(0,240,255,0.5)] flex-shrink-0">
+          <div class="w-full h-full bg-[#040814] rounded-[14px] flex items-center justify-center text-2xl">
+            🎰
+          </div>
+        </div>
+        <div>
+          <h3 class="font-display font-black text-lg sm:text-xl text-white uppercase tracking-tight">
+            ¿CÓMO JUGAR TRAGAMONEDAS?
+          </h3>
+          <p class="text-[11px] text-cyan-300 font-medium">Instrucciones &amp; Promociones Paradice</p>
+        </div>
+      </div>
+
+      <!-- Contenido Scrolleable -->
+      <div class="flex-1 overflow-y-auto pr-1 space-y-3 text-xs text-slate-300">
+        
+        <!-- Regla de Oro: 1 Intento = 1 Vida -->
+        <div class="p-3 rounded-2xl bg-gradient-to-r from-rose-950/60 to-pink-950/40 border border-rose-500/40 flex items-start gap-3">
+          <span class="text-2xl flex-shrink-0">❤️❤️❤️</span>
+          <div>
+            <h4 class="font-black text-white text-xs uppercase tracking-wide">1 Intento = 1 Vida (3 Vidas por Partida)</h4>
+            <p class="text-[11px] text-rose-200 mt-0.5 leading-relaxed">
+              Cada tirada consume exactamente <strong>1 vida</strong> de forma inmediata. Tienes 3 vidas en total (3 giros). En cada giro, los corazones superiores reflejan en tiempo real tus vidas restantes.
+            </p>
+          </div>
+        </div>
+
+        <!-- Paso 1 -->
+        <div class="p-3 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-start gap-3">
+          <div class="w-7 h-7 rounded-xl bg-cyan-950 text-cyan-300 border border-cyan-500/40 flex items-center justify-center font-black flex-shrink-0">1</div>
+          <div>
+            <h4 class="font-bold text-white text-xs">Gira los 5 Rodillos Glaciales</h4>
+            <p class="text-[11px] text-slate-400 mt-0.5">
+              Presiona <strong>[🔄 GIRAR]</strong> o la barra espaciadora. Los rodillos girarán velozmente con símbolos de granizados, cócteles, frutas y el sello dorado de Paradice.
+            </p>
+          </div>
+        </div>
+
+        <!-- Paso 2 -->
+        <div class="p-3 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-start gap-3">
+          <div class="w-7 h-7 rounded-xl bg-amber-950 text-amber-300 border border-amber-500/40 flex items-center justify-center font-black flex-shrink-0">2</div>
+          <div>
+            <h4 class="font-bold text-white text-xs">Escala la Pirámide de Premios</h4>
+            <p class="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
+              ⭐ <strong>Super Promo 2x1 (Jackpot):</strong> 5+ Sellos dorados.<br>
+              🍸 <strong>Combos Cócteles:</strong> 2 Dobles x $23k o Doble x $13k.<br>
+              🍧 <strong>Granizados:</strong> Descuentos directos de -$1.000, -$800, -$600 o -$500 COP.<br>
+              🥃 <strong>3 Shots de Licor:</strong> Promo Pague 2 Lleve 3.<br>
+              🫗 <strong>Bonus Coctelera (3+):</strong> Jeringa de Alcohol gratis con tu compra.
+            </p>
+          </div>
+        </div>
+
+        <!-- Paso 3: Hit Bar -->
+        <div class="p-3 rounded-2xl bg-gradient-to-r from-amber-950/40 to-yellow-950/30 border border-amber-500/40 flex items-start gap-3">
+          <div class="w-7 h-7 rounded-xl bg-amber-500 text-slate-950 font-black flex items-center justify-center flex-shrink-0">⚡</div>
+          <div>
+            <h4 class="font-bold text-amber-300 text-xs">Desafío Especial HIT BAR 2.0</h4>
+            <p class="text-[11px] text-amber-100/90 mt-0.5 leading-relaxed">
+              Si aparecen 3+ Granizados 2x1 o de forma misteriosa, se desata el <strong>HIT BAR</strong>: ¡los 5 rodillos rotan a hipervelocidad! Presiona <strong>[🛑 DETENER]</strong> en cada columna para alinear los granizados en la línea central láser.
+            </p>
+          </div>
+        </div>
+
+        <!-- Paso 4 -->
+        <div class="p-3 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-start gap-3">
+          <div class="w-7 h-7 rounded-xl bg-purple-950 text-purple-300 border border-purple-500/40 flex items-center justify-center font-black flex-shrink-0">3</div>
+          <div>
+            <h4 class="font-bold text-white text-xs">Asegurar Premio o Arriesgar (-1 Vida)</h4>
+            <p class="text-[11px] text-slate-400 mt-0.5">
+              Si te gusta el premio obtenido, pulsa <strong>[🏆 ASEGURAR PREMIO]</strong> para generar tu tarjeta 3D con código QR. Si quieres buscar un premio mayor y aún te quedan vidas, pulsa <strong>[🔄 Descartar y volver a tirar]</strong>.
+            </p>
+          </div>
+        </div>
+
+        <!-- Paso 5 -->
+        <div class="p-3 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-start gap-3">
+          <div class="w-7 h-7 rounded-xl bg-emerald-950 text-emerald-300 border border-emerald-500/40 flex items-center justify-center font-black flex-shrink-0">4</div>
+          <div>
+            <h4 class="font-bold text-white text-xs">Canje en Barra o Pedido por WhatsApp</h4>
+            <p class="text-[11px] text-slate-400 mt-0.5">
+              Muestra tu código QR verificado en el punto de atención o abre el link directo para pedir a domicilio por WhatsApp con tu descuento ya aplicado.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Botón Entendido -->
+      <div class="mt-4 pt-3 border-t border-cyan-500/30">
+        <button id="close-instructions-btn-bottom" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-cyan-500 via-sky-400 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(0,240,255,0.4)] transition cursor-pointer">
+          ¡ENTENDIDO, A JUGAR!
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 6. MODAL DE TABLA DE COMBINACIONES -->
+  <div id="combinations-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-3 hidden">
+    <div class="w-full max-w-md bg-slate-900 border-2 border-sky-400 rounded-3xl p-4 shadow-[0_0_35px_rgba(56,189,248,0.4)] flex flex-col max-h-[88vh]">
+      
+      <!-- Header Modal -->
+      <div class="flex items-center justify-between pb-2 border-b border-sky-500/30">
+        <div class="flex items-center space-x-2">
+          <span class="text-2xl">📜</span>
+          <div>
+            <h3 class="text-sm sm:text-base font-black text-sky-300 uppercase tracking-tight">Tabla de Combinaciones</h3>
+            <p class="text-[10px] text-slate-400">Guía oficial de coincidencias en los 15 símbolos</p>
+          </div>
+        </div>
+        <button id="close-combinations-modal" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-sky-400 border border-sky-500/40 flex items-center justify-center text-sm font-black">
+          ✕
+        </button>
+      </div>
+
+      <!-- Lista de combinaciones oficiales -->
+      <div class="flex-1 overflow-y-auto space-y-1.5 py-3 pr-1 text-xs">
+        
+        <!-- Especial Hit Bar -->
+        <div class="p-2 rounded-xl bg-slate-950 border border-amber-400 shadow-[0_0_12px_rgba(250,204,21,0.3)] flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">⚡</span>
+            <div class="flex flex-col">
+              <span class="font-extrabold text-amber-300 text-[11px]">3+ Granizados 2x1</span>
+              <span class="text-[9px] text-slate-400">Activa el desafío Hit Bar por el Premio Mayor</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 font-black text-[10px]">⚡ HIT BAR</span>
+        </div>
+
+        <!-- Nivel 13 Jackpot -->
+        <div class="p-2 rounded-xl bg-slate-950 border border-amber-400/60 shadow-[0_0_10px_rgba(250,204,21,0.2)] flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">⭐</span>
+            <div class="flex flex-col">
+              <span class="font-extrabold text-amber-300 text-[11px]">5+ Sellos Promo 2x1 ⭐</span>
+              <span class="text-[9px] text-slate-400">5 o más sellos dorados en pantalla</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 font-black text-[10px]">Super Promo 2x1</span>
+        </div>
+
+        <!-- Nivel 12 -->
+        <div class="p-2 rounded-xl bg-slate-950 border border-purple-500/50 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">🍸🍷</span>
+            <div class="flex flex-col">
+              <span class="font-bold text-purple-300 text-[11px]">5 Cócteles Especiales</span>
+              <span class="text-[9px] text-slate-400">Cualquier combinación de Berries / Vodka</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-purple-700 text-white font-bold text-[10px]">2 Dobles x $23k</span>
+        </div>
+
+        <!-- Nivel 11 -->
+        <div class="p-2 rounded-xl bg-slate-950 border border-sky-500/50 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">🍸🍷</span>
+            <div class="flex flex-col">
+              <span class="font-bold text-sky-300 text-[11px]">4 Cócteles Especiales</span>
+              <span class="text-[9px] text-slate-400">4 Berries o Vodka</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-sky-600 text-white font-bold text-[10px]">Doble x $13k</span>
+        </div>
+
+        <!-- Nivel 10 -->
+        <div class="p-2 rounded-xl bg-slate-950 border border-yellow-400/50 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">🍧🍹</span>
+            <div class="flex flex-col">
+              <span class="font-bold text-yellow-300 text-[11px]">5 Granizados</span>
+              <span class="text-[9px] text-slate-400">5 Granizados Azul o Verde</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-yellow-500 text-slate-950 font-black text-[10px]">-$1.000 COP</span>
+        </div>
+
+        <!-- Nivel 9 -->
+        <div class="p-2 rounded-xl bg-slate-950 border border-orange-500/50 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">🍋🍊</span>
+            <div class="flex flex-col">
+              <span class="font-bold text-orange-300 text-[11px]">5 Frutas</span>
+              <span class="text-[9px] text-slate-400">5 Limones o Naranjas</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-orange-600 text-white font-bold text-[10px]">-$900 COP</span>
+        </div>
+
+        <!-- Nivel 8 -->
+        <div class="p-2 rounded-xl bg-slate-950 border border-amber-600/50 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">🍧🍹</span>
+            <div class="flex flex-col">
+              <span class="font-bold text-amber-200 text-[11px]">4 Granizados</span>
+              <span class="text-[9px] text-slate-400">4 Granizados Azul o Verde</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-amber-800 text-amber-100 font-bold text-[10px]">-$600 COP</span>
+        </div>
+
+        <!-- Bonus Alcohol -->
+        <div class="p-2 rounded-xl bg-slate-950 border border-fuchsia-500/50 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">🫗</span>
+            <div class="flex flex-col">
+              <span class="font-bold text-fuchsia-300 text-[11px]">3+ Bonus Coctelera</span>
+              <span class="text-[9px] text-slate-400">3 o más shakers en pantalla</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-fuchsia-700 text-white font-black text-[10px]">Jeringa de Alcohol</span>
+        </div>
+
+        <!-- Bonus Vida Extra -->
+        <div class="p-2 rounded-xl bg-slate-950 border border-rose-500/70 shadow-[0_0_10px_rgba(244,63,94,0.3)] flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">💖</span>
+            <div class="flex flex-col">
+              <span class="font-extrabold text-rose-300 text-[11px]">3+ Corazones Glaciales 💖</span>
+              <span class="text-[9px] text-slate-400">Recupera +1 vida de juego de inmediato</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-rose-600 text-white font-black text-[10px]">❤️ +1 VIDA</span>
+        </div>
+
+        <!-- Nivel 7 -->
+        <div class="p-2 rounded-xl bg-slate-950 border border-red-500/50 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">🍋🍊</span>
+            <div class="flex flex-col">
+              <span class="font-bold text-red-300 text-[11px]">4 Frutas</span>
+              <span class="text-[9px] text-slate-400">4 Limones o Naranjas</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-red-700 text-white font-bold text-[10px]">-$800 COP</span>
+        </div>
+
+        <!-- Nivel 5 -->
+        <div class="p-2 rounded-xl bg-slate-950 border border-yellow-600/50 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">🍧🍹</span>
+            <div class="flex flex-col">
+              <span class="font-bold text-yellow-300 text-[11px]">3 Granizados</span>
+              <span class="text-[9px] text-slate-400">3 Granizados Azul o Verde</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-yellow-700 text-amber-100 font-bold text-[10px]">-$600 COP</span>
+        </div>
+
+        <!-- Promo 2x3 -->
+        <div class="p-2 rounded-xl bg-slate-950 border border-amber-500/40 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">🥃</span>
+            <div class="flex flex-col">
+              <span class="font-bold text-amber-300 text-[11px]">3 Shots de Licor</span>
+              <span class="text-[9px] text-slate-400">3 Shots dorados con hielo</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-amber-600 text-white font-bold text-[10px]">Pague 2 Lleve 3</span>
+        </div>
+
+        <!-- Nivel 4 -->
+        <div class="p-2 rounded-xl bg-slate-950 border border-yellow-500/40 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">🍋</span>
+            <div class="flex flex-col">
+              <span class="font-bold text-yellow-200 text-[11px]">3 Limones</span>
+              <span class="text-[9px] text-slate-400">3 Limones amarillos</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-yellow-600 text-slate-950 font-bold text-[10px]">-$500 COP</span>
+        </div>
+
+        <!-- Nivel 3 -->
+        <div class="p-2 rounded-xl bg-slate-950 border border-orange-500/40 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">🍊</span>
+            <div class="flex flex-col">
+              <span class="font-bold text-orange-200 text-[11px]">3 Naranjas</span>
+              <span class="text-[9px] text-slate-400">3 Naranjas frescas</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-orange-700 text-white font-bold text-[10px]">-$400 COP</span>
+        </div>
+
+        <!-- Nivel 2 -->
+        <div class="p-2 rounded-xl bg-slate-950 border border-purple-500/30 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">🍸🍷</span>
+            <div class="flex flex-col">
+              <span class="font-bold text-purple-200 text-[11px]">Pareja Alta (2 especiales)</span>
+              <span class="text-[9px] text-slate-400">2 Cócteles especiales</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-purple-900 text-purple-200 font-bold text-[10px]">-$300 COP</span>
+        </div>
+
+        <!-- Nivel 1 -->
+        <div class="p-2 rounded-xl bg-slate-950 border border-slate-700 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">🍋🍊</span>
+            <div class="flex flex-col">
+              <span class="font-bold text-slate-300 text-[11px]">Pareja Básica (2 frutas)</span>
+              <span class="text-[9px] text-slate-400">2 Limones o 2 Naranjas</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-bold text-[10px]">-$150 COP</span>
+        </div>
+
+      </div>
+
+      <div class="pt-2 border-t border-sky-500/30 flex flex-col items-center gap-1.5">
+        <p class="text-[9px] text-slate-400">Todos los premios están sujetos a validación del supervisor.</p>
+        <button id="close-combinations-btn-bottom" class="w-full py-1.5 bg-slate-800 hover:bg-slate-700 text-sky-300 font-bold rounded-xl text-xs">
+          Entendido
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. MODAL DE SUPERVISOR (MODERACIÓN Y PRUEBAS) -->
+  <div id="supervisor-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="w-full max-w-sm bg-slate-900 border border-slate-700 rounded-2xl p-4 shadow-2xl flex flex-col space-y-3 text-xs">
+      
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+        <div class="flex items-center space-x-2">
+          <span class="text-lg">🛡️</span>
+          <span class="font-bold text-white uppercase tracking-wider">Panel de Supervisor</span>
+        </div>
+        <button id="close-supervisor-modal" class="text-slate-400 hover:text-white text-base">✕</button>
+      </div>
+
+      <!-- Estado Actual y Cupo de Jackpots -->
+      <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800 space-y-1.5">
+        <div class="flex justify-between items-center">
+          <span class="text-slate-400">Estado Máquina:</span>
+          <span id="supervisor-state-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-cyan-300">IDLE</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-slate-400">Último Premio:</span>
+          <span id="supervisor-result-summary" class="font-bold text-amber-400">Ninguno</span>
+        </div>
+        <div class="flex justify-between items-center pt-1 border-t border-slate-800/80">
+          <span class="text-slate-400">🏆 Jackpots Entregados:</span>
+          <div class="flex items-center space-x-1.5">
+            <span id="jackpot-count-display" class="font-black text-amber-300 bg-amber-950/80 px-2 py-0.5 rounded border border-amber-500/40">0 / 3</span>
+            <button id="reset-jackpot-btn" class="px-1.5 py-0.5 text-[9px] bg-slate-800 hover:bg-slate-700 text-slate-300 rounded border border-slate-700" title="Reiniciar cupo de Jackpots">Reiniciar</button>
+          </div>
+        </div>
+        <div class="flex justify-between items-center pt-1 border-t border-slate-800/80">
+          <span class="text-slate-400">🔒 Terminal / Acceso:</span>
+          <span id="supervisor-terminal-status" class="font-bold text-emerald-400">🟢 Habilitada</span>
+        </div>
+        <div class="flex justify-between items-center text-[9px] text-slate-400 truncate">
+          <span id="supervisor-terminal-info">MAC / IP: Detectando...</span>
+        </div>
+      </div>
+
+      <!-- Zona de Validación / Desbloqueo -->
+      <div id="supervisor-validation-box" class="p-2.5 rounded-lg bg-cyan-950/40 border border-cyan-500/30 text-center space-y-2 hidden">
+        <p id="supervisor-action-hint" class="text-[11px] text-cyan-200 font-medium">Hay un premio pendiente de entrega.</p>
+        <button id="supervisor-validate-btn" class="w-full py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold rounded-lg shadow-lg">
+          ✓ Validar y Habilitar Siguiente Jugada
+        </button>
+      </div>
+
+      <!-- Herramientas de Prueba -->
+      <div class="space-y-1.5 pt-1">
+        <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Simular Resultados de Prueba</span>
+        <div class="grid grid-cols-5 gap-1.5">
+          <button id="test-jackpot-btn" class="py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-300 font-medium rounded border border-amber-500/30 text-[10px]">
+            ⭐ Jackpot
+          </button>
+          <button id="test-bonus-btn" class="py-1.5 bg-slate-800 hover:bg-slate-700 text-fuchsia-300 font-medium rounded border border-fuchsia-500/30 text-[10px]">
+            🫗 Bonus
+          </button>
+          <button id="test-vida-btn" class="py-1.5 bg-slate-800 hover:bg-slate-700 text-rose-300 font-medium rounded border border-rose-500/30 text-[10px]">
+            💖 +1 Vida
+          </button>
+          <button id="test-hitbar-btn" class="py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 font-medium rounded border border-cyan-500/30 text-[10px]">
+            ⚡ Hit Bar
+          </button>
+          <button id="test-mojarro-btn" class="py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium rounded border border-slate-700 text-[10px]">
+            🐟 Mojarro
+          </button>
+        </div>
+      </div>
+
+      <!-- Acciones Administrativas -->
+      <div class="pt-1 flex space-x-1.5">
+        <button id="unlock-terminal-btn" class="flex-1 py-1.5 bg-emerald-950/70 hover:bg-emerald-900 border border-emerald-600 text-emerald-200 rounded font-medium text-[10px]">
+          🔓 Desbloquear IP/MAC
+        </button>
+        <button id="supervisor-reset-btn" class="flex-1 py-1.5 bg-rose-950/60 hover:bg-rose-900 border border-rose-800 text-rose-200 rounded font-medium text-[10px]">
+          ⚠️ Desbloqueo Forzado
+        </button>
+        <button id="clear-history-btn" class="px-2 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded font-medium text-[10px]" title="Limpiar historial">
+          🗑️
+        </button>
+      </div>
+
+      <!-- Historial Reciente de Tiradas -->
+      <div class="pt-1 space-y-1">
+        <div class="flex justify-between items-center text-[10px] text-slate-400 font-semibold uppercase">
+          <span>Historial Reciente</span>
+          <span class="text-[9px] text-slate-500">Sesión actual</span>
+        </div>
+        <div id="supervisor-historial-list" class="max-h-24 overflow-y-auto space-y-1 pr-1"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 8. OVERLAY DE FIN DE PARTIDA Y REINICIO CONTINUO (SIN BLOQUEO DE IP/MAC) -->
+  <div id="terminal-blocked-modal" class="fixed inset-0 bg-slate-950/95 backdrop-blur-lg z-50 flex items-center justify-center p-4 hidden">
+    <div class="w-full max-w-sm bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 border-2 border-cyan-500 rounded-3xl p-6 shadow-[0_0_50px_rgba(0,240,255,0.5)] flex flex-col items-center text-center relative overflow-hidden">
+      
+      <div class="w-16 h-16 rounded-full bg-cyan-950/80 border-2 border-cyan-400 flex items-center justify-center text-3xl mb-3 shadow-[0_0_25px_rgba(0,240,255,0.7)] animate-pulse">
+        🍧
+      </div>
+
+      <span class="px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-cyan-950 text-cyan-300 border border-cyan-500/50 mb-2">
+        Ronda Finalizada
+      </span>
+
+      <h2 class="text-xl sm:text-2xl font-black text-white uppercase tracking-tight">
+        ¡PARTIDA COMPLETADA!
+      </h2>
+
+      <p class="text-xs text-slate-300 mt-2 max-w-xs leading-relaxed">
+        Has utilizado tus <strong>3 vidas</strong>. ¡En Paradice siempre hay una nueva oportunidad de ganar promociones y descuentos para tus bebidas!
+      </p>
+
+      <!-- Botón de Reinicio Inmediato -->
+      <button id="btn-restart-free-play" class="w-full mt-4 py-3 px-4 rounded-xl bg-gradient-to-r from-cyan-500 via-sky-400 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(0,240,255,0.6)] active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2">
+        <span>🔄</span> <span>JUGAR OTRA PARTIDA (3 VIDAS)</span>
+      </button>
+
+      <!-- Enlaces a la Landing y otros juegos -->
+      <div class="mt-4 flex items-center justify-center gap-3 text-[11px] pt-3 border-t border-slate-800/80 w-full">
+        <a href="minas.html" class="text-pink-400 hover:text-pink-300 font-bold flex items-center gap-1">
+          <span>💣</span> Minas Paradice
+        </a>
+        <span class="text-slate-600">•</span>
+        <a href="index.html" class="text-cyan-400 hover:text-cyan-300 font-bold flex items-center gap-1">
+          <span>🏠</span> Landing
+        </a>
+      </div>
+
+  <!-- MODAL DE PÉRDIDA DE VIDA (POPOUT FULLSCREEN) -->
+  <div id="life-loss-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="w-full max-w-sm bg-gradient-to-b from-slate-900 via-rose-950/30 to-slate-900 border-2 border-rose-500/70 rounded-3xl p-6 shadow-[0_0_40px_rgba(244,63,94,0.5)] flex flex-col items-center text-center">
+      <div class="w-16 h-16 rounded-full bg-rose-950/80 border border-rose-400 flex items-center justify-center text-3xl mb-3 animate-bounce">
+        💔
+      </div>
+      <h3 class="text-xl font-black text-rose-400 uppercase tracking-wide">¡VIDA PERDIDA!</h3>
+      <p id="life-loss-message" class="text-xs text-slate-300 mt-2 mb-4 leading-relaxed">
+        No obtuviste premio en este tiro. Te quedan <span id="life-loss-remaining" class="font-bold text-amber-300">2 vidas</span>.
+      </p>
+      <button id="btn-continue-life" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-rose-500 via-pink-600 to-rose-600 hover:from-rose-400 hover:to-pink-500 text-white font-black text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(244,63,94,0.5)] active:scale-95 transition-all cursor-pointer">
+        CONTINUAR JUGANDO
+      </button>
+    </div>
+  </div>
+
+  <!-- SERVICIOS COMPARTIDOS Y LIBRERÍAS CORE -->
+  <script src="js/libs/qrcode.min.js"></script>
+  <script src="js/core/StorageService.js"></script>
+  <script src="js/core/SecurityService.js"></script>
+  <script src="js/core/AudioManager.js"></script>
+  <script src="js/core/TimerService.js"></script>
+
+  <!-- ARQUITECTURA MVC: TRAGAMONEDAS PARADICE -->
+  <script src="js/mvc/slot/SlotConfig.js"></script>
+  <script src="js/mvc/slot/SlotModel.js"></script>
+  <script src="js/mvc/slot/SlotView.js"></script>
+  <script src="js/mvc/slot/SlotController.js"></script>
+  <script>
+    (function () {
+      function startSlot() {
+        if (window.__slotStarted) return;
+        window.__slotStarted = true;
+        window.slotController = new SlotController();
+        window.slotController.init();
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', startSlot);
+      } else {
+        startSlot();
+      }
+    })();
+  </script>
+
+
+</div></div></body></html>
