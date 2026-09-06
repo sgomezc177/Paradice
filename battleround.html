@@ -401,13 +401,16 @@
     <div class="w-full p-5 sm:p-6 rounded-3xl bg-slate-900/90 border-2 border-cyan-500/50 shadow-[0_0_35px_rgba(0,240,255,0.25)] backdrop-blur-md flex flex-col items-center text-center">
       
       <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-cyan-950 text-cyan-300 border border-cyan-500/50 mb-2">
-        SALA CREADA • COMPARTE CON TUS AMIGOS
+        SALA MULTIJUGADOR • JUEGA EN VIVO O A DISTANCIA
       </span>
 
+      <!-- Banner de Estado de Conexión (Especial para Invitados / A Distancia) -->
+      <div id="guest-connection-status" class="hidden w-full py-2 px-3 rounded-xl mb-3 text-xs font-bold flex items-center justify-center gap-2 transition-all"></div>
+
       <div class="my-2">
-        <span class="text-xs text-slate-400 font-bold">Código de Sala:</span>
-        <div id="room-code-display" class="font-mono text-3xl font-black text-cyan-300 tracking-widest my-1 select-all">
-          ---
+        <span class="text-xs text-slate-400 font-bold">Código de Sala (4 Dígitos):</span>
+        <div id="room-code-display" class="font-mono text-4xl font-black text-cyan-300 tracking-widest my-1 select-all drop-shadow-[0_0_12px_rgba(0,240,255,0.6)]">
+          ----
         </div>
       </div>
 
@@ -415,7 +418,17 @@
       <div class="p-3 bg-white rounded-2xl shadow-[0_0_20px_rgba(0,240,255,0.4)] my-2">
         <div id="room-qrcode" class="w-[140px] h-[140px] flex items-center justify-center"></div>
       </div>
-      <p class="text-[10px] text-slate-400">Escanea este código QR con el celular para unirte a la partida.</p>
+      <p class="text-[10px] text-slate-400">Escanea el QR o ingresa el código de 4 dígitos en otro celular.</p>
+
+      <!-- Botones de Compartir Enlace y Código para amigos a distancia -->
+      <div class="flex items-center gap-2 w-full my-2">
+        <button id="btn-copy-room-code" class="flex-1 py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold text-xs flex items-center justify-center gap-1.5 border border-slate-700 transition active:scale-95 cursor-pointer" title="Copiar código al portapapeles">
+          <span>📋</span> <span id="copy-btn-text">Copiar Código</span>
+        </button>
+        <button id="btn-share-room-link" class="flex-1 py-2 px-3 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(16,185,129,0.3)] transition active:scale-95 cursor-pointer" title="Invitar por WhatsApp">
+          <span>📲</span> <span>WhatsApp</span>
+        </button>
+      </div>
 
       <!-- Lista de Jugadores Conectados -->
       <div class="w-full my-4">
@@ -428,7 +441,7 @@
         </div>
       </div>
 
-      <!-- Acciones del Host -->
+      <!-- Acciones de Sala (Host / Guest) -->
       <div class="w-full space-y-2">
         <button id="btn-add-bot" class="w-full py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold text-xs uppercase transition flex items-center justify-center gap-1.5 cursor-pointer">
           <span>🤖</span> <span>Añadir Bot de Prueba</span>
@@ -436,6 +449,10 @@
 
         <button id="btn-start-game" class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wider shadow-[0_0_20px_rgba(52,211,153,0.6)] active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer animate-glow-pulse">
           <span>🚀</span> <span>¡INICIAR DUELO DE HIELOS!</span>
+        </button>
+
+        <button id="btn-leave-room" class="w-full py-2 px-3 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-white text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
+          <span>🚪</span> <span>Salir al Menú Principal</span>
         </button>
       </div>
 
@@ -694,7 +711,9 @@
           { name: 'DJ Santi', avatar: '⚡' },
           { name: 'Camila', avatar: '🍸' }
         ],
-        connections: [] // Conexiones activas en caso de host
+        connections: [], // Conexiones activas en caso de host
+        heartbeatInterval: null,
+        connectionTimeoutTimer: null
       };
 
       // 2. Referencias DOM
@@ -713,6 +732,11 @@
         roomQrcode: document.getElementById('room-qrcode'),
         playerCountBadge: document.getElementById('player-count-badge'),
         roomPlayersList: document.getElementById('room-players-list'),
+        guestConnectionStatus: document.getElementById('guest-connection-status'),
+        btnCopyRoomCode: document.getElementById('btn-copy-room-code'),
+        copyBtnText: document.getElementById('copy-btn-text'),
+        btnShareRoomLink: document.getElementById('btn-share-room-link'),
+        btnLeaveRoom: document.getElementById('btn-leave-room'),
         btnAddBot: document.getElementById('btn-add-bot'),
         btnStartGame: document.getElementById('btn-start-game'),
         headerRoomBadge: document.getElementById('header-room-badge'),
@@ -918,7 +942,45 @@
           dom.modalInstructions.classList.remove('hidden');
         });
         dom.closeInstructionsBtn.addEventListener('click', () => dom.modalInstructions.classList.add('hidden'));
-        dom.closeInstructionsBtnBottom.addEventListener('click', () => dom.modalInstructions.classList.add('hidden'));
+        // Herramientas de Sala de Espera (A distancia)
+        dom.btnCopyRoomCode?.addEventListener('click', () => {
+          if (!state.roomCode) return;
+          navigator.clipboard?.writeText(state.roomCode).then(() => {
+            if (dom.copyBtnText) dom.copyBtnText.textContent = '¡Copiado!';
+            setTimeout(() => {
+              if (dom.copyBtnText) dom.copyBtnText.textContent = 'Copiar Código';
+            }, 2000);
+          }).catch(() => {
+            prompt('Copia este código de sala para compartir:', state.roomCode);
+          });
+        });
+
+        dom.btnShareRoomLink?.addEventListener('click', () => {
+          if (!state.roomCode) return;
+          const isFile = window.location.protocol === 'file:';
+          let shareText = '';
+          if (isFile) {
+            shareText = `¡Únete a mi partida de Paradice BattleRound! 🍻 Abre el juego en tu celular e ingresa el código de sala: *${state.roomCode}*`;
+          } else {
+            const joinUrl = `${window.location.origin}${window.location.pathname}?room=${state.roomCode}`;
+            shareText = `¡Únete a mi partida de Paradice BattleRound! 🍻 Código: *${state.roomCode}*. Entra directo aquí: ${joinUrl}`;
+          }
+          const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
+          window.open(whatsappUrl, '_blank');
+        });
+
+        dom.btnLeaveRoom?.addEventListener('click', () => {
+          if (state.peer) {
+            try { state.peer.destroy(); } catch(e) {}
+            state.peer = null;
+          }
+          if (state.heartbeatInterval) clearInterval(state.heartbeatInterval);
+          if (state.connectionTimeoutTimer) clearTimeout(state.connectionTimeoutTimer);
+          dom.viewRoomWaiting.classList.add('hidden');
+          dom.viewGame.classList.add('hidden');
+          dom.viewLobby.classList.remove('hidden');
+          dom.headerRoomBadge.classList.add('hidden');
+        });
       }
 
       function setupPlayerProfile() {
@@ -928,22 +990,119 @@
       }
 
       // =========================================================================
-      // 4. Conexión P2P con PeerJS (WebRTC Directo)
+      // 4. Conexión P2P con PeerJS (WebRTC Local y a Distancia con STUN/TURN)
       // =========================================================================
-      function iniciarHostRoom() {
-        const randomCode = Math.floor(Math.random() * 900 + 100).toString();
-        const fullPeerId = `paradice-battle-${randomCode}`;
-        state.roomCode = randomCode;
+
+      // Configuración de red WebRTC de alta resiliencia para multijugador a distancia
+      // Incluye STUN global multi-región y servidores de retransmisión TURN Relay (OpenRelay)
+      const PEER_CONFIG = {
+        host: '0.peerjs.com',
+        port: 443,
+        path: '/',
+        secure: true,
+        pingInterval: 5000, // Ping WebSocket cada 5s para evitar que operadores móviles (4G/5G) cierren la conexión
+        config: {
+          iceServers: [
+            // 1. Google Public STUN (Espejos globales 0 a 4)
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:stun1.l.google.com:19302' },
+            { urls: 'stun:stun2.l.google.com:19302' },
+            { urls: 'stun:stun3.l.google.com:19302' },
+            { urls: 'stun:stun4.l.google.com:19302' },
+            // 2. Twilio, Cloudflare & Mozilla STUN
+            { urls: 'stun:global.stun.twilio.com:3478' },
+            { urls: 'stun:stun.cloudflare.com:3478' },
+            { urls: 'stun:stun.services.mozilla.com' },
+            // 3. OpenRelay / Metered Free STUN & TURN Relay (Vital para conexiones a distancia en 4G/5G con NAT Simétrico)
+            { urls: 'stun:openrelay.metered.ca:80' },
+            {
+              urls: 'turn:openrelay.metered.ca:80',
+              username: 'openrelay',
+              credential: 'openrelay'
+            },
+            {
+              urls: 'turn:openrelay.metered.ca:443',
+              username: 'openrelay',
+              credential: 'openrelay'
+            },
+            {
+              urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+              username: 'openrelay',
+              credential: 'openrelay'
+            }
+          ],
+          iceCandidatePoolSize: 10,
+          iceTransportPolicy: 'all',
+          sdpSemantics: 'unified-plan'
+        },
+        debug: 1
+      };
+
+      const PEER_PREFIX = 'paradice-battle-v2-';
+
+      function generarCodigoSala() {
+        // Código de 4 dígitos (1000 a 9999): 9000 combinaciones, rápido y fácil de dictar
+        return Math.floor(Math.random() * 9000 + 1000).toString();
+      }
+
+      function mostrarEstadoConexion(texto, tipo = 'info') {
+        if (!dom.guestConnectionStatus) return;
+        dom.guestConnectionStatus.classList.remove('hidden', 'bg-cyan-950/80', 'border-cyan-500/50', 'text-cyan-200', 'bg-emerald-950/80', 'border-emerald-500/50', 'text-emerald-200', 'bg-rose-950/90', 'border-rose-500', 'text-rose-200', 'animate-pulse');
+
+        if (tipo === 'connecting') {
+          dom.guestConnectionStatus.classList.add('bg-cyan-950/80', 'border', 'border-cyan-500/50', 'text-cyan-200', 'animate-pulse');
+        } else if (tipo === 'connected') {
+          dom.guestConnectionStatus.classList.add('bg-emerald-950/80', 'border', 'border-emerald-500/50', 'text-emerald-200');
+        } else if (tipo === 'error') {
+          dom.guestConnectionStatus.classList.add('bg-rose-950/90', 'border', 'border-rose-500', 'text-rose-200');
+        } else {
+          dom.guestConnectionStatus.classList.add('bg-slate-950/80', 'border', 'border-slate-700', 'text-slate-300');
+        }
+
+        dom.guestConnectionStatus.innerHTML = `<span>${texto}</span>`;
+      }
+
+      function iniciarHeartbeat() {
+        if (state.heartbeatInterval) clearInterval(state.heartbeatInterval);
+        state.heartbeatInterval = setInterval(() => {
+          if (state.isHost) {
+            state.connections.forEach(conn => {
+              if (conn && conn.open) {
+                try { conn.send({ type: 'HEARTBEAT' }); } catch(e) {}
+              }
+            });
+          } else if (state.hostConnection && state.hostConnection.open) {
+            try { state.hostConnection.send({ type: 'HEARTBEAT' }); } catch(e) {}
+          }
+        }, 4000);
+      }
+
+      function iniciarHostRoom(codeOverride = null) {
+        if (state.peer) {
+          try { state.peer.destroy(); } catch(e) {}
+          state.peer = null;
+        }
+
+        const roomCode = codeOverride || generarCodigoSala();
+        const fullPeerId = `${PEER_PREFIX}${roomCode}`;
+        state.roomCode = roomCode;
         state.isHost = true;
+        state.connections = [];
 
         dom.viewLobby.classList.add('hidden');
         dom.viewRoomWaiting.classList.remove('hidden');
-        dom.roomCodeDisplay.textContent = randomCode;
+        dom.roomCodeDisplay.textContent = roomCode;
         dom.headerRoomBadge.classList.remove('hidden');
-        dom.headerRoomCode.textContent = randomCode;
+        dom.headerRoomCode.textContent = roomCode;
+
+        if (dom.guestConnectionStatus) {
+          dom.guestConnectionStatus.classList.add('hidden');
+        }
+        if (dom.btnAddBot) dom.btnAddBot.classList.remove('hidden');
+        if (dom.btnStartGame) dom.btnStartGame.classList.remove('hidden');
 
         // Renderizar Código QR
-        const joinUrl = `${window.location.origin}${window.location.pathname}?room=${randomCode}`;
+        const joinUrl = `${window.location.origin}${window.location.pathname}?room=${roomCode}`;
         dom.roomQrcode.innerHTML = '';
         if (typeof QRCode !== 'undefined') {
           new QRCode(dom.roomQrcode, {
@@ -967,54 +1126,129 @@
         }];
         renderWaitingPlayers();
 
-        // Inicializar PeerJS Broker
+        iniciarHeartbeat();
+
+        // Inicializar PeerJS Broker con STUN y TURN configurados
         try {
-          state.peer = new Peer(fullPeerId);
+          state.peer = new Peer(fullPeerId, PEER_CONFIG);
           
           state.peer.on('open', (id) => {
-            console.log('Host PeerJS conectado con ID:', id);
+            console.log('Host PeerJS registrado exitosamente con ID:', id);
           });
 
           state.peer.on('connection', (conn) => {
-            state.connections.push(conn);
-            conn.on('data', (data) => handlePeerMessage(data, conn));
-            conn.on('close', () => {
-              state.connections = state.connections.filter(c => c !== conn);
+            console.log('Solicitud de conexión entrante de:', conn.peer);
+
+            conn.on('open', () => {
+              console.log('Canal WebRTC DataChannel establecido con:', conn.peer);
+              if (!state.connections.some(c => c.peer === conn.peer)) {
+                state.connections.push(conn);
+              }
             });
+
+            conn.on('data', (data) => handlePeerMessage(data, conn));
+
+            conn.on('close', () => {
+              console.log('Conexión cerrada con cliente:', conn.peer);
+              state.connections = state.connections.filter(c => c !== conn && c.peer !== conn.peer);
+            });
+
+            conn.on('error', (err) => {
+              console.warn('Error en canal WebRTC con cliente:', err);
+            });
+
+            if (conn.peerConnection) {
+              conn.peerConnection.oniceconnectionstatechange = () => {
+                console.log('Host ICE state con', conn.peer, ':', conn.peerConnection.iceConnectionState);
+                if (conn.peerConnection.iceConnectionState === 'failed') {
+                  console.warn('ICE failed, intentando reinicio de ICE...');
+                  conn.peerConnection.restartIce?.();
+                }
+              };
+            }
+          });
+
+          state.peer.on('disconnected', () => {
+            console.warn('Host desconectado del broker de señalización. Reconectando...');
+            state.peer?.reconnect();
           });
 
           state.peer.on('error', (err) => {
-            console.warn('PeerJS warning:', err);
-            // Si el código ya existe o hay problemas de red, se puede continuar con bots
+            console.warn('Host PeerJS error:', err.type, err);
+            if (err.type === 'unavailable-id') {
+              console.log('Código de sala ocupado en el broker, generando nuevo código automáticamente...');
+              iniciarHostRoom();
+            } else if (err.type === 'network' || err.type === 'server-error') {
+              setTimeout(() => {
+                if (state.isHost && state.peer && state.peer.disconnected) {
+                  state.peer.reconnect();
+                }
+              }, 3000);
+            }
           });
         } catch (e) {
-          console.error('Error inicializando PeerJS:', e);
+          console.error('Error inicializando Host PeerJS:', e);
         }
       }
 
       function unirseComoGuest(code) {
-        state.roomCode = code;
+        if (state.peer) {
+          try { state.peer.destroy(); } catch(e) {}
+          state.peer = null;
+        }
+        if (state.connectionTimeoutTimer) {
+          clearTimeout(state.connectionTimeoutTimer);
+          state.connectionTimeoutTimer = null;
+        }
+
+        const cleanCode = code.trim().toUpperCase();
+        state.roomCode = cleanCode;
         state.isHost = false;
-        const hostPeerId = `paradice-battle-${code}`;
+        state.hostConnection = null;
+        const hostPeerId = `${PEER_PREFIX}${cleanCode}`;
 
         dom.viewLobby.classList.add('hidden');
         dom.viewRoomWaiting.classList.remove('hidden');
-        dom.roomCodeDisplay.textContent = code;
+        dom.roomCodeDisplay.textContent = cleanCode;
         dom.btnAddBot.classList.add('hidden');
         dom.btnStartGame.classList.add('hidden');
         dom.headerRoomBadge.classList.remove('hidden');
-        dom.headerRoomCode.textContent = code;
+        dom.headerRoomCode.textContent = cleanCode;
 
-        const myGuestId = `guest-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+        // Mostrar estado de conexión
+        mostrarEstadoConexion(`📡 Conectando a distancia vía WebRTC con la sala #${cleanCode}...`, 'connecting');
+
+        const myGuestId = `guest-${cleanCode}-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
         state.myPlayerId = myGuestId;
 
-        try {
-          state.peer = new Peer(myGuestId);
+        // Timeout de seguridad: Si tras 14s no conecta a distancia, notificar y permitir reintento
+        state.connectionTimeoutTimer = setTimeout(() => {
+          if (!state.hostConnection || !state.hostConnection.open) {
+            mostrarEstadoConexion('⚠️ Tiempo de espera agotado. Verifica que el anfitrión tenga la sala abierta y vuelve a intentar.', 'error');
+          }
+        }, 14000);
 
-          state.peer.on('open', () => {
-            const conn = state.peer.connect(hostPeerId);
+        try {
+          state.peer = new Peer(myGuestId, PEER_CONFIG);
+
+          state.peer.on('open', (id) => {
+            console.log('Guest registrado con ID:', id, 'Conectando con Host:', hostPeerId);
+            mostrarEstadoConexion('🔗 Enlazando con el anfitrión a distancia...', 'connecting');
+
+            const conn = state.peer.connect(hostPeerId, {
+              reliable: true,
+              serialization: 'json'
+            });
+
             conn.on('open', () => {
+              if (state.connectionTimeoutTimer) {
+                clearTimeout(state.connectionTimeoutTimer);
+                state.connectionTimeoutTimer = null;
+              }
+              console.log('¡Conexión WebRTC exitosa con el Host!');
               state.hostConnection = conn;
+              mostrarEstadoConexion('✅ ¡Conectado con éxito! Esperando que el anfitrión inicie...', 'connected');
+
               conn.send({
                 type: 'PLAYER_JOIN',
                 player: {
@@ -1026,17 +1260,53 @@
                   mines: 0
                 }
               });
+
+              iniciarHeartbeat();
             });
 
-            conn.on('data', (data) => handlePeerMessage(data));
+            conn.on('data', (data) => handlePeerMessage(data, conn));
+
+            conn.on('close', () => {
+              console.warn('Conexión con el host cerrada');
+              mostrarEstadoConexion('⚠️ La conexión con el anfitrión se ha cerrado.', 'error');
+            });
+
+            conn.on('error', (err) => {
+              console.error('Error de canal de datos WebRTC:', err);
+              mostrarEstadoConexion('⚠️ Error en la conexión WebRTC. Reintentando...', 'error');
+            });
+
+            if (conn.peerConnection) {
+              conn.peerConnection.oniceconnectionstatechange = () => {
+                console.log('Guest ICE State:', conn.peerConnection.iceConnectionState);
+                if (conn.peerConnection.iceConnectionState === 'failed') {
+                  console.warn('Guest ICE failed, intentando reinicio de ICE...');
+                  conn.peerConnection.restartIce?.();
+                }
+              };
+            }
+          });
+
+          state.peer.on('disconnected', () => {
+            console.warn('Guest desconectado del broker de señalización. Reconectando...');
+            state.peer?.reconnect();
           });
 
           state.peer.on('error', (err) => {
-            alert('No se pudo conectar a la sala. Verifica que el código sea correcto o inicia en modo Bots.');
-            console.error('Peer error:', err);
+            console.error('Guest PeerJS error:', err.type, err);
+            if (state.connectionTimeoutTimer) {
+              clearTimeout(state.connectionTimeoutTimer);
+              state.connectionTimeoutTimer = null;
+            }
+            if (err.type === 'peer-unavailable') {
+              mostrarEstadoConexion(`❌ La sala #${cleanCode} no está activa o el código es incorrecto.`, 'error');
+            } else {
+              mostrarEstadoConexion(`❌ Error de red (${err.type}). Revisa tu conexión a internet.`, 'error');
+            }
           });
         } catch (e) {
           console.error('Peer join error:', e);
+          mostrarEstadoConexion('❌ Error al inicializar conexión WebRTC.', 'error');
         }
       }
 
@@ -1053,11 +1323,28 @@
       }
 
       function handlePeerMessage(msg, connSender) {
-        if (msg.type === 'PLAYER_JOIN' && state.isHost) {
+        if (msg.type === 'HEARTBEAT') {
+          return; // Mantener vivo el canal y el NAT sin procesar lógica
+        } else if (msg.type === 'PLAYER_JOIN' && state.isHost) {
           if (state.players.length >= 6) return;
-          state.players.push(msg.player);
+          const exists = state.players.some(p => p.id === msg.player.id);
+          if (!exists) {
+            state.players.push(msg.player);
+          }
           renderWaitingPlayers();
+          // Respuesta directa inmediata al que se acaba de unir
+          if (connSender && connSender.open) {
+            connSender.send({
+              type: 'JOIN_ACCEPTED',
+              players: state.players,
+              turnIndex: state.currentTurnIndex
+            });
+          }
           broadcast({ type: 'UPDATE_PLAYERS', players: state.players });
+        } else if (msg.type === 'JOIN_ACCEPTED') {
+          state.players = msg.players;
+          renderWaitingPlayers();
+          mostrarEstadoConexion('✅ ¡Conectado con éxito! Esperando inicio...', 'connected');
         } else if (msg.type === 'UPDATE_PLAYERS') {
           state.players = msg.players;
           renderWaitingPlayers();
