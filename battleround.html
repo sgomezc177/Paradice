@@ -345,6 +345,15 @@
         Duelo multijugador en vivo entre celulares. Descubre granizados, siembra minas secretas, roba puntos a tus amigos y... <strong class="text-amber-300">¡el perdedor paga la ronda de tragos!</strong>
       </p>
 
+      <!-- Banner de Invitación por Enlace Directo (?room=XXXX) -->
+      <div id="invitation-banner" class="hidden w-full p-3 rounded-2xl bg-cyan-950/90 border border-cyan-400/60 shadow-[0_0_20px_rgba(0,240,255,0.25)] mb-4 text-left">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="text-base animate-bounce">🎉</span>
+          <span class="text-xs font-black uppercase text-cyan-300 tracking-wide">¡Invitación a Sala #<span id="invite-room-code">----</span>!</span>
+        </div>
+        <p class="text-[11px] text-slate-300">Ingresa tu apodo abajo y pulsa <strong class="text-cyan-400">"UNIRME"</strong> para entrar directamente a la partida.</p>
+      </div>
+
       <!-- Registro de Perfil -->
       <div class="w-full space-y-3 mb-5 text-left">
         <div>
@@ -405,7 +414,12 @@
       </span>
 
       <!-- Banner de Estado de Conexión (Especial para Invitados / A Distancia) -->
-      <div id="guest-connection-status" class="hidden w-full py-2 px-3 rounded-xl mb-3 text-xs font-bold flex items-center justify-center gap-2 transition-all"></div>
+      <div id="guest-connection-status" class="hidden w-full py-2.5 px-3 rounded-2xl mb-3 text-xs font-bold flex flex-col items-center justify-center gap-1.5 transition-all"></div>
+
+      <!-- Consejo de Mantener Pantalla Activa para el Anfitrión -->
+      <div id="host-keepalive-tip" class="hidden w-full py-2 px-3 rounded-2xl bg-amber-950/60 border border-amber-500/50 text-amber-300 text-[11px] text-center mb-3 font-medium">
+        💡 <strong>Consejo para el anfitrión:</strong> Mantén esta pantalla activa mientras tus amigos se unen.
+      </div>
 
       <div class="my-2">
         <span class="text-xs text-slate-400 font-bold">Código de Sala (4 Dígitos):</span>
@@ -713,7 +727,8 @@
         ],
         connections: [], // Conexiones activas en caso de host
         heartbeatInterval: null,
-        connectionTimeoutTimer: null
+        connectionTimeoutTimer: null,
+        connectionPhaseTimer: null
       };
 
       // 2. Referencias DOM
@@ -813,8 +828,13 @@
       function checkUrlParams() {
         const urlParams = new URLSearchParams(window.location.search);
         const room = urlParams.get('room');
-        if (room && dom.inputRoomCode) {
-          dom.inputRoomCode.value = room.toUpperCase();
+        if (room) {
+          const cleanRoom = room.trim().toUpperCase();
+          if (dom.inputRoomCode) dom.inputRoomCode.value = cleanRoom;
+          const banner = document.getElementById('invitation-banner');
+          const codeSpan = document.getElementById('invite-room-code');
+          if (banner) banner.classList.remove('hidden');
+          if (codeSpan) codeSpan.textContent = cleanRoom;
         }
       }
 
@@ -970,12 +990,14 @@
         });
 
         dom.btnLeaveRoom?.addEventListener('click', () => {
+          desactivarWakeLock();
           if (state.peer) {
             try { state.peer.destroy(); } catch(e) {}
             state.peer = null;
           }
           if (state.heartbeatInterval) clearInterval(state.heartbeatInterval);
           if (state.connectionTimeoutTimer) clearTimeout(state.connectionTimeoutTimer);
+          if (state.connectionPhaseTimer) clearTimeout(state.connectionPhaseTimer);
           dom.viewRoomWaiting.classList.add('hidden');
           dom.viewGame.classList.add('hidden');
           dom.viewLobby.classList.remove('hidden');
@@ -990,11 +1012,59 @@
       }
 
       // =========================================================================
+      // Gestión de Suspensión Móvil y Screen Wake Lock
+      // =========================================================================
+      let screenWakeLock = null;
+      async function activarWakeLock() {
+        try {
+          if ('wakeLock' in navigator) {
+            screenWakeLock = await navigator.wakeLock.request('screen');
+            console.log('Screen WakeLock activo: la pantalla no se suspenderá.');
+            screenWakeLock.addEventListener('release', () => {
+              screenWakeLock = null;
+            });
+          }
+        } catch (e) {
+          console.log('WakeLock no disponible o no permitido:', e);
+        }
+      }
+
+      function desactivarWakeLock() {
+        if (screenWakeLock) {
+          try { screenWakeLock.release(); } catch(e) {}
+          screenWakeLock = null;
+        }
+      }
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          if (!state.isGameOver && (state.isHost || state.hostConnection)) {
+            activarWakeLock();
+          }
+          if (state.peer && state.peer.disconnected && !state.peer.destroyed) {
+            console.log('Pestaña visible: reconectando broker PeerJS...');
+            try { state.peer.reconnect(); } catch(e) {}
+          }
+        }
+      });
+
+      window.addEventListener('online', () => {
+        if (state.peer && state.peer.disconnected && !state.peer.destroyed) {
+          console.log('Red reanudada: reconectando broker PeerJS...');
+          try { state.peer.reconnect(); } catch(e) {}
+        }
+      });
+
+      // =========================================================================
       // 4. Conexión P2P con PeerJS (WebRTC Local y a Distancia con STUN/TURN)
       // =========================================================================
 
-      // Configuración de red WebRTC de alta resiliencia para multijugador a distancia
-      // Incluye STUN global multi-región y servidores de retransmisión TURN Relay (OpenRelay)
+      // Configuración opcional de servidores TURN dedicados (ej: Metered.ca con 50GB/mes gratis)
+      // Si el anfitrión o desarrollador añade credenciales aquí, se priorizan sobre los públicos.
+      const CUSTOM_TURN_SERVERS = [];
+
+      // Configuración de red WebRTC de alta resiliencia para GitHub Pages
+      // Utiliza STUN multi-región global y servidores TURN Relay comunitarios oficiales de PeerJS
       const PEER_CONFIG = {
         host: '0.peerjs.com',
         port: 443,
@@ -1003,32 +1073,22 @@
         pingInterval: 5000, // Ping WebSocket cada 5s para evitar que operadores móviles (4G/5G) cierren la conexión
         config: {
           iceServers: [
-            // 1. Google Public STUN (Espejos globales 0 a 4)
+            ...CUSTOM_TURN_SERVERS,
+            // 1. Google Public STUN
             { urls: 'stun:stun.l.google.com:19302' },
             { urls: 'stun:stun1.l.google.com:19302' },
             { urls: 'stun:stun2.l.google.com:19302' },
-            { urls: 'stun:stun3.l.google.com:19302' },
-            { urls: 'stun:stun4.l.google.com:19302' },
-            // 2. Twilio, Cloudflare & Mozilla STUN
-            { urls: 'stun:global.stun.twilio.com:3478' },
+            // 2. Cloudflare & Twilio STUN
             { urls: 'stun:stun.cloudflare.com:3478' },
-            { urls: 'stun:stun.services.mozilla.com' },
-            // 3. OpenRelay / Metered Free STUN & TURN Relay (Vital para conexiones a distancia en 4G/5G con NAT Simétrico)
-            { urls: 'stun:openrelay.metered.ca:80' },
+            { urls: 'stun:global.stun.twilio.com:3478' },
+            // 3. Servidores TURN Relay oficiales de PeerJS (Activos con credenciales oficiales)
             {
-              urls: 'turn:openrelay.metered.ca:80',
-              username: 'openrelay',
-              credential: 'openrelay'
-            },
-            {
-              urls: 'turn:openrelay.metered.ca:443',
-              username: 'openrelay',
-              credential: 'openrelay'
-            },
-            {
-              urls: 'turn:openrelay.metered.ca:443?transport=tcp',
-              username: 'openrelay',
-              credential: 'openrelay'
+              urls: [
+                'turn:eu-0.turn.peerjs.com:3478',
+                'turn:us-0.turn.peerjs.com:3478'
+              ],
+              username: 'peerjs',
+              credential: 'peerjsp'
             }
           ],
           iceCandidatePoolSize: 10,
@@ -1045,21 +1105,45 @@
         return Math.floor(Math.random() * 9000 + 1000).toString();
       }
 
-      function mostrarEstadoConexion(texto, tipo = 'info') {
+      function mostrarEstadoConexion(textoHtml, tipo = 'info', allowRetry = false) {
         if (!dom.guestConnectionStatus) return;
-        dom.guestConnectionStatus.classList.remove('hidden', 'bg-cyan-950/80', 'border-cyan-500/50', 'text-cyan-200', 'bg-emerald-950/80', 'border-emerald-500/50', 'text-emerald-200', 'bg-rose-950/90', 'border-rose-500', 'text-rose-200', 'animate-pulse');
+        dom.guestConnectionStatus.classList.remove(
+          'hidden',
+          'bg-cyan-950/80', 'border-cyan-500/50', 'text-cyan-200',
+          'bg-emerald-950/80', 'border-emerald-500/50', 'text-emerald-200',
+          'bg-amber-950/90', 'border-amber-500/60', 'text-amber-200',
+          'bg-rose-950/90', 'border-rose-500', 'text-rose-200',
+          'animate-pulse'
+        );
 
         if (tipo === 'connecting') {
           dom.guestConnectionStatus.classList.add('bg-cyan-950/80', 'border', 'border-cyan-500/50', 'text-cyan-200', 'animate-pulse');
         } else if (tipo === 'connected') {
           dom.guestConnectionStatus.classList.add('bg-emerald-950/80', 'border', 'border-emerald-500/50', 'text-emerald-200');
+        } else if (tipo === 'warning') {
+          dom.guestConnectionStatus.classList.add('bg-amber-950/90', 'border', 'border-amber-500/60', 'text-amber-200');
         } else if (tipo === 'error') {
           dom.guestConnectionStatus.classList.add('bg-rose-950/90', 'border', 'border-rose-500', 'text-rose-200');
         } else {
           dom.guestConnectionStatus.classList.add('bg-slate-950/80', 'border', 'border-slate-700', 'text-slate-300');
         }
 
-        dom.guestConnectionStatus.innerHTML = `<span>${texto}</span>`;
+        let inner = `<div class="text-center w-full leading-snug">${textoHtml}</div>`;
+        if (allowRetry) {
+          inner += `
+            <button id="btn-guest-retry-action" class="mt-2 px-3 py-1.5 bg-gradient-to-r from-cyan-500 to-teal-400 hover:from-cyan-400 hover:to-teal-300 text-slate-950 font-black text-[11px] uppercase tracking-wider rounded-xl shadow-[0_0_10px_rgba(0,240,255,0.4)] transition active:scale-95 cursor-pointer">
+              🔄 Reintentar Conexión Ahora
+            </button>
+          `;
+        }
+        dom.guestConnectionStatus.innerHTML = inner;
+
+        if (allowRetry) {
+          const btnRetry = document.getElementById('btn-guest-retry-action');
+          btnRetry?.addEventListener('click', () => {
+            if (state.roomCode) unirseComoGuest(state.roomCode);
+          });
+        }
       }
 
       function iniciarHeartbeat() {
@@ -1098,8 +1182,13 @@
         if (dom.guestConnectionStatus) {
           dom.guestConnectionStatus.classList.add('hidden');
         }
+        const hostTip = document.getElementById('host-keepalive-tip');
+        if (hostTip) hostTip.classList.remove('hidden');
+
         if (dom.btnAddBot) dom.btnAddBot.classList.remove('hidden');
         if (dom.btnStartGame) dom.btnStartGame.classList.remove('hidden');
+
+        activarWakeLock();
 
         // Renderizar Código QR
         const joinUrl = `${window.location.origin}${window.location.pathname}?room=${roomCode}`;
@@ -1200,6 +1289,10 @@
           clearTimeout(state.connectionTimeoutTimer);
           state.connectionTimeoutTimer = null;
         }
+        if (state.connectionPhaseTimer) {
+          clearTimeout(state.connectionPhaseTimer);
+          state.connectionPhaseTimer = null;
+        }
 
         const cleanCode = code.trim().toUpperCase();
         state.roomCode = cleanCode;
@@ -1215,25 +1308,45 @@
         dom.headerRoomBadge.classList.remove('hidden');
         dom.headerRoomCode.textContent = cleanCode;
 
-        // Mostrar estado de conexión
-        mostrarEstadoConexion(`📡 Conectando a distancia vía WebRTC con la sala #${cleanCode}...`, 'connecting');
+        // Ocultar tip de anfitrión para invitados
+        const hostTip = document.getElementById('host-keepalive-tip');
+        if (hostTip) hostTip.classList.add('hidden');
+
+        // Fase 1 (0s): Notificación de conexión
+        mostrarEstadoConexion(`📡 Conectando a distancia con la sala #${cleanCode}...`, 'connecting');
 
         const myGuestId = `guest-${cleanCode}-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
         state.myPlayerId = myGuestId;
 
-        // Timeout de seguridad: Si tras 14s no conecta a distancia, notificar y permitir reintento
+        // Fase 2 (7s): Notificar negociación WebRTC en redes móviles
+        state.connectionPhaseTimer = setTimeout(() => {
+          if (!state.hostConnection || !state.hostConnection.open) {
+            mostrarEstadoConexion(
+              `⚡ Enlazando con el anfitrión vía WebRTC / Relay...<br><span class="text-[10px] text-cyan-300/80">En redes móviles (4G/5G) esto puede tardar unos segundos.</span>`,
+              'connecting'
+            );
+          }
+        }, 7000);
+
+        // Fase 3 (20s): En lugar de abortar o colgar un error fatal, advertir amigablemente y ofrecer reintento
         state.connectionTimeoutTimer = setTimeout(() => {
           if (!state.hostConnection || !state.hostConnection.open) {
-            mostrarEstadoConexion('⚠️ Tiempo de espera agotado. Verifica que el anfitrión tenga la sala abierta y vuelve a intentar.', 'error');
+            mostrarEstadoConexion(
+              `⏳ La conexión está tardando más de lo habitual.<br><span class="text-[10px] text-amber-200">Asegúrate de que el anfitrión tenga abierta la sala en su pantalla.</span>`,
+              'warning',
+              true
+            );
           }
-        }, 14000);
+        }, 20000);
 
         try {
           state.peer = new Peer(myGuestId, PEER_CONFIG);
 
           state.peer.on('open', (id) => {
             console.log('Guest registrado con ID:', id, 'Conectando con Host:', hostPeerId);
-            mostrarEstadoConexion('🔗 Enlazando con el anfitrión a distancia...', 'connecting');
+            if (!state.hostConnection || !state.hostConnection.open) {
+              mostrarEstadoConexion('🔗 Negociando canal seguro con el anfitrión...', 'connecting');
+            }
 
             const conn = state.peer.connect(hostPeerId, {
               reliable: true,
@@ -1241,6 +1354,10 @@
             });
 
             conn.on('open', () => {
+              if (state.connectionPhaseTimer) {
+                clearTimeout(state.connectionPhaseTimer);
+                state.connectionPhaseTimer = null;
+              }
               if (state.connectionTimeoutTimer) {
                 clearTimeout(state.connectionTimeoutTimer);
                 state.connectionTimeoutTimer = null;
@@ -1262,18 +1379,19 @@
               });
 
               iniciarHeartbeat();
+              activarWakeLock();
             });
 
             conn.on('data', (data) => handlePeerMessage(data, conn));
 
             conn.on('close', () => {
               console.warn('Conexión con el host cerrada');
-              mostrarEstadoConexion('⚠️ La conexión con el anfitrión se ha cerrado.', 'error');
+              mostrarEstadoConexion('⚠️ La conexión con el anfitrión se ha cerrado.', 'error', true);
             });
 
             conn.on('error', (err) => {
               console.error('Error de canal de datos WebRTC:', err);
-              mostrarEstadoConexion('⚠️ Error en la conexión WebRTC. Reintentando...', 'error');
+              mostrarEstadoConexion('⚠️ Error en la conexión WebRTC. Pulsa reintentar.', 'error', true);
             });
 
             if (conn.peerConnection) {
@@ -1294,19 +1412,23 @@
 
           state.peer.on('error', (err) => {
             console.error('Guest PeerJS error:', err.type, err);
+            if (state.connectionPhaseTimer) {
+              clearTimeout(state.connectionPhaseTimer);
+              state.connectionPhaseTimer = null;
+            }
             if (state.connectionTimeoutTimer) {
               clearTimeout(state.connectionTimeoutTimer);
               state.connectionTimeoutTimer = null;
             }
             if (err.type === 'peer-unavailable') {
-              mostrarEstadoConexion(`❌ La sala #${cleanCode} no está activa o el código es incorrecto.`, 'error');
+              mostrarEstadoConexion(`❌ La sala #${cleanCode} no responde o no existe.<br><span class="text-[10px] text-slate-300">Pídele al anfitrión que mantenga abierta la pantalla de la sala.</span>`, 'error', true);
             } else {
-              mostrarEstadoConexion(`❌ Error de red (${err.type}). Revisa tu conexión a internet.`, 'error');
+              mostrarEstadoConexion(`❌ Error de señalización (${err.type}). Revisa tu conexión a internet.`, 'error', true);
             }
           });
         } catch (e) {
           console.error('Peer join error:', e);
-          mostrarEstadoConexion('❌ Error al inicializar conexión WebRTC.', 'error');
+          mostrarEstadoConexion('❌ Error al inicializar conexión WebRTC.', 'error', true);
         }
       }
 
@@ -1504,6 +1626,7 @@
       }
 
       function iniciarPantallaJuego() {
+        activarWakeLock();
         dom.viewLobby.classList.add('hidden');
         dom.viewRoomWaiting.classList.add('hidden');
         dom.viewGame.classList.remove('hidden');
@@ -1956,6 +2079,7 @@
 
       function finalizarPartida() {
         state.isGameOver = true;
+        desactivarWakeLock();
         const sorted = [...state.players].sort((a, b) => b.score - a.score);
         const winner = sorted[0];
         const loser = sorted[sorted.length - 1];
