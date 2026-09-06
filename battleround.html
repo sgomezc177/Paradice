@@ -158,20 +158,34 @@
       border: 2px solid #f43f5e;
       box-shadow: 0 0 25px rgba(244, 63, 94, 0.8), inset 0 0 15px rgba(244, 63, 94, 0.5);
     }
+
+    /* Efecto de tensión y peligro últimos 10s del temporizador */
+    .tension-danger-overlay::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 999;
+      box-shadow: inset 0 0 70px rgba(239, 68, 68, 0.75), inset 0 0 140px rgba(225, 29, 72, 0.45);
+      animation: tensionDangerPulse 0.7s infinite alternate ease-in-out;
+    }
+    @keyframes tensionDangerPulse {
+      0% {
+        opacity: 0.35;
+        box-shadow: inset 0 0 50px rgba(239, 68, 68, 0.6), inset 0 0 100px rgba(225, 29, 72, 0.3);
+      }
+      100% {
+        opacity: 0.95;
+        box-shadow: inset 0 0 90px rgba(239, 68, 68, 0.9), inset 0 0 160px rgba(225, 29, 72, 0.65);
+      }
+    }
   </style>
 </head>
 
 <body class="min-h-screen text-slate-100 flex flex-col items-center justify-between p-2 sm:p-4 md:p-6 overflow-x-hidden">
 
-  <!-- BANNER FLOTANTE GAMEPLAY DEMO EN VIVO -->
-  <div id="preview-mode-banner" class="fixed top-12 left-1/2 transform -translate-x-1/2 z-40 bg-gradient-to-r from-amber-500/90 via-fuchsia-600/90 to-cyan-500/90 px-4 py-1.5 rounded-full shadow-[0_0_25px_rgba(250,204,21,0.7)] border-2 border-white/80 text-white font-black text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-2 pointer-events-auto cursor-pointer animate-pulse hidden">
-    <span>🎮</span>
-    <span>DEMO GAMEPLAY EN VIVO</span>
-    <span>🎮</span>
-  </div>
-
   <!-- ========================================================================= -->
-  <!-- 1. HEADER OFICIAL PARADICE Y BARRA DE NAVEGACIÓN                          -->
+  <!-- 1. HEADER OFICIAL PARADICE Y BARRA DE NAVEGACIÓN COMPACTA                -->
   <!-- ========================================================================= -->
   <header class="w-full max-w-4xl flex items-center justify-between py-2 px-3 sm:px-5 bg-slate-900/80 border border-red-500/30 rounded-2xl sm:rounded-3xl backdrop-blur-md shadow-[0_0_25px_rgba(244,63,94,0.15)] mb-3 sm:mb-4">
     
@@ -195,57 +209,123 @@
       </div>
     </div>
 
-    <!-- Controles de Audio & Juegos -->
-    <div class="flex items-center space-x-2 sm:space-x-3">
+    <!-- Controles Compactos y Botón Menú Lateral -->
+    <div class="flex items-center space-x-2">
       <!-- Indicador de Sala -->
       <div id="header-room-badge" class="hidden flex items-center space-x-1 px-2.5 py-1 rounded-full bg-slate-950 border border-red-500/40 text-[10px] sm:text-xs font-bold text-rose-300">
         <span>SALA:</span> <span id="header-room-code" class="font-mono text-cyan-300">---</span>
       </div>
 
-      <button id="btn-sound-toggle" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-800 border border-slate-700 hover:border-red-400 text-xs text-slate-200 flex items-center justify-center transition shadow-sm" title="Sonido SFX">
-        <span id="sound-icon">🔊</span>
+      <!-- Botón Menú Lateral Desplegable -->
+      <button id="btn-open-sidebar" class="px-3 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700 hover:border-red-500/60 text-slate-200 hover:text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition active:scale-95 cursor-pointer" title="Abrir Menú de Opciones">
+        <span class="text-sm leading-none">☰</span>
+        <span>Menú</span>
       </button>
-
-      <!-- Botones de Música Eurodance y Playlist /music -->
-      <div class="flex items-center space-x-1">
-        <button id="btn-music-toggle" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-purple-950/80 border border-purple-500/50 hover:border-purple-300 text-xs text-purple-200 flex items-center justify-center transition shadow-sm" title="Reproducir / Pausar Música">
-          <span id="music-icon">🎵</span>
-        </button>
-        <button id="btn-music-next" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-purple-950/80 border border-purple-500/50 hover:border-purple-300 text-xs text-purple-200 flex items-center justify-center transition shadow-sm" title="Siguiente Canción">
-          <span>⏭️</span>
-        </button>
-        <span id="music-track-display" class="hidden xl:inline-block max-w-[120px] truncate text-[9px] text-rose-300 font-mono px-1.5 py-0.5 rounded bg-purple-950/60 border border-purple-500/30">🎵 Paradice Music</span>
-      </div>
-
-      <!-- Botón Instrucciones Cómo Jugar -->
-      <button id="btn-instructions" class="px-2 sm:px-2.5 py-1 rounded-xl bg-red-950/80 hover:bg-red-900 border border-red-500/50 hover:border-red-300 text-rose-300 hover:text-white flex items-center gap-1 text-[10px] sm:text-[11px] font-bold shadow-[0_0_10px_rgba(244,63,94,0.2)] transition cursor-pointer" title="Instrucciones de BattleRound">
-        <span>📖</span> <span class="hidden sm:inline">Reglas</span>
-      </button>
-
-      <!-- Enlaces de Retorno -->
-      <div class="hidden xs:flex items-center space-x-1.5">
-        <a href="minas.html" class="px-2 py-1 rounded-xl bg-slate-900 hover:bg-slate-800 border border-pink-500/40 text-pink-300 text-[10px] sm:text-[11px] font-bold transition flex items-center gap-1">
-          <span>💣</span> <span class="hidden sm:inline">Minas</span>
-        </a>
-        <a href="hitbar.html" class="px-2 py-1 rounded-xl bg-slate-900 hover:bg-slate-800 border border-amber-500/40 text-amber-300 text-[10px] sm:text-[11px] font-bold transition flex items-center gap-1">
-          <span>⚡</span> <span class="hidden sm:inline">Hit Bar</span>
-        </a>
-        <a href="dados.html" class="px-2 py-1 rounded-xl bg-slate-900 hover:bg-slate-800 border border-purple-500/40 text-purple-300 text-[10px] sm:text-[11px] font-bold transition flex items-center gap-1">
-          <span>🎲</span> <span class="hidden sm:inline">Dados</span>
-        </a>
-        <a href="ruleta.html" class="px-2 py-1 rounded-xl bg-slate-900 hover:bg-slate-800 border border-emerald-500/40 text-emerald-300 text-[10px] sm:text-[11px] font-bold transition flex items-center gap-1">
-          <span>🎡</span> <span class="hidden sm:inline">Ruleta</span>
-        </a>
-        <a href="tragamonedas.html" class="px-2 py-1 rounded-xl bg-slate-900 hover:bg-slate-800 border border-cyan-500/40 text-cyan-300 text-[10px] sm:text-[11px] font-bold transition flex items-center gap-1">
-          <span>🎰</span> <span class="hidden sm:inline">Slots</span>
-        </a>
-        <a href="index.html" class="px-2 py-1 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 text-[10px] sm:text-[11px] font-bold transition flex items-center gap-1">
-          <span>🏠</span> <span class="hidden sm:inline">Landing</span>
-        </a>
-      </div>
     </div>
 
   </header>
+
+  <!-- ========================================================================= -->
+  <!-- MENÚ LATERAL OFFCANVAS (DRAWER)                                           -->
+  <!-- ========================================================================= -->
+  <div id="sidebar-backdrop" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 transition-opacity duration-300 opacity-0 pointer-events-none"></div>
+
+  <aside id="sidebar-drawer" class="fixed top-0 right-0 h-full w-72 sm:w-80 bg-slate-950/95 border-l border-slate-800 p-4 sm:p-5 z-50 flex flex-col justify-between transform translate-x-full transition-transform duration-300 shadow-2xl overflow-y-auto">
+    <div>
+      <!-- Cabecera del Drawer -->
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800/80 mb-4">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">💥</span>
+          <span class="font-display font-black text-sm uppercase tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-white via-rose-200 to-red-400">
+            Menú Paradice
+          </span>
+        </div>
+        <button id="btn-close-sidebar" class="w-8 h-8 rounded-full bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-sm font-bold transition cursor-pointer" title="Cerrar Menú">
+          ✕
+        </button>
+      </div>
+
+      <!-- Sección Audio & Música -->
+      <div class="mb-4">
+        <h4 class="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-2">🔊 Audio & Música Eurodance</h4>
+        <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-3 space-y-3">
+          <!-- Sonido SFX -->
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-slate-300 font-semibold flex items-center gap-1.5">
+              Efectos de Sonido
+            </span>
+            <button id="btn-sound-toggle" class="px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 hover:border-red-400 text-xs text-slate-200 flex items-center gap-1 transition shadow-sm cursor-pointer" title="Sonido SFX">
+              <span id="sound-icon">🔊</span> <span class="text-[11px] font-bold">SFX</span>
+            </button>
+          </div>
+          <!-- Música -->
+          <div class="pt-2 border-t border-slate-800/60 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-purple-300 font-semibold flex items-center gap-1.5">
+                Música Eurodance
+              </span>
+              <div class="flex items-center space-x-1.5">
+                <button id="btn-music-toggle" class="w-7 h-7 rounded-full bg-purple-950/80 border border-purple-500/50 hover:border-purple-300 text-xs text-purple-200 flex items-center justify-center transition shadow-sm cursor-pointer" title="Reproducir / Pausar">
+                  <span id="music-icon">🎵</span>
+                </button>
+                <button id="btn-music-next" class="w-7 h-7 rounded-full bg-purple-950/80 border border-purple-500/50 hover:border-purple-300 text-xs text-purple-200 flex items-center justify-center transition shadow-sm cursor-pointer" title="Siguiente Canción">
+                  <span>⏭️</span>
+                </button>
+              </div>
+            </div>
+            <div class="w-full">
+              <span id="music-track-display" class="block w-full text-center truncate text-[9px] text-rose-300 font-mono px-2 py-1 rounded bg-purple-950/60 border border-purple-500/30">🎵 Paradice Music</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección Información / Reglas -->
+      <div class="mb-4">
+        <h4 class="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-2">📖 Información</h4>
+        <button id="btn-instructions" class="w-full py-2 px-3 rounded-xl bg-red-950/80 hover:bg-red-900 border border-red-500/50 hover:border-red-300 text-rose-300 hover:text-white flex items-center justify-between text-xs font-bold shadow-[0_0_10px_rgba(244,63,94,0.2)] transition cursor-pointer">
+          <span class="flex items-center gap-1.5"><span>📖</span> Reglas del Duelo</span>
+          <span class="text-[10px] text-rose-400">Ver</span>
+        </button>
+      </div>
+
+      <!-- Sección Directorio de Juegos Paradice -->
+      <div>
+        <h4 class="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-2">🎮 Otros Juegos Paradice</h4>
+        <div class="space-y-1.5">
+          <a href="minas.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 border border-pink-500/20 hover:border-pink-400 text-xs font-bold text-pink-300 transition">
+            <span class="flex items-center gap-2"><span>💣</span> Minas Glaciales</span>
+            <span class="text-[9px] text-pink-400 font-mono">1 Jugador</span>
+          </a>
+          <a href="hitbar.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 border border-amber-500/20 hover:border-amber-400 text-xs font-bold text-amber-300 transition">
+            <span class="flex items-center gap-2"><span>⚡</span> Hit Bar Rush</span>
+            <span class="text-[9px] text-amber-400 font-mono">Velocidad</span>
+          </a>
+          <a href="tragamonedas.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 border border-cyan-500/20 hover:border-cyan-400 text-xs font-bold text-cyan-300 transition">
+            <span class="flex items-center gap-2"><span>🎰</span> Tragamonedas</span>
+            <span class="text-[9px] text-cyan-400 font-mono">3 Vidas</span>
+          </a>
+          <a href="dados.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 border border-purple-500/20 hover:border-purple-400 text-xs font-bold text-purple-300 transition">
+            <span class="flex items-center gap-2"><span>🎲</span> Dice Battle</span>
+            <span class="text-[9px] text-purple-400 font-mono">Duelo</span>
+          </a>
+          <a href="ruleta.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 border border-emerald-500/20 hover:border-emerald-400 text-xs font-bold text-emerald-300 transition">
+            <span class="flex items-center gap-2"><span>🎡</span> Ruleta Glacial</span>
+            <span class="text-[9px] text-emerald-400 font-mono">Premios</span>
+          </a>
+          <a href="index.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/40 hover:bg-slate-800/80 border border-slate-800 hover:border-slate-700 text-xs font-bold text-slate-400 hover:text-white transition">
+            <span class="flex items-center gap-2"><span>🏠</span> Landing Oficial</span>
+            <span class="text-[9px] text-slate-500">Inicio</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer del Drawer -->
+    <div class="pt-4 border-t border-slate-800/80 text-center">
+      <span class="text-[10px] text-slate-500 font-mono block">PARADICE ARCADE • BATTLEROUND</span>
+    </div>
+  </aside>
 
   <!-- ========================================================================= -->
   <!-- 2. VISTA DE LOBBY / CONEXIÓN SALA (INICIAL)                               -->
@@ -662,82 +742,28 @@
         btnMusicToggle: document.getElementById('btn-music-toggle'),
         musicIcon: document.getElementById('music-icon'),
         btnMusicNext: document.getElementById('btn-music-next'),
-        musicTrackDisplay: document.getElementById('music-track-display')
+        musicTrackDisplay: document.getElementById('music-track-display'),
+        // Menú Lateral Drawer
+        btnOpenSidebar: document.getElementById('btn-open-sidebar'),
+        btnCloseSidebar: document.getElementById('btn-close-sidebar'),
+        sidebarDrawer: document.getElementById('sidebar-drawer'),
+        sidebarBackdrop: document.getElementById('sidebar-backdrop')
       };
 
       const audio = window.audioManager || window.ParadiceAudio;
 
-      let demoInterval = null;
-
-      function iniciarGameplayDemoSimulado() {
-        if (state.roomCode || (state.players.length > 0 && !state.isDemoMode)) return;
-
-        state.isDemoMode = true;
-        dom.viewLobby.classList.add('hidden');
-        dom.viewRoomWaiting.classList.add('hidden');
-        dom.viewGame.classList.remove('hidden');
-
-        // Configurar 2 bots para el gameplay demo
-        state.players = [
-          { id: 'bot-1', name: 'Mateo', avatar: '🥃', score: 300, isBot: true },
-          { id: 'bot-2', name: 'Valentina', avatar: '🍧', score: 200, isBot: true }
-        ];
-        state.myPlayerId = 'bot-1';
-        generarTableroBatalla();
-        renderTableroVisual();
-        actualizarScoreboard();
-
-        // Plantar una mina simulada en casilla 14
-        if (state.board[14]) state.board[14].mineBy = 'bot-2';
-
-        let step = 0;
-        if (demoInterval) clearInterval(demoInterval);
-        demoInterval = setInterval(() => {
-          if (!state.isDemoMode) {
-            clearInterval(demoInterval);
-            return;
-          }
-
-          const eligibleTiles = state.board.filter(t => !t.isExplosion && (!t.revealedTo || t.revealedTo.length === 0));
-          if (eligibleTiles.length === 0) {
-            generarTableroBatalla();
-            renderTableroVisual();
-            if (state.board[14]) state.board[14].mineBy = 'bot-2';
-            step = 0;
-            return;
-          }
-
-          const activeBot = state.players[step % 2];
-          step++;
-
-          let targetTile;
-          if (step === 3 && state.board[14] && !state.board[14].isExplosion) {
-            targetTile = state.board[14]; // Provocar explosión con Mateo
-          } else {
-            targetTile = eligibleTiles[Math.floor(Math.random() * eligibleTiles.length)];
-          }
-
-          if (targetTile) {
-            procesarClicCasilla(targetTile.index, activeBot.id);
-          }
-        }, 1600);
+      function openSidebar() {
+        if (!dom.sidebarDrawer || !dom.sidebarBackdrop) return;
+        dom.sidebarBackdrop.classList.remove('opacity-0', 'pointer-events-none');
+        dom.sidebarBackdrop.classList.add('opacity-100', 'pointer-events-auto');
+        dom.sidebarDrawer.classList.remove('translate-x-full');
       }
 
-      function detenerGameplayDemoSimulado() {
-        state.isDemoMode = false;
-        if (demoInterval) {
-          clearInterval(demoInterval);
-          demoInterval = null;
-        }
-
-        // Restaurar pantalla de lobby si no está en sala real
-        if (!state.roomCode) {
-          dom.viewGame.classList.add('hidden');
-          dom.viewRoomWaiting.classList.add('hidden');
-          dom.viewLobby.classList.remove('hidden');
-          state.players = [];
-          state.board = [];
-        }
+      function closeSidebar() {
+        if (!dom.sidebarDrawer || !dom.sidebarBackdrop) return;
+        dom.sidebarBackdrop.classList.remove('opacity-100', 'pointer-events-auto');
+        dom.sidebarBackdrop.classList.add('opacity-0', 'pointer-events-none');
+        dom.sidebarDrawer.classList.add('translate-x-full');
       }
 
       // 3. Inicialización
@@ -751,14 +777,6 @@
             dom.musicTrackDisplay.textContent = `🎵 ${e.detail.title}`;
           }
         });
-
-        // Inicializar Gameplay Demo universal desde el arranque
-        if (window.TimerService && window.TimerService.initGameplayDemo) {
-          window.TimerService.initGameplayDemo(
-            () => iniciarGameplayDemoSimulado(),
-            () => detenerGameplayDemoSimulado()
-          );
-        }
       }
 
       function updateAudioUI() {
@@ -848,7 +866,6 @@
 
           const gameStartData = {
             type: 'START_GAME',
-            board: state.board.map(t => ({ index: t.index, revealed: false })),
             players: state.players,
             turnIndex: state.currentTurnIndex
           };
@@ -867,6 +884,11 @@
             dom.viewLobby.classList.remove('hidden');
           }
         });
+
+        // Menú Lateral (Drawer)
+        dom.btnOpenSidebar?.addEventListener('click', openSidebar);
+        dom.btnCloseSidebar?.addEventListener('click', closeSidebar);
+        dom.sidebarBackdrop?.addEventListener('click', closeSidebar);
 
         // Controles de audio
         dom.btnSoundToggle.addEventListener('click', () => {
@@ -891,7 +913,10 @@
         });
 
         // Instrucciones
-        dom.btnInstructions.addEventListener('click', () => dom.modalInstructions.classList.remove('hidden'));
+        dom.btnInstructions.addEventListener('click', () => {
+          closeSidebar();
+          dom.modalInstructions.classList.remove('hidden');
+        });
         dom.closeInstructionsBtn.addEventListener('click', () => dom.modalInstructions.classList.add('hidden'));
         dom.closeInstructionsBtnBottom.addEventListener('click', () => dom.modalInstructions.classList.add('hidden'));
       }
@@ -1039,9 +1064,35 @@
         } else if (msg.type === 'START_GAME') {
           state.players = msg.players;
           state.currentTurnIndex = msg.turnIndex;
+          state.isGameOver = false;
+          state.isPlantingMode = false;
+          // Inicializar las 36 casillas en el Guest
+          state.board = Array.from({ length: 36 }, (_, idx) => ({
+            index: idx,
+            revealedTo: [],
+            publiclyRevealed: false,
+            isExplosion: false,
+            mineBy: null,
+            victimAvatar: null,
+            victimName: null,
+            pointsLabel: '',
+            icon: '🧊',
+            name: 'Hielo'
+          }));
           iniciarPantallaJuego();
         } else if (msg.type === 'TILE_CLICK') {
-          procesarClicCasilla(msg.tileIndex, msg.playerId);
+          if (state.isHost) {
+            procesarClicCasilla(msg.tileIndex, msg.playerId);
+          }
+        } else if (msg.type === 'PLANT_MINE') {
+          registrarMinaPlantada(msg.tileIndex, msg.planterId);
+          if (state.isHost) {
+            pasarSiguienteTurno();
+          }
+        } else if (msg.type === 'PASS_TURN') {
+          if (state.isHost) {
+            pasarSiguienteTurno();
+          }
         } else if (msg.type === 'MINE_PLANTED' || msg.type === 'MINE_PLANTED_SYNC') {
           registrarMinaPlantada(msg.tileIndex, msg.planterId);
         } else if (msg.type === 'CLEAN_TILE_RESULT' && msg.playerId === state.myPlayerId) {
@@ -1049,7 +1100,13 @@
           if (tile) {
             if (!tile.revealedTo) tile.revealedTo = [];
             if (!tile.revealedTo.includes(state.myPlayerId)) tile.revealedTo.push(state.myPlayerId);
+            if (msg.tileInfo) {
+              tile.icon = msg.tileInfo.icon;
+              tile.name = msg.tileInfo.name;
+            }
+            if (msg.players) state.players = msg.players;
             actualizarTileVisual(msg.tileIndex);
+            actualizarScoreboard();
             state.myMinesCount = Math.max(1, state.myMinesCount);
             dom.playerMinesCount.textContent = state.myMinesCount;
             if (audio && audio.playCoinWin) audio.playCoinWin();
@@ -1072,13 +1129,13 @@
           setTimeout(() => dom.battleGrid.classList.remove('animate-shake'), 500);
           const victim = state.players.find(p => p.id === msg.victimId);
           const planter = state.players.find(p => p.id === msg.planterId);
-          logEvent(`💥 <strong>¡EMBOSCADA!</strong> ${victim ? victim.name : 'Un rival'} pisó la mina secreta de <strong>${planter ? planter.name : 'un rival'}</strong>. ¡${planter ? planter.name : 'Rival'} le robó ${msg.stolenPoints} pts!`);
+          logEvent(`💥 <strong>¡EMBOSCADA!</strong> ${msg.victimAvatar || '👤'} ${victim ? victim.name : 'Un rival'} pisó la mina secreta de <strong>${planter ? planter.name : 'un rival'}</strong>. ¡${planter ? planter.name : 'Rival'} le robó ${msg.stolenPoints} pts!`);
         } else if (msg.type === 'PLAYER_EXPLORED_CLEAN') {
           state.players = msg.players;
           actualizarScoreboard();
           const p = state.players.find(x => x.id === msg.playerId);
           if (p && p.id !== state.myPlayerId) {
-            logEvent(`❄️ ${p.name} exploró una casilla de hielo.`);
+            logEvent(`❄️ ${p.avatar || '👤'} ${p.name} exploró una casilla de hielo.`);
           }
         } else if (msg.type === 'GAME_SYNC') {
           state.players = msg.players;
@@ -1204,8 +1261,10 @@
         // Si estamos en modo de siembra de mina
         if (state.isPlantingMode) {
           const tile = state.board[tileIndex];
-          if (!tile || tile.isExplosion) {
-            alert('No puedes sembrar en una casilla destruida.');
+          if (!tile) return;
+          // REGLA CLAVE: La casilla SOLO se desactiva si un usuario detonó una mina y murió
+          if (tile.isExplosion) {
+            alert('Esta casilla quedó destruida por una explosión mortal. Por favor elige otro hielo.');
             return;
           }
           plantarMina(tileIndex, state.myPlayerId);
@@ -1218,7 +1277,15 @@
         }
 
         const tile = state.board[tileIndex];
-        if (tile && (tile.isExplosion || (tile.revealedTo && tile.revealedTo.includes(state.myPlayerId)))) {
+        if (!tile) return;
+
+        // Si la casilla ya está destruida por una mina mortal
+        if (tile.isExplosion) {
+          return;
+        }
+
+        // Si este mismo usuario ya exploró este cubo en su turno
+        if (tile.revealedTo && tile.revealedTo.includes(state.myPlayerId)) {
           return;
         }
 
@@ -1243,9 +1310,9 @@
           player.score = 0;
           if (planter) planter.score += Math.max(stolenPoints, 250);
 
+          // AQUÍ Y SOLO AQUÍ LA CASILLA SE DESACTIVA PARA TODOS LOS JUGADORES
           tile.isExplosion = true;
           tile.publiclyRevealed = true;
-          tile.displayIcon = '💥';
           tile.victimAvatar = player.avatar;
           tile.victimName = player.name;
           tile.pointsLabel = `-${stolenPoints} pts`;
@@ -1253,7 +1320,7 @@
           if (audio && audio.playExplosion) audio.playExplosion();
           else if (audio && audio.playFailSound) audio.playFailSound();
 
-          logEvent(`💥 <strong>¡EMBOSCADA!</strong> ${player.name} pisó la mina secreta de <strong>${planter ? planter.name : 'un rival'}</strong>. ¡${planter ? planter.name : 'Rival'} le robó ${stolenPoints} pts!`);
+          logEvent(`💥 <strong>¡EMBOSCADA!</strong> ${player.avatar || '👤'} ${player.name} pisó la mina secreta de <strong>${planter ? planter.name : 'un rival'}</strong>. ¡${planter ? planter.name : 'Rival'} le robó ${stolenPoints} pts!`);
 
           // Shake animation en el tablero
           dom.battleGrid.classList.add('animate-shake');
@@ -1283,21 +1350,22 @@
           tile.revealedTo.push(playerId);
         }
 
-        const puntosGanados = tile.points;
+        const puntosGanados = tile.points || 0;
         if (puntosGanados > 0) {
           player.score += puntosGanados;
           tile.points = 0; // Premio reclamado
         }
 
-        // Otorga 1 mina disponible
-        state.myMinesCount = Math.max(1, state.myMinesCount);
-        dom.playerMinesCount.textContent = state.myMinesCount;
+        // Otorga 1 mina disponible al jugador que acertó
+        if (playerId === state.myPlayerId) {
+          state.myMinesCount = Math.max(1, state.myMinesCount);
+          dom.playerMinesCount.textContent = state.myMinesCount;
+        }
 
         actualizarScoreboard();
 
-        // Si es el jugador local
+        // Si es el jugador local (Host)
         if (playerId === state.myPlayerId) {
-          // El cubo se revela LIMPIO exclusivamente para este jugador
           actualizarTileVisual(tileIndex);
 
           if (audio && audio.playCoinWin) audio.playCoinWin();
@@ -1308,29 +1376,45 @@
           // Ofrecerle sembrar una mina aquí en secreto, en otro hielo o pasar turno
           mostrarOpcionesCuboLimpio(tileIndex);
 
-          // A los rivales NO se les revela el contenido del cubo
           broadcast({
             type: 'PLAYER_EXPLORED_CLEAN',
             playerId: state.myPlayerId,
             players: state.players
           });
         } else if (player.isBot) {
-          // El bot juega: 70% probabilidad de plantar en este cubo limpio sin que el jugador lo sepa
+          // El bot juega: siembra o pasa
           if (Math.random() < 0.70) {
             tile.mineBy = player.id;
           } else {
             simularSiembraBot(player.id);
           }
-          logEvent(`❄️ ${player.name} exploró una casilla de hielo.`);
+          logEvent(`❄️ ${player.avatar || '🤖'} ${player.name} exploró una casilla de hielo.`);
+          broadcast({
+            type: 'PLAYER_EXPLORED_CLEAN',
+            playerId: player.id,
+            players: state.players
+          });
           pasarSiguienteTurno();
         } else {
           // Es un guest humano en otra pantalla
-          logEvent(`❄️ ${player.name} exploró una casilla de hielo.`);
+          logEvent(`❄️ ${player.avatar || '👤'} ${player.name} exploró una casilla de hielo.`);
           if (state.isHost) {
             broadcast({
               type: 'CLEAN_TILE_RESULT',
               tileIndex,
-              playerId
+              playerId,
+              tileInfo: {
+                type: tile.type,
+                icon: tile.icon,
+                name: tile.name,
+                points: puntosGanados
+              },
+              players: state.players
+            });
+            broadcast({
+              type: 'PLAYER_EXPLORED_CLEAN',
+              playerId,
+              players: state.players
             });
           }
         }
@@ -1383,19 +1467,30 @@
           e.stopPropagation();
           state.isPlantingMode = false;
           if (tileEl) tileEl.classList.remove('planting-target');
+          dom.battleGrid.querySelectorAll('.planting-target').forEach(el => el.classList.remove('planting-target'));
           dom.actionBannerPrompt.className = 'w-full py-1.5 px-3 rounded-xl bg-slate-900 border border-slate-700 text-slate-300 text-[11px] font-bold text-center mb-2.5';
           dom.actionBannerPrompt.innerHTML = '✅ Turno completado sin sembrar mina.';
-          pasarSiguienteTurno();
+          if (state.isHost) {
+            pasarSiguienteTurno();
+          } else {
+            broadcast({ type: 'PASS_TURN', playerId: state.myPlayerId });
+          }
         });
       }
 
       function activarModoSiembraCualquierHielo() {
         state.isPlantingMode = true;
         dom.actionBannerPrompt.className = 'w-full py-1.5 px-3 rounded-xl bg-gradient-to-r from-amber-500 to-rose-500 text-slate-950 text-[11px] font-black text-center mb-2.5 shadow-[0_0_20px_rgba(250,204,21,0.6)] animate-pulse';
-        dom.actionBannerPrompt.innerHTML = '💣 Toca cualquier cubo de hielo del tablero para sembrar tu mina trampa en secreto.';
+        dom.actionBannerPrompt.innerHTML = '💣 Toca cualquier hielo activo del tablero para sembrar tu mina trampa en secreto.';
 
-        const allTiles = dom.battleGrid.querySelectorAll('.battle-tile:not(.revealed) .battle-tile-front');
-        allTiles.forEach(t => t.classList.add('planting-target'));
+        dom.battleGrid.querySelectorAll('.battle-tile').forEach(t => {
+          const idx = parseInt(t.dataset.index, 10);
+          const tData = state.board[idx];
+          if (tData && !tData.isExplosion) {
+            const front = t.querySelector('.battle-tile-front');
+            if (front) front.classList.add('planting-target');
+          }
+        });
       }
 
       function plantarMina(tileIndex, planterId) {
@@ -1408,15 +1503,16 @@
 
         registrarMinaPlantada(tileIndex, planterId);
 
-        // Notificar sincronización sin revelar la mina visualmente a los rivales
-        broadcast({ type: 'MINE_PLANTED_SYNC', tileIndex, planterId });
-
         dom.actionBannerPrompt.className = 'w-full py-1.5 px-3 rounded-xl bg-cyan-950/90 border border-cyan-400/60 text-cyan-200 text-[11px] font-bold text-center mb-2.5';
         dom.actionBannerPrompt.innerHTML = '✅ ¡Mina trampa sembrada en secreto! Espera tu siguiente turno.';
 
         logEvent(`💣 Sembraste una mina trampa secreta en el cubo <strong>#${tileIndex + 1}</strong>.`);
 
-        pasarSiguienteTurno();
+        if (state.isHost) {
+          pasarSiguienteTurno();
+        } else {
+          broadcast({ type: 'PLANT_MINE', tileIndex, planterId });
+        }
       }
 
       function registrarMinaPlantada(tileIndex, planterId) {
@@ -1451,13 +1547,14 @@
         const frontIcon = front ? front.querySelector('.tile-front-icon') : null;
 
         if (isExploded) {
-          tileEl.classList.add('revealed');
-          if (back) back.className = 'battle-tile-face battle-tile-back battle-tile-mine border-2 border-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.9)]';
+          tileEl.classList.add('revealed', 'pointer-events-none', 'cursor-not-allowed');
+          if (back) back.className = 'battle-tile-face battle-tile-back battle-tile-mine border-2 border-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.9)] bg-rose-950/90';
           if (iconEl) iconEl.innerHTML = `<div class="flex items-center justify-center gap-0.5 text-xs sm:text-sm leading-none"><span class="text-sm sm:text-base">${tileData.victimAvatar || '👤'}</span><span>💀</span><span class="text-sm sm:text-base">💥</span></div>`;
-          if (labelEl) labelEl.innerHTML = `<span class="text-[9px] sm:text-[10px] text-rose-200 font-extrabold tracking-tight">${tileData.victimName ? tileData.victimName : (tileData.pointsLabel || '¡BOOM!')}</span>`;
+          if (labelEl) labelEl.innerHTML = `<span class="text-[9px] sm:text-[10px] text-rose-200 font-extrabold tracking-tight">${tileData.victimName ? tileData.victimName : 'RIVAL'} 💀</span>`;
         } else if (isRevealedToMe) {
           // Destapado exclusivamente para mí (cubo limpio verificado)
           tileEl.classList.add('revealed');
+          tileEl.classList.remove('pointer-events-none', 'cursor-not-allowed');
           if (isMinePlantedByMe) {
             if (back) back.className = 'battle-tile-face battle-tile-back battle-tile-safe border-2 border-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.85)]';
             if (iconEl) iconEl.textContent = '💣';
@@ -1469,7 +1566,7 @@
           }
         } else {
           // No revelado para mí: sigue viéndose como hielo cubierto
-          tileEl.classList.remove('revealed');
+          tileEl.classList.remove('revealed', 'pointer-events-none', 'cursor-not-allowed');
           if (isMinePlantedByMe) {
             if (front) front.classList.add('mine-planted-by-me');
             if (frontIcon) frontIcon.textContent = '💣';
@@ -1485,9 +1582,11 @@
       }
 
       function pasarSiguienteTurno() {
-        // La partida finaliza cuando todas las casillas han explotado o han sido exploradas
-        const quedanOcultas = state.board.some(t => !t.isExplosion && (!t.revealedTo || t.revealedTo.length === 0));
-        if (!quedanOcultas) {
+        if (!state.isHost) return;
+
+        // La partida finaliza cuando todas las casillas han explotado
+        const quedanActivas = state.board.some(t => !t.isExplosion);
+        if (!quedanActivas) {
           finalizarPartida();
           return;
         }
@@ -1503,7 +1602,7 @@
 
         // Si el siguiente turno es de un Bot
         const nextPlayer = state.players[state.currentTurnIndex];
-        if (nextPlayer && nextPlayer.isBot && state.isHost) {
+        if (nextPlayer && nextPlayer.isBot) {
           setTimeout(() => ejecutarTurnoBot(nextPlayer), 1200);
         }
       }

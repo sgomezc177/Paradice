@@ -43,12 +43,6 @@
     <div class="stars-field"></div>
   </div>
 
-  <!-- BANNER FLOTANTE GAMEPLAY DEMO EN VIVO -->
-  <div id="preview-mode-banner" class="fixed top-12 left-1/2 transform -translate-x-1/2 z-40 bg-gradient-to-r from-amber-500/90 via-fuchsia-600/90 to-cyan-500/90 px-4 py-1.5 rounded-full shadow-[0_0_25px_rgba(250,204,21,0.7)] border-2 border-white/80 text-white font-black text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-2 pointer-events-auto cursor-pointer animate-pulse hidden">
-    <span>🎮</span>
-    <span>DEMO GAMEPLAY EN VIVO</span>
-    <span>🎮</span>
-  </div>
 
   <!-- Contenedor Principal (100dvh Exacto: Todo Encaja Sin Cortes) -->
   <div id="app-container" class="app-container w-full sm:max-w-[420px] flex flex-col justify-between relative z-10 sm:rounded-3xl sm:border sm:border-sky-400/40 sm:shadow-[0_0_35px_rgba(56,189,248,0.3)] overflow-hidden px-2 pt-1.5 pb-2 bg-slate-950/85 backdrop-blur-md">
@@ -126,67 +120,11 @@
         </div>
       </div>
 
-      <!-- Controles de Audio, Combinaciones, Landing y Supervisor -->
+      <!-- Botón Menú Lateral Desplegable -->
       <div class="flex items-center space-x-1.5">
-        <!-- Enlace a la Landing Oficial -->
-        <a href="index.html" class="px-1.5 sm:px-2 py-1 rounded-full bg-cyan-950 border border-cyan-400/70 text-cyan-300 hover:text-white flex items-center gap-1 text-[9px] sm:text-[10px] font-bold shadow-[0_0_8px_rgba(0,240,255,0.4)] transition-all" title="Ir a la Landing Oficial de Paradice">
-          <span>🏠</span> <span class="hidden sm:inline">Landing</span>
-        </a>
-
-        <!-- Enlace a Minas Paradice -->
-        <a href="minas.html" class="px-1.5 sm:px-2 py-1 rounded-full bg-pink-950 border border-pink-400/70 text-pink-300 hover:text-white flex items-center gap-1 text-[9px] sm:text-[10px] font-bold shadow-[0_0_8px_rgba(255,0,127,0.4)] transition-all" title="Jugar a Minas Paradice">
-          <span>💣</span> <span class="hidden xs:inline">Minas</span>
-        </a>
-
-        <!-- Enlace a Hit Bar Rush -->
-        <a href="hitbar.html" class="px-1.5 sm:px-2 py-1 rounded-full bg-amber-950 border border-amber-400/70 text-amber-300 hover:text-white flex items-center gap-1 text-[9px] sm:text-[10px] font-bold shadow-[0_0_8px_rgba(250,204,21,0.4)] transition-all" title="Jugar a Hit Bar Rush 2.0">
-          <span>⚡</span> <span class="hidden md:inline">Hit Bar</span>
-        </a>
-
-        <!-- Enlace a Dice Battle -->
-        <a href="dados.html" class="px-1.5 sm:px-2 py-1 rounded-full bg-purple-950 border border-purple-400/70 text-purple-300 hover:text-white flex items-center gap-1 text-[9px] sm:text-[10px] font-bold shadow-[0_0_8px_rgba(147,51,234,0.4)] transition-all" title="Jugar a Dice Battle">
-          <span>🎲</span> <span class="hidden md:inline">Dados</span>
-        </a>
-
-        <!-- Enlace a Ruleta Paradice -->
-        <a href="ruleta.html" class="px-1.5 sm:px-2 py-1 rounded-full bg-emerald-950 border border-emerald-400/70 text-emerald-300 hover:text-white flex items-center gap-1 text-[9px] sm:text-[10px] font-bold shadow-[0_0_8px_rgba(52,211,153,0.4)] transition-all" title="Jugar a Ruleta Paradice">
-          <span>🎡</span> <span class="hidden md:inline">Ruleta</span>
-        </a>
-
-        <!-- Enlace a BattleRound (Multijugador) -->
-        <a href="battleround.html" class="px-1.5 sm:px-2 py-1 rounded-full bg-red-950 border border-red-500/70 text-red-300 hover:text-white flex items-center gap-1 text-[9px] sm:text-[10px] font-bold shadow-[0_0_8px_rgba(239,68,68,0.4)] transition-all" title="Jugar a BattleRound Multijugador">
-          <span>💥</span> <span class="hidden md:inline">BattleRound</span>
-        </a>
-
-        <!-- Botón Cómo Jugar -->
-        <button id="instructions-btn" class="px-2 py-1 rounded-full bg-amber-950/90 border border-amber-400/70 text-amber-300 hover:text-white flex items-center gap-1 text-[9px] sm:text-[10px] font-bold shadow-[0_0_8px_rgba(251,191,36,0.4)] transition-all cursor-pointer" title="Instrucciones & Cómo Jugar">
-          <span>📖</span> <span class="hidden xs:inline">Ayuda</span>
-        </button>
-
-        <!-- Botón para ver combinaciones de premios -->
-        <button id="combinations-btn" class="px-2 py-1 rounded-full bg-sky-950 border border-sky-400/70 text-sky-300 hover:text-white flex items-center gap-1 text-[9px] sm:text-[10px] font-bold shadow-[0_0_8px_rgba(56,189,248,0.4)] transition-all" title="Ver Combinaciones Ganadoras">
-          <span>📜</span> <span class="hidden xs:inline">Premios</span>
-        </button>
-
-        <!-- Botón de Música (Playlist de 116 canciones aleatorias en /music) -->
-        <div class="flex items-center space-x-1">
-          <button id="music-btn" class="px-2 py-1 rounded-full bg-purple-950/90 border border-purple-400/70 text-purple-300 hover:text-white flex items-center gap-1 text-[9px] sm:text-[10px] font-bold shadow-[0_0_8px_rgba(168,85,247,0.4)] transition-all" title="Reproducir / Pausar Música">
-            <span id="music-icon">🎵</span>
-          </button>
-          <button id="music-next-btn" class="w-6 h-6 rounded-full bg-purple-950/90 border border-purple-400/70 text-purple-300 hover:text-white flex items-center justify-center text-[10px] font-bold shadow-[0_0_8px_rgba(168,85,247,0.4)] transition-all" title="Siguiente Canción">
-            <span>⏭️</span>
-          </button>
-          <span id="music-track-display" class="hidden lg:inline-block max-w-[120px] truncate text-[9px] text-purple-300 font-mono px-1.5 py-0.5 rounded bg-purple-950/60 border border-purple-500/30">🎵 Paradice Music</span>
-        </div>
-
-        <!-- Silenciar / Activar SFX -->
-        <button id="mute-btn" class="w-6 h-6 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center text-xs text-slate-300" title="Sonido SFX">
-          <span id="mute-icon">🔊</span>
-        </button>
-
-        <!-- Panel de Supervisor -->
-        <button id="supervisor-btn" class="w-6 h-6 rounded-full bg-slate-900 border border-sky-500/50 text-sky-400 flex items-center justify-center text-xs font-bold" title="Panel de Supervisor">
-          🛡️
+        <button id="btn-open-sidebar" class="px-2.5 py-1 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700 hover:border-cyan-400 text-slate-200 hover:text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition active:scale-95 cursor-pointer" title="Abrir Menú">
+          <span class="text-sm leading-none">☰</span>
+          <span>Menú</span>
         </button>
       </div>
     </header>
@@ -951,6 +889,118 @@
     </div>
   </div>
 
+  <!-- ========================================================================= -->
+  <!-- MENÚ LATERAL OFFCANVAS (DRAWER)                                           -->
+  <!-- ========================================================================= -->
+  <div id="sidebar-backdrop" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 transition-opacity duration-300 opacity-0 pointer-events-none"></div>
+
+  <aside id="sidebar-drawer" class="fixed top-0 right-0 h-full w-72 sm:w-80 bg-slate-950/95 border-l border-slate-800 p-4 sm:p-5 z-50 flex flex-col justify-between transform translate-x-full transition-transform duration-300 shadow-2xl overflow-y-auto">
+    <div>
+      <!-- Cabecera del Drawer -->
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800/80 mb-4">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">🎰</span>
+          <span class="font-display font-black text-sm uppercase tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-200 to-cyan-400">
+            Menú Paradice
+          </span>
+        </div>
+        <button id="btn-close-sidebar" class="w-8 h-8 rounded-full bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-sm font-bold transition cursor-pointer" title="Cerrar Menú">
+          ✕
+        </button>
+      </div>
+
+      <!-- Sección Audio & Música -->
+      <div class="mb-4">
+        <h4 class="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-2">🔊 Audio & Música Eurodance</h4>
+        <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-3 space-y-3">
+          <!-- Sonido SFX -->
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-slate-300 font-semibold flex items-center gap-1.5">
+              Efectos de Sonido
+            </span>
+            <button id="mute-btn" class="px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 hover:border-cyan-400 text-xs text-slate-200 flex items-center gap-1 transition shadow-sm cursor-pointer" title="Sonido SFX">
+              <span id="mute-icon">🔊</span> <span class="text-[11px] font-bold">SFX</span>
+            </button>
+          </div>
+          <!-- Música -->
+          <div class="pt-2 border-t border-slate-800/60 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-purple-300 font-semibold flex items-center gap-1.5">
+                Música Eurodance
+              </span>
+              <div class="flex items-center space-x-1.5">
+                <button id="music-btn" class="w-7 h-7 rounded-full bg-purple-950/80 border border-purple-500/50 hover:border-purple-300 text-xs text-purple-200 flex items-center justify-center transition shadow-sm cursor-pointer" title="Reproducir / Pausar">
+                  <span id="music-icon">🎵</span>
+                </button>
+                <button id="music-next-btn" class="w-7 h-7 rounded-full bg-purple-950/80 border border-purple-500/50 hover:border-purple-300 text-xs text-purple-200 flex items-center justify-center transition shadow-sm cursor-pointer" title="Siguiente Canción">
+                  <span>⏭️</span>
+                </button>
+              </div>
+            </div>
+            <div class="w-full">
+              <span id="music-track-display" class="block w-full text-center truncate text-[9px] text-purple-300 font-mono px-2 py-1 rounded bg-purple-950/60 border border-purple-500/30">🎵 Paradice Music</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección Información / Opciones del Juego -->
+      <div class="mb-4">
+        <h4 class="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-2">📖 Información & Opciones</h4>
+        <div class="space-y-1.5">
+          <button id="instructions-btn" class="w-full py-2 px-3 rounded-xl bg-amber-950/80 hover:bg-amber-900 border border-amber-500/50 hover:border-amber-300 text-amber-300 hover:text-white flex items-center justify-between text-xs font-bold shadow-[0_0_10px_rgba(251,191,36,0.2)] transition cursor-pointer">
+            <span class="flex items-center gap-1.5"><span>📖</span> Cómo Jugar</span>
+            <span class="text-[10px] text-amber-400">Ver</span>
+          </button>
+          <button id="combinations-btn" class="w-full py-2 px-3 rounded-xl bg-sky-950/80 hover:bg-sky-900 border border-sky-500/50 hover:border-sky-300 text-sky-300 hover:text-white flex items-center justify-between text-xs font-bold shadow-[0_0_10px_rgba(56,189,248,0.2)] transition cursor-pointer">
+            <span class="flex items-center gap-1.5"><span>📜</span> Tabla de Premios</span>
+            <span class="text-[10px] text-sky-400">Ver</span>
+          </button>
+          <button id="supervisor-btn" class="w-full py-2 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white flex items-center justify-between text-xs font-bold transition cursor-pointer">
+            <span class="flex items-center gap-1.5"><span>🛡️</span> Panel de Supervisor</span>
+            <span class="text-[10px] text-slate-400">Acceso</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Sección Directorio de Juegos Paradice -->
+      <div>
+        <h4 class="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-2">🎮 Otros Juegos Paradice</h4>
+        <div class="space-y-1.5">
+          <a href="hitbar.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 border border-amber-500/20 hover:border-amber-400 text-xs font-bold text-amber-300 transition">
+            <span class="flex items-center gap-2"><span>⚡</span> Hit Bar Rush</span>
+            <span class="text-[9px] text-amber-400 font-mono">Velocidad</span>
+          </a>
+          <a href="battleround.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 border border-rose-500/20 hover:border-rose-400 text-xs font-bold text-rose-300 transition">
+            <span class="flex items-center gap-2"><span>💥</span> BattleRound</span>
+            <span class="text-[9px] text-rose-400 font-mono">Multiplayer</span>
+          </a>
+          <a href="minas.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 border border-pink-500/20 hover:border-pink-400 text-xs font-bold text-pink-300 transition">
+            <span class="flex items-center gap-2"><span>💣</span> Minas Glaciales</span>
+            <span class="text-[9px] text-pink-400 font-mono">1 Jugador</span>
+          </a>
+          <a href="dados.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 border border-purple-500/20 hover:border-purple-400 text-xs font-bold text-purple-300 transition">
+            <span class="flex items-center gap-2"><span>🎲</span> Dice Battle</span>
+            <span class="text-[9px] text-purple-400 font-mono">Duelo</span>
+          </a>
+          <a href="ruleta.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 border border-emerald-500/20 hover:border-emerald-400 text-xs font-bold text-emerald-300 transition">
+            <span class="flex items-center gap-2"><span>🎡</span> Ruleta Glacial</span>
+            <span class="text-[9px] text-emerald-400 font-mono">Premios</span>
+          </a>
+          <a href="index.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/40 hover:bg-slate-800/80 border border-slate-800 hover:border-slate-700 text-xs font-bold text-slate-400 hover:text-white transition">
+            <span class="flex items-center gap-2"><span>🏠</span> Landing Oficial</span>
+            <span class="text-[9px] text-slate-500">Inicio</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer del Drawer -->
+    <div class="pt-4 border-t border-slate-800/80 text-center">
+      <span class="text-[10px] text-slate-500 font-mono block">PARADICE ARCADE • SLOTS</span>
+    </div>
+  </aside>
+
   <!-- SERVICIOS COMPARTIDOS Y LIBRERÍAS CORE -->
   <script src="js/libs/qrcode.min.js"></script>
   <script src="js/core/StorageService.js"></script>
@@ -970,6 +1020,29 @@
         window.__slotStarted = true;
         window.slotController = new SlotController();
         window.slotController.init();
+
+        // Control del Drawer Lateral
+        const openBtn = document.getElementById('btn-open-sidebar');
+        const closeBtn = document.getElementById('btn-close-sidebar');
+        const drawer = document.getElementById('sidebar-drawer');
+        const backdrop = document.getElementById('sidebar-backdrop');
+        function openDrawer() {
+          backdrop?.classList.remove('opacity-0', 'pointer-events-none');
+          backdrop?.classList.add('opacity-100', 'pointer-events-auto');
+          drawer?.classList.remove('translate-x-full');
+        }
+        function closeDrawer() {
+          backdrop?.classList.remove('opacity-100', 'pointer-events-auto');
+          backdrop?.classList.add('opacity-0', 'pointer-events-none');
+          drawer?.classList.add('translate-x-full');
+        }
+        openBtn?.addEventListener('click', openDrawer);
+        closeBtn?.addEventListener('click', closeDrawer);
+        backdrop?.addEventListener('click', closeDrawer);
+
+        ['instructions-btn', 'combinations-btn', 'supervisor-btn'].forEach(id => {
+          document.getElementById(id)?.addEventListener('click', closeDrawer);
+        });
       }
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', startSlot);

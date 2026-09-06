@@ -1,4 +1,4 @@
-﻿/**
+/**
  * MinasController.js - Paradice Juegos (MVC - Minas Paradice)
  * Controlador que orquesta la interacción del jugador, transiciones de estado, audio, cupones QR,
  * temporizador de tiro de 30s tras perder la primera vida y detector de inactividad.
@@ -38,17 +38,6 @@
         }
       });
 
-      // Inicializar detector de inactividad de 30s
-      if (this.timerService && this.timerService.initInactivityDetector) {
-        this.timerService.initInactivityDetector(
-          () => {
-            this.view.mostrarModoPreview();
-          },
-          () => {
-            this.view.ocultarModoPreview();
-          }
-        );
-      }
 
       this.iniciarNuevaRonda();
 

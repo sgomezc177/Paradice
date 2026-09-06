@@ -39,17 +39,6 @@
         }
       });
 
-      // Inicializar detector de inactividad de 30s
-      if (this.timerService && this.timerService.initInactivityDetector) {
-        this.timerService.initInactivityDetector(
-          () => {
-            this.view.mostrarModoPreview();
-          },
-          () => {
-            this.view.ocultarModoPreview();
-          }
-        );
-      }
 
       this.prepararNivelActual();
 

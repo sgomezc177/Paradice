@@ -90,17 +90,31 @@
       filter: grayscale(1);
       transform: scale(0.75);
     }
+
+    /* Efecto de tensión y peligro últimos 10s del temporizador */
+    .tension-danger-overlay::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 999;
+      box-shadow: inset 0 0 70px rgba(239, 68, 68, 0.75), inset 0 0 140px rgba(225, 29, 72, 0.45);
+      animation: tensionDangerPulse 0.7s infinite alternate ease-in-out;
+    }
+    @keyframes tensionDangerPulse {
+      0% {
+        opacity: 0.35;
+        box-shadow: inset 0 0 50px rgba(239, 68, 68, 0.6), inset 0 0 100px rgba(225, 29, 72, 0.3);
+      }
+      100% {
+        opacity: 0.95;
+        box-shadow: inset 0 0 90px rgba(239, 68, 68, 0.9), inset 0 0 160px rgba(225, 29, 72, 0.65);
+      }
+    }
   </style>
 </head>
 
 <body class="min-h-screen text-slate-100 flex flex-col items-center justify-between p-2 sm:p-4 md:p-6 overflow-x-hidden">
-
-  <!-- BANNER FLOTANTE GAMEPLAY DEMO EN VIVO -->
-  <div id="preview-mode-banner" class="fixed top-12 left-1/2 transform -translate-x-1/2 z-40 bg-gradient-to-r from-amber-500/90 via-fuchsia-600/90 to-cyan-500/90 px-4 py-1.5 rounded-full shadow-[0_0_25px_rgba(250,204,21,0.7)] border-2 border-white/80 text-white font-black text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-2 pointer-events-auto cursor-pointer animate-pulse hidden">
-    <span>🎮</span>
-    <span>DEMO GAMEPLAY EN VIVO</span>
-    <span>🎮</span>
-  </div>
 
   <!-- ========================================================================= -->
   <!-- 1. HEADER OFICIAL PARADICE Y BARRA DE NAVEGACIÓN                          -->
@@ -140,50 +154,116 @@
         <span>⏱️</span> <span id="shot-timer-display" class="timer-val font-mono">30s</span>
       </div>
 
-      <button id="btn-sound-toggle" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-800 border border-slate-700 hover:border-pink-400 text-xs text-slate-200 flex items-center justify-center transition shadow-sm" title="Sonido SFX">
-        <span id="sound-icon">🔊</span>
+      <!-- Botón Menú Lateral Desplegable -->
+      <button id="btn-open-sidebar" class="px-3 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700 hover:border-pink-400 text-slate-200 hover:text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition active:scale-95 cursor-pointer" title="Abrir Menú">
+        <span class="text-sm leading-none">☰</span>
+        <span>Menú</span>
       </button>
-
-      <!-- Botones de Música Eurodance y Playlist /music -->
-      <div class="flex items-center space-x-1">
-        <button id="btn-music-toggle" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-purple-950/80 border border-purple-500/50 hover:border-purple-300 text-xs text-purple-200 flex items-center justify-center transition shadow-sm" title="Reproducir / Pausar Música">
-          <span id="music-icon">🎵</span>
-        </button>
-        <button id="btn-music-next" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-purple-950/80 border border-purple-500/50 hover:border-purple-300 text-xs text-purple-200 flex items-center justify-center transition shadow-sm" title="Siguiente Canción">
-          <span>⏭️</span>
-        </button>
-        <span id="music-track-display" class="hidden xl:inline-block max-w-[120px] truncate text-[9px] text-pink-300 font-mono px-1.5 py-0.5 rounded bg-purple-950/60 border border-purple-500/30">🎵 Paradice Music</span>
-      </div>
-
-      <!-- Botón Instrucciones Cómo Jugar -->
-      <button id="btn-instructions" class="px-2 sm:px-2.5 py-1 rounded-xl bg-pink-950/80 hover:bg-pink-900 border border-pink-500/50 hover:border-pink-300 text-pink-300 hover:text-white flex items-center gap-1 text-[10px] sm:text-[11px] font-bold shadow-[0_0_10px_rgba(255,0,127,0.2)] transition cursor-pointer" title="Instrucciones de la Ruleta">
-        <span>📖</span> <span class="hidden sm:inline">Cómo Jugar</span>
-      </button>
-
-      <!-- Enlaces de Retorno -->
-      <div class="hidden xs:flex items-center space-x-1.5">
-        <a href="battleround.html" class="px-2 py-1 rounded-xl bg-slate-900 hover:bg-slate-800 border border-red-500/40 text-red-300 text-[10px] sm:text-[11px] font-bold transition flex items-center gap-1" title="BattleRound Multijugador">
-          <span>💥</span> <span class="hidden sm:inline">BattleRound</span>
-        </a>
-        <a href="dados.html" class="px-2 py-1 rounded-xl bg-slate-900 hover:bg-slate-800 border border-purple-500/40 text-purple-300 text-[10px] sm:text-[11px] font-bold transition flex items-center gap-1">
-          <span>🎲</span> <span class="hidden sm:inline">Dados</span>
-        </a>
-        <a href="hitbar.html" class="px-2 py-1 rounded-xl bg-slate-900 hover:bg-slate-800 border border-amber-500/40 text-amber-300 text-[10px] sm:text-[11px] font-bold transition flex items-center gap-1">
-          <span>⚡</span> <span class="hidden sm:inline">Hit Bar</span>
-        </a>
-        <a href="minas.html" class="px-2 py-1 rounded-xl bg-slate-900 hover:bg-slate-800 border border-pink-500/40 text-pink-300 text-[10px] sm:text-[11px] font-bold transition flex items-center gap-1">
-          <span>💣</span> <span class="hidden sm:inline">Minas</span>
-        </a>
-        <a href="tragamonedas.html" class="px-2 py-1 rounded-xl bg-slate-900 hover:bg-slate-800 border border-cyan-500/40 text-cyan-300 text-[10px] sm:text-[11px] font-bold transition flex items-center gap-1">
-          <span>🎰</span> <span class="hidden sm:inline">Slots</span>
-        </a>
-        <a href="index.html" class="px-2 py-1 rounded-xl bg-slate-900 hover:bg-slate-800 border border-emerald-500/40 text-emerald-300 text-[10px] sm:text-[11px] font-bold transition flex items-center gap-1">
-          <span>🏠</span> <span class="hidden sm:inline">Landing</span>
-        </a>
-      </div>
     </div>
 
   </header>
+
+  <!-- ========================================================================= -->
+  <!-- MENÚ LATERAL OFFCANVAS (DRAWER)                                           -->
+  <!-- ========================================================================= -->
+  <div id="sidebar-backdrop" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 transition-opacity duration-300 opacity-0 pointer-events-none"></div>
+
+  <aside id="sidebar-drawer" class="fixed top-0 right-0 h-full w-72 sm:w-80 bg-slate-950/95 border-l border-slate-800 p-4 sm:p-5 z-50 flex flex-col justify-between transform translate-x-full transition-transform duration-300 shadow-2xl overflow-y-auto">
+    <div>
+      <!-- Cabecera del Drawer -->
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800/80 mb-4">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">🎡</span>
+          <span class="font-display font-black text-sm uppercase tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-white via-pink-200 to-rose-400">
+            Menú Paradice
+          </span>
+        </div>
+        <button id="btn-close-sidebar" class="w-8 h-8 rounded-full bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-sm font-bold transition cursor-pointer" title="Cerrar Menú">
+          ✕
+        </button>
+      </div>
+
+      <!-- Sección Audio & Música -->
+      <div class="mb-4">
+        <h4 class="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-2">🔊 Audio & Música Eurodance</h4>
+        <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-3 space-y-3">
+          <!-- Sonido SFX -->
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-slate-300 font-semibold flex items-center gap-1.5">
+              Efectos de Sonido
+            </span>
+            <button id="btn-sound-toggle" class="px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 hover:border-pink-400 text-xs text-slate-200 flex items-center gap-1 transition shadow-sm cursor-pointer" title="Sonido SFX">
+              <span id="sound-icon">🔊</span> <span class="text-[11px] font-bold">SFX</span>
+            </button>
+          </div>
+          <!-- Música -->
+          <div class="pt-2 border-t border-slate-800/60 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-purple-300 font-semibold flex items-center gap-1.5">
+                Música Eurodance
+              </span>
+              <div class="flex items-center space-x-1.5">
+                <button id="btn-music-toggle" class="w-7 h-7 rounded-full bg-purple-950/80 border border-purple-500/50 hover:border-purple-300 text-xs text-purple-200 flex items-center justify-center transition shadow-sm cursor-pointer" title="Reproducir / Pausar">
+                  <span id="music-icon">🎵</span>
+                </button>
+                <button id="btn-music-next" class="w-7 h-7 rounded-full bg-purple-950/80 border border-purple-500/50 hover:border-purple-300 text-xs text-purple-200 flex items-center justify-center transition shadow-sm cursor-pointer" title="Siguiente Canción">
+                  <span>⏭️</span>
+                </button>
+              </div>
+            </div>
+            <div class="w-full">
+              <span id="music-track-display" class="block w-full text-center truncate text-[9px] text-pink-300 font-mono px-2 py-1 rounded bg-purple-950/60 border border-purple-500/30">🎵 Paradice Music</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección Información / Reglas -->
+      <div class="mb-4">
+        <h4 class="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-2">📖 Información</h4>
+        <button id="btn-instructions" class="w-full py-2 px-3 rounded-xl bg-pink-950/80 hover:bg-pink-900 border border-pink-500/50 hover:border-pink-300 text-pink-300 hover:text-white flex items-center justify-between text-xs font-bold shadow-[0_0_10px_rgba(255,0,127,0.2)] transition cursor-pointer">
+          <span class="flex items-center gap-1.5"><span>📖</span> Cómo Jugar</span>
+          <span class="text-[10px] text-pink-400">Ver</span>
+        </button>
+      </div>
+
+      <!-- Sección Directorio de Juegos Paradice -->
+      <div>
+        <h4 class="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-2">🎮 Otros Juegos Paradice</h4>
+        <div class="space-y-1.5">
+          <a href="tragamonedas.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 border border-cyan-500/20 hover:border-cyan-400 text-xs font-bold text-cyan-300 transition">
+            <span class="flex items-center gap-2"><span>🎰</span> Slots Glaciales</span>
+            <span class="text-[9px] text-cyan-400 font-mono">3 Vidas</span>
+          </a>
+          <a href="battleround.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 border border-rose-500/20 hover:border-rose-400 text-xs font-bold text-rose-300 transition">
+            <span class="flex items-center gap-2"><span>💥</span> BattleRound</span>
+            <span class="text-[9px] text-rose-400 font-mono">Multiplayer</span>
+          </a>
+          <a href="hitbar.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 border border-amber-500/20 hover:border-amber-400 text-xs font-bold text-amber-300 transition">
+            <span class="flex items-center gap-2"><span>⚡</span> Hit Bar</span>
+            <span class="text-[9px] text-amber-400 font-mono">Speed</span>
+          </a>
+          <a href="minas.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 border border-pink-500/20 hover:border-pink-400 text-xs font-bold text-pink-300 transition">
+            <span class="flex items-center gap-2"><span>💣</span> Minas Glaciales</span>
+            <span class="text-[9px] text-pink-400 font-mono">1 Jugador</span>
+          </a>
+          <a href="dados.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 border border-purple-500/20 hover:border-purple-400 text-xs font-bold text-purple-300 transition">
+            <span class="flex items-center gap-2"><span>🎲</span> Dice Battle</span>
+            <span class="text-[9px] text-purple-400 font-mono">Duelo</span>
+          </a>
+          <a href="index.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/40 hover:bg-slate-800/80 border border-slate-800 hover:border-slate-700 text-xs font-bold text-slate-400 hover:text-white transition">
+            <span class="flex items-center gap-2"><span>🏠</span> Landing Oficial</span>
+            <span class="text-[9px] text-slate-500">Inicio</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer del Drawer -->
+    <div class="pt-4 border-t border-slate-800/80 text-center">
+      <span class="text-[10px] text-slate-500 font-mono block">PARADICE ARCADE • RULETA SHOT</span>
+    </div>
+  </aside>
 
   <!-- ========================================================================= -->
   <!-- 2. CONTENIDO PRINCIPAL: RULETA GIRATORIA Y PANEL DE RETIRO                -->
@@ -502,6 +582,27 @@
         window.__ruletaStarted = true;
         window.ruletaController = new RuletaController();
         window.ruletaController.init();
+
+        // Control del Drawer Lateral
+        const openBtn = document.getElementById('btn-open-sidebar');
+        const closeBtn = document.getElementById('btn-close-sidebar');
+        const drawer = document.getElementById('sidebar-drawer');
+        const backdrop = document.getElementById('sidebar-backdrop');
+        function openDrawer() {
+          backdrop?.classList.remove('opacity-0', 'pointer-events-none');
+          backdrop?.classList.add('opacity-100', 'pointer-events-auto');
+          drawer?.classList.remove('translate-x-full');
+        }
+        function closeDrawer() {
+          backdrop?.classList.remove('opacity-100', 'pointer-events-auto');
+          backdrop?.classList.add('opacity-0', 'pointer-events-none');
+          drawer?.classList.add('translate-x-full');
+        }
+        openBtn?.addEventListener('click', openDrawer);
+        closeBtn?.addEventListener('click', closeDrawer);
+        backdrop?.addEventListener('click', closeDrawer);
+
+        document.getElementById('btn-instructions')?.addEventListener('click', closeDrawer);
       }
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', startRuleta);

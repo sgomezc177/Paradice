@@ -40,19 +40,6 @@
         }
       });
 
-      // Inicializar detector de inactividad de 30s para Modo Preview
-      if (this.timerService && this.timerService.initInactivityDetector) {
-        this.timerService.initInactivityDetector(
-          () => {
-            if (!this.isSpinning) {
-              this.view.mostrarModoPreview();
-            }
-          },
-          () => {
-            this.view.ocultarModoPreview();
-          }
-        );
-      }
 
       // Si ya hay vidas consumidas (< 3 y > 0), iniciar temporizador
       if (this.model.vidas < 3 && this.model.vidas > 0) {

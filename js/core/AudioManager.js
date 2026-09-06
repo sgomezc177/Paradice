@@ -750,6 +750,34 @@
         this.playFailSound();
       }
     }
+
+    playTensionTick(secondsRemaining = 10) {
+      if (this.sfxMuted) return;
+      this.initWebAudio();
+      if (!this.ctx) return;
+
+      try {
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        // Tono más agudo y urgente a medida que quedan menos segundos (10s -> 440Hz, 1s -> 880Hz)
+        const freq = 440 + (10 - Math.max(1, secondsRemaining)) * 48;
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now);
+        osc.frequency.exponentialRampToValueAtTime(120, now + 0.08);
+
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.09);
+      } catch (e) {
+        // Ignorar si el contexto no está listo
+      }
+    }
   }
 
   // Instancia singleton compartida globalmente
