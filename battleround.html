@@ -280,6 +280,15 @@
         </div>
       </div>
 
+      <!-- Sección Red & Conectividad -->
+      <div class="mb-4">
+        <h4 class="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-2">🌐 Red & Conectividad</h4>
+        <button id="btn-open-network-settings" class="w-full py-2 px-3 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-cyan-500/40 hover:border-cyan-300 text-cyan-300 hover:text-white flex items-center justify-between text-xs font-bold shadow-sm transition cursor-pointer">
+          <span class="flex items-center gap-1.5"><span>⚡</span> Red & TURN Relay</span>
+          <span id="sidebar-turn-badge" class="text-[9px] px-1.5 py-0.5 rounded font-mono bg-cyan-950 text-cyan-400 border border-cyan-500/30">STUN</span>
+        </button>
+      </div>
+
       <!-- Sección Información / Reglas -->
       <div class="mb-4">
         <h4 class="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-2">📖 Información</h4>
@@ -397,6 +406,11 @@
         <button id="btn-quick-play-bots" class="w-full py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 hover:text-white border border-amber-500/40 font-bold text-xs uppercase tracking-wider transition flex items-center justify-center gap-2 cursor-pointer">
           <span>🤖</span> <span>PARTIDA RÁPIDA CONTRA BOTS (OFFLINE)</span>
         </button>
+
+        <!-- Acceso a Diagnóstico de Red -->
+        <button id="btn-lobby-network-settings" class="w-full mt-2 py-2 px-3 rounded-xl bg-slate-900/70 hover:bg-slate-800 border border-cyan-500/30 hover:border-cyan-400 text-cyan-300 hover:text-white text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
+          <span>🌐</span> <span>¿Problemas conectando? Diagnóstico de Red & TURN</span>
+        </button>
       </div>
 
     </div>
@@ -441,6 +455,14 @@
         </button>
         <button id="btn-share-room-link" class="flex-1 py-2 px-3 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(16,185,129,0.3)] transition active:scale-95 cursor-pointer" title="Invitar por WhatsApp">
           <span>📲</span> <span>WhatsApp</span>
+        </button>
+      </div>
+
+      <!-- Acceso Rápido a Diagnóstico de Red -->
+      <div class="w-full flex items-center justify-between text-[11px] text-slate-400 px-1 my-1">
+        <span>¿Tu amigo no se conecta?</span>
+        <button id="btn-quick-network-settings" class="text-cyan-400 hover:text-cyan-200 underline font-semibold flex items-center gap-1 cursor-pointer">
+          <span>⚙️</span> Diagnóstico / TURN
         </button>
       </div>
 
@@ -693,6 +715,128 @@
     </div>
   </div>
 
+  <!-- ========================================================================= -->
+  <!-- MODAL: AJUSTES DE RED, DIAGNÓSTICO WEBRTC & TURN RELAY                   -->
+  <!-- ========================================================================= -->
+  <div id="modal-network-settings" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
+    <div class="max-w-lg w-full rounded-3xl bg-slate-900 border-2 border-cyan-500/50 p-5 sm:p-6 shadow-[0_0_40px_rgba(0,240,255,0.25)] text-left flex flex-col max-h-[90vh] overflow-y-auto">
+      
+      <!-- Cabecera del Modal -->
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+        <div class="flex items-center gap-2.5">
+          <span class="text-2xl">🌐</span>
+          <div>
+            <h3 class="font-black text-white text-base tracking-wide flex items-center gap-2">
+              Conectividad & Diagnóstico de Red
+            </h3>
+            <p class="text-[10px] text-cyan-400 font-mono">WebRTC P2P + Servidores STUN/TURN</p>
+          </div>
+        </div>
+        <button id="close-network-settings-btn" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-rose-900/60 border border-slate-700 hover:border-rose-500 text-slate-300 hover:text-white flex items-center justify-center transition cursor-pointer text-sm font-bold">
+          ✕
+        </button>
+      </div>
+
+      <!-- Estado Actual de la Red -->
+      <div class="p-3 rounded-2xl bg-slate-950 border border-slate-800 mb-4 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
+          <span class="text-xs text-slate-300 font-bold">Modo de Conexión:</span>
+        </div>
+        <span id="modal-turn-status-badge" class="px-2.5 py-1 rounded-full text-[10px] font-mono font-black bg-cyan-950 text-cyan-300 border border-cyan-500/40">
+          STUN MULTI-REGIÓN (Directo)
+        </span>
+      </div>
+
+      <!-- Guía Explicativa: ¿Por qué falla a veces? -->
+      <div class="space-y-2 mb-4 text-xs">
+        <div class="p-3 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-2">
+          <h4 class="font-bold text-cyan-300 flex items-center gap-1.5 text-xs">
+            <span>💡</span> ¿Por qué dos celulares no se conectan a veces?
+          </h4>
+          <ul class="space-y-1.5 text-[11px] text-slate-300 leading-relaxed">
+            <li class="flex items-start gap-1.5">
+              <span class="text-amber-400 font-bold">•</span>
+              <span><strong>Wi-Fi de Invitados (WLAN_Invitados):</strong> Los routers suelen activar <em>Aislamiento de Clientes (AP Isolation)</em>, bloqueando el tráfico directo entre celulares conectados al mismo Wi-Fi.</span>
+            </li>
+            <li class="flex items-start gap-1.5">
+              <span class="text-amber-400 font-bold">•</span>
+              <span><strong>Redes Móviles (4G/5G / A Distancia):</strong> Tienen <em>NAT Simétrico (CGNAT)</em>, lo que impide abrir puertos directos por STUN sin un repetidor TURN.</span>
+            </li>
+            <li class="flex items-start gap-1.5">
+              <span class="text-emerald-400 font-bold">•</span>
+              <span><strong>Solución Rápida:</strong> Usa datos móviles en uno de los celulares, activa Zona Wi-Fi portátil (Hotspot), o activa un <strong>Servidor TURN Relay gratuito</strong> aquí abajo.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Herramienta de Diagnóstico en Vivo -->
+      <div class="p-3.5 rounded-2xl bg-slate-950 border border-cyan-500/30 mb-4 space-y-2.5">
+        <div class="flex items-center justify-between">
+          <h4 class="font-bold text-white text-xs flex items-center gap-1.5">
+            <span>🔍</span> Test de Diagnóstico WebRTC en Vivo
+          </h4>
+          <button id="btn-run-net-diag" class="px-3 py-1.5 bg-gradient-to-r from-cyan-500 to-teal-400 hover:from-cyan-400 hover:to-teal-300 text-slate-950 font-black text-[11px] uppercase tracking-wider rounded-xl shadow-[0_0_10px_rgba(0,240,255,0.3)] transition active:scale-95 cursor-pointer">
+            Ejecutar Test
+          </button>
+        </div>
+
+        <div id="net-diag-results" class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-[11px] font-mono text-slate-400 space-y-1 min-h-[70px]">
+          Pulsa "Ejecutar Test" para comprobar si tu red actual permite conexiones directas (STUN) o si requiere TURN Relay.
+        </div>
+      </div>
+
+      <!-- Configuración Servidor TURN Relay (Metered.ca) -->
+      <div class="p-3.5 rounded-2xl bg-slate-950/80 border border-purple-500/30 mb-4 space-y-2.5">
+        <div class="flex items-center justify-between">
+          <h4 class="font-bold text-purple-300 text-xs flex items-center gap-1.5">
+            <span>🚀</span> Servidor TURN Relay Dedicado (100% Garantizado)
+          </h4>
+          <span class="text-[9px] font-bold text-purple-400 bg-purple-950/80 px-2 py-0.5 rounded-full border border-purple-500/40">50 GB/Mes Gratis</span>
+        </div>
+
+        <p class="text-[11px] text-slate-300 leading-tight">
+          Un servidor TURN retransmite los paquetes cuando el router o la red 4G bloquea el tráfico P2P directo.
+        </p>
+
+        <div class="space-y-2">
+          <label class="block text-[10px] uppercase font-mono text-slate-400 font-bold">
+            URL de Credenciales Metered.ca (o endpoint de IceServers):
+          </label>
+          <input id="input-turn-url" type="text" placeholder="https://[tu-app].metered.live/api/v1/turn/credentials?apiKey=..." class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-cyan-300 text-[11px] font-mono outline-none focus:border-purple-400">
+          
+          <div class="flex items-center gap-2 pt-1">
+            <button id="btn-save-turn-url" class="flex-1 py-2 px-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs uppercase tracking-wider transition active:scale-95 cursor-pointer flex items-center justify-center gap-1.5">
+              <span>💾</span> <span>Guardar y Activar</span>
+            </button>
+            <button id="btn-clear-turn-url" class="py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white font-bold text-xs uppercase transition active:scale-95 cursor-pointer" title="Restablecer configuración predeterminada">
+              <span>🗑️</span> <span>Limpiar</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Pasos para obtener cuenta gratis -->
+        <div class="p-2.5 rounded-xl bg-purple-950/30 border border-purple-500/20 text-[10px] text-purple-200 space-y-1">
+          <div class="font-bold text-purple-300">¿Cómo conseguir tu URL gratuita en 30 segundos?</div>
+          <ol class="list-decimal list-inside space-y-0.5 text-[10px] text-slate-300">
+            <li>Ingresa a <a href="https://www.metered.ca/tools/openrelay" target="_blank" class="text-cyan-400 underline font-bold">metered.ca/tools/openrelay</a> y regístrate gratis.</li>
+            <li>En tu Dashboard ve a <em>API Credentials</em> y copia tu <strong>Credentials API URL</strong>.</li>
+            <li>Pégala arriba y haz clic en <strong>Guardar y Activar</strong>. ¡Funcionará en cualquier lugar del mundo!</li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- Botón de Cerrar -->
+      <div class="pt-2 border-t border-slate-800">
+        <button id="btn-close-network-settings-bottom" class="w-full py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs uppercase tracking-wider transition cursor-pointer">
+          Cerrar Ajustes
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- SERVICIOS COMPARTIDOS Y LIBRERÍAS CORE -->
   <script src="js/libs/qrcode.min.js"></script>
   <script src="js/core/StorageService.js"></script>
@@ -788,7 +932,21 @@
         btnOpenSidebar: document.getElementById('btn-open-sidebar'),
         btnCloseSidebar: document.getElementById('btn-close-sidebar'),
         sidebarDrawer: document.getElementById('sidebar-drawer'),
-        sidebarBackdrop: document.getElementById('sidebar-backdrop')
+        sidebarBackdrop: document.getElementById('sidebar-backdrop'),
+        // Modal Network Settings & TURN Relay
+        modalNetworkSettings: document.getElementById('modal-network-settings'),
+        btnOpenNetworkSettings: document.getElementById('btn-open-network-settings'),
+        btnLobbyNetworkSettings: document.getElementById('btn-lobby-network-settings'),
+        btnQuickNetworkSettings: document.getElementById('btn-quick-network-settings'),
+        closeNetworkSettingsBtn: document.getElementById('close-network-settings-btn'),
+        closeNetworkSettingsBtnBottom: document.getElementById('btn-close-network-settings-bottom'),
+        sidebarTurnBadge: document.getElementById('sidebar-turn-badge'),
+        modalTurnStatusBadge: document.getElementById('modal-turn-status-badge'),
+        inputTurnUrl: document.getElementById('input-turn-url'),
+        btnSaveTurnUrl: document.getElementById('btn-save-turn-url'),
+        btnClearTurnUrl: document.getElementById('btn-clear-turn-url'),
+        btnRunNetDiag: document.getElementById('btn-run-net-diag'),
+        netDiagResults: document.getElementById('net-diag-results')
       };
 
       const audio = window.audioManager || window.ParadiceAudio;
@@ -807,11 +965,27 @@
         dom.sidebarDrawer.classList.add('translate-x-full');
       }
 
+      function openNetworkSettings() {
+        closeSidebar();
+        if (!dom.modalNetworkSettings) return;
+        const savedUrl = localStorage.getItem('paradice_turn_url') || '';
+        if (dom.inputTurnUrl) dom.inputTurnUrl.value = savedUrl;
+        actualizarBadgeTurn();
+        dom.modalNetworkSettings.classList.remove('hidden');
+      }
+
+      function closeNetworkSettings() {
+        if (!dom.modalNetworkSettings) return;
+        dom.modalNetworkSettings.classList.add('hidden');
+      }
+
       // 3. Inicialización
       function init() {
         bindEvents();
         checkUrlParams();
         updateAudioUI();
+        actualizarBadgeTurn();
+        ensureIceServers(); // Precarga servidores ICE configurados
 
         window.addEventListener('audiotrackchange', (e) => {
           if (dom.musicTrackDisplay) {
@@ -828,7 +1002,8 @@
       }
 
       function checkUrlParams() {
-        const urlParams = new URLSearchParams(window.location.search);
+        const searchStr = window.location.search || (window.location.href.includes('?') ? '?' + window.location.href.split('?')[1] : '');
+        const urlParams = new URLSearchParams(searchStr);
         const room = urlParams.get('room');
         if (room) {
           const cleanRoom = room.trim().toUpperCase();
@@ -837,6 +1012,9 @@
           const codeSpan = document.getElementById('invite-room-code');
           if (banner) banner.classList.remove('hidden');
           if (codeSpan) codeSpan.textContent = cleanRoom;
+        }
+        if (urlParams.get('network') === '1' || window.location.hash === '#network') {
+          openNetworkSettings();
         }
       }
 
@@ -855,20 +1033,20 @@
         });
 
         // Crear Sala
-        dom.btnCreateRoom.addEventListener('click', () => {
+        dom.btnCreateRoom.addEventListener('click', async () => {
           setupPlayerProfile();
-          iniciarHostRoom();
+          await iniciarHostRoom();
         });
 
         // Unirse a Sala
-        dom.btnJoinRoom.addEventListener('click', () => {
+        dom.btnJoinRoom.addEventListener('click', async () => {
           setupPlayerProfile();
           const code = dom.inputRoomCode.value.trim().toUpperCase();
           if (!code) {
             alert('Por favor ingresa un código de sala válido.');
             return;
           }
-          unirseComoGuest(code);
+          await unirseComoGuest(code);
         });
 
         // Partida Rápida vs Bots
@@ -1010,6 +1188,36 @@
           dom.viewLobby.classList.remove('hidden');
           dom.headerRoomBadge.classList.add('hidden');
         });
+
+        // Herramientas de Red, Diagnóstico y Servidor TURN Relay
+        dom.btnOpenNetworkSettings?.addEventListener('click', openNetworkSettings);
+        dom.btnLobbyNetworkSettings?.addEventListener('click', openNetworkSettings);
+        dom.btnQuickNetworkSettings?.addEventListener('click', openNetworkSettings);
+        dom.closeNetworkSettingsBtn?.addEventListener('click', closeNetworkSettings);
+        dom.closeNetworkSettingsBtnBottom?.addEventListener('click', closeNetworkSettings);
+
+        dom.btnSaveTurnUrl?.addEventListener('click', async () => {
+          const val = dom.inputTurnUrl?.value.trim() || '';
+          if (val) {
+            localStorage.setItem('paradice_turn_url', val);
+            alert('✅ Configuración TURN guardada. Se aplicará a tus próximas conexiones.');
+          } else {
+            localStorage.removeItem('paradice_turn_url');
+            alert('Configuración restablecida a STUN predeterminado.');
+          }
+          actualizarBadgeTurn();
+          await ensureIceServers();
+        });
+
+        dom.btnClearTurnUrl?.addEventListener('click', async () => {
+          localStorage.removeItem('paradice_turn_url');
+          if (dom.inputTurnUrl) dom.inputTurnUrl.value = '';
+          alert('Configuración restablecida a STUN predeterminado.');
+          actualizarBadgeTurn();
+          await ensureIceServers();
+        });
+
+        dom.btnRunNetDiag?.addEventListener('click', runNetworkDiagnostic);
       }
 
       function setupPlayerProfile() {
@@ -1063,39 +1271,186 @@
       });
 
       // =========================================================================
-      // 4. Conexión P2P con PeerJS (WebRTC Local y a Distancia con STUN)
+      // 4. Conexión P2P con PeerJS (WebRTC Local y a Distancia con STUN y TURN)
       // =========================================================================
 
-      // Configuración opcional de servidores TURN dedicados (ej: Metered.ca con 50GB/mes gratis)
-      // Si el anfitrión o desarrollador añade credenciales aquí, se priorizan para atravesar NATs simétricos estrictos.
-      const CUSTOM_TURN_SERVERS = [];
+      // Servidores STUN multi-región probados y de respuesta ultra-rápida (<25ms)
+      const BASE_STUN_SERVERS = [
+        // Google Public STUN
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+        { urls: 'stun:stun2.l.google.com:19302' },
+        { urls: 'stun:stun3.l.google.com:19302' },
+        { urls: 'stun:stun4.l.google.com:19302' },
+        // Cloudflare & Twilio STUN
+        { urls: 'stun:stun.cloudflare.com:3478' },
+        { urls: 'stun:global.stun.twilio.com:3478' }
+      ];
 
       // Configuración de red WebRTC de alta resiliencia y velocidad
-      // Utiliza servidores STUN multi-región probados y de respuesta ultra-rápida (<25ms)
       const PEER_CONFIG = {
         host: '0.peerjs.com',
         port: 443,
         path: '/',
         secure: true,
-        pingInterval: 5000, // Ping WebSocket cada 5s para evitar que operadores móviles (4G/5G) cierren la conexión
+        pingInterval: 5000, // Ping WebSocket cada 5s para evitar que operadores móviles cierren el socket
         config: {
-          iceServers: [
-            ...CUSTOM_TURN_SERVERS,
-            // Google Public STUN
-            { urls: 'stun:stun.l.google.com:19302' },
-            { urls: 'stun:stun1.l.google.com:19302' },
-            { urls: 'stun:stun2.l.google.com:19302' },
-            { urls: 'stun:stun3.l.google.com:19302' },
-            { urls: 'stun:stun4.l.google.com:19302' },
-            // Cloudflare & Twilio STUN
-            { urls: 'stun:stun.cloudflare.com:3478' },
-            { urls: 'stun:global.stun.twilio.com:3478' }
-          ],
+          iceServers: [...BASE_STUN_SERVERS],
           iceTransportPolicy: 'all',
           sdpSemantics: 'unified-plan'
         },
         debug: 1
       };
+
+      const PEER_PREFIX = 'paradice-battle-v2-';
+
+      function actualizarBadgeTurn() {
+        const turnUrl = localStorage.getItem('paradice_turn_url');
+        const hasTurn = !!(turnUrl && turnUrl.trim().length > 5);
+        if (dom.sidebarTurnBadge) {
+          if (hasTurn) {
+            dom.sidebarTurnBadge.textContent = 'TURN RELAY';
+            dom.sidebarTurnBadge.className = 'text-[9px] px-1.5 py-0.5 rounded font-mono bg-purple-950 text-purple-300 border border-purple-500/50';
+          } else {
+            dom.sidebarTurnBadge.textContent = 'STUN';
+            dom.sidebarTurnBadge.className = 'text-[9px] px-1.5 py-0.5 rounded font-mono bg-cyan-950 text-cyan-400 border border-cyan-500/30';
+          }
+        }
+        if (dom.modalTurnStatusBadge) {
+          if (hasTurn) {
+            dom.modalTurnStatusBadge.textContent = 'TURN RELAY ACTIVO (Túnel Garantizado)';
+            dom.modalTurnStatusBadge.className = 'px-2.5 py-1 rounded-full text-[10px] font-mono font-black bg-purple-950 text-purple-300 border border-purple-500/50';
+          } else {
+            dom.modalTurnStatusBadge.textContent = 'STUN MULTI-REGIÓN (Directo)';
+            dom.modalTurnStatusBadge.className = 'px-2.5 py-1 rounded-full text-[10px] font-mono font-black bg-cyan-950 text-cyan-300 border border-cyan-500/40';
+          }
+        }
+      }
+
+      async function ensureIceServers() {
+        const savedUrl = localStorage.getItem('paradice_turn_url');
+        actualizarBadgeTurn();
+
+        PEER_CONFIG.config.iceServers = [...BASE_STUN_SERVERS];
+
+        if (!savedUrl || !savedUrl.trim()) {
+          return PEER_CONFIG.config.iceServers;
+        }
+
+        const url = savedUrl.trim();
+        try {
+          if (url.startsWith('[') || url.startsWith('{')) {
+            const parsed = JSON.parse(url);
+            const servers = Array.isArray(parsed) ? parsed : (parsed.iceServers || [parsed]);
+            PEER_CONFIG.config.iceServers = [...servers, ...BASE_STUN_SERVERS];
+            console.log('Servidores ICE personalizados aplicados desde JSON:', servers);
+            return PEER_CONFIG.config.iceServers;
+          }
+
+          console.log('Consultando credenciales TURN dinámicas desde:', url);
+          const resp = await fetch(url, { cache: 'no-cache' });
+          if (resp.ok) {
+            const data = await resp.json();
+            const fetchedServers = Array.isArray(data) ? data : (data.iceServers || []);
+            if (fetchedServers.length > 0) {
+              PEER_CONFIG.config.iceServers = [...fetchedServers, ...BASE_STUN_SERVERS];
+              console.log('Credenciales TURN dinámicas inyectadas exitosamente:', fetchedServers);
+            }
+          } else {
+            console.warn('Respuesta no-OK al consultar TURN:', resp.status);
+          }
+        } catch (e) {
+          console.warn('No se pudieron obtener credenciales TURN remotas, usando STUN:', e);
+        }
+
+        return PEER_CONFIG.config.iceServers;
+      }
+
+      async function runNetworkDiagnostic() {
+        if (!dom.netDiagResults) return;
+        dom.netDiagResults.innerHTML = '<div class="text-cyan-400">⏳ Iniciando test WebRTC... analizando candidatos de red en tiempo real...</div>';
+
+        await ensureIceServers();
+
+        const config = {
+          iceServers: PEER_CONFIG.config.iceServers,
+          iceCandidatePoolSize: 2
+        };
+
+        const candidates = {
+          host: [],
+          srflx: [],
+          relay: []
+        };
+
+        try {
+          const pc = new RTCPeerConnection(config);
+          pc.createDataChannel('diag-channel');
+
+          await new Promise((resolve) => {
+            const timer = setTimeout(() => resolve('timeout'), 7000);
+
+            pc.onicecandidate = (e) => {
+              if (!e.candidate) {
+                clearTimeout(timer);
+                resolve('completed');
+                return;
+              }
+              const c = e.candidate;
+              const type = c.type;
+              if (candidates[type]) {
+                candidates[type].push(c.candidate);
+              }
+              console.log(`[Diagnóstico ICE] Candidato ${type}:`, c.candidate);
+            };
+
+            pc.createOffer()
+              .then(offer => pc.setLocalDescription(offer))
+              .catch(err => {
+                clearTimeout(timer);
+                resolve('error: ' + err.message);
+              });
+          });
+
+          pc.close();
+        } catch (err) {
+          dom.netDiagResults.innerHTML = `<div class="text-rose-400">❌ Error ejecutando test: ${err.message}</div>`;
+          return;
+        }
+
+        let html = '<div class="space-y-1.5">';
+        html += `<div class="text-xs font-bold text-white mb-1">Resultados del Diagnóstico:</div>`;
+        
+        if (candidates.host.length > 0) {
+          html += `<div class="text-emerald-300">✅ Interfaz Local (host): OK (${candidates.host.length} candidato/s)</div>`;
+        } else {
+          html += `<div class="text-amber-300">⚠️ Sin interfaz local detectable</div>`;
+        }
+
+        if (candidates.srflx.length > 0) {
+          html += `<div class="text-emerald-300">✅ STUN Público (srflx): OK (${candidates.srflx.length} candidato/s descubiertos)</div>`;
+        } else {
+          html += `<div class="text-amber-400">⚠️ STUN Público (srflx): No detectado. Cortafuegos o aislamiento activo.</div>`;
+        }
+
+        if (candidates.relay.length > 0) {
+          html += `<div class="text-purple-300 font-bold">🚀 Servidor TURN (relay): ACTIVO (${candidates.relay.length} túneles disponibles)</div>`;
+        } else {
+          html += `<div class="text-slate-400">ℹ️ TURN Relay: No activo (usando STUN directo).</div>`;
+        }
+
+        html += '<div class="mt-2 pt-2 border-t border-slate-800 text-[11px] leading-snug">';
+        if (candidates.relay.length > 0) {
+          html += '<span class="text-emerald-300 font-bold">🎉 ¡Conexión 100% blindada! Tu dispositivo puede conectar con cualquier celular del mundo sin importar Wi-Fi de invitados o datos 4G/5G.</span>';
+        } else if (candidates.srflx.length > 0) {
+          html += '<span class="text-cyan-300 font-bold">👍 STUN funciona. Puedes jugar en Wi-Fi doméstico o compartiendo Hotspot. Si juegas en Wi-Fi de invitados (WLAN_Invitados) y no conecta por aislamiento de router, activa TURN arriba.</span>';
+        } else {
+          html += '<span class="text-rose-300 font-bold">⚠️ Red restrictiva detectada. Configura la URL gratuita de Metered.ca para garantizar la conexión.</span>';
+        }
+        html += '</div></div>';
+
+        dom.netDiagResults.innerHTML = html;
+      }
 
       const PEER_PREFIX = 'paradice-battle-v2-';
 
@@ -1160,7 +1515,7 @@
         }, 4000);
       }
 
-      function iniciarHostRoom(codeOverride = null) {
+      async function iniciarHostRoom(codeOverride = null) {
         if (state.peer) {
           try { state.peer.destroy(); } catch(e) {}
           state.peer = null;
@@ -1227,7 +1582,10 @@
           }
         };
 
-        // Inicializar PeerJS Broker con STUN multi-servidor
+        // Cargar servidores ICE y TURN actualizados
+        await ensureIceServers();
+
+        // Inicializar PeerJS Broker con STUN multi-servidor y TURN opcional
         try {
           state.peer = new Peer(fullPeerId, PEER_CONFIG);
           
@@ -1260,10 +1618,11 @@
 
             if (conn.peerConnection) {
               conn.peerConnection.oniceconnectionstatechange = () => {
-                console.log('Host ICE state con', conn.peer, ':', conn.peerConnection.iceConnectionState);
-                if (conn.peerConnection.iceConnectionState === 'failed') {
-                  console.warn('ICE failed, intentando reinicio de ICE...');
-                  conn.peerConnection.restartIce?.();
+                const iceState = conn.peerConnection.iceConnectionState;
+                console.log('Host ICE state con', conn.peer, ':', iceState);
+                if (iceState === 'failed' || iceState === 'disconnected') {
+                  console.warn('Host ICE disconnected/failed, intentando reinicio de ICE...');
+                  try { conn.peerConnection.restartIce?.(); } catch(e) {}
                 }
               };
             }
@@ -1292,7 +1651,7 @@
         }
       }
 
-      function unirseComoGuest(code) {
+      async function unirseComoGuest(code) {
         if (state.peer) {
           try { state.peer.destroy(); } catch(e) {}
           state.peer = null;
@@ -1355,6 +1714,9 @@
             );
           }
         }, 18000);
+
+        // Cargar servidores ICE y TURN actualizados
+        await ensureIceServers();
 
         try {
           state.peer = new Peer(myGuestId, PEER_CONFIG);
@@ -1432,10 +1794,26 @@
 
             if (conn.peerConnection) {
               conn.peerConnection.oniceconnectionstatechange = () => {
-                console.log('Guest ICE State:', conn.peerConnection.iceConnectionState);
-                if (conn.peerConnection.iceConnectionState === 'failed') {
-                  console.warn('Guest ICE failed, intentando reinicio de ICE...');
-                  conn.peerConnection.restartIce?.();
+                const iceState = conn.peerConnection.iceConnectionState;
+                console.log('Guest ICE State:', iceState);
+                if (iceState === 'disconnected' || iceState === 'failed') {
+                  console.warn('Guest ICE disconnected/failed, intentando reinicio de ICE...');
+                  try { conn.peerConnection.restartIce?.(); } catch(e) {}
+
+                  if (!state.isJoinAccepted) {
+                    mostrarEstadoConexion(
+                      `⚠️ Red Restringida: No se pudo enlazar directamente con el anfitrión.<br>` +
+                      `<span class="text-[10px] text-amber-200">El router o la red móvil bloquea el tráfico P2P directo. ` +
+                      `<button id="link-guest-open-turn" class="underline text-cyan-300 font-bold ml-1 cursor-pointer">Activar TURN Relay</button> o usa Hotspot.</span>`,
+                      'warning',
+                      true
+                    );
+                    const linkTurn = document.getElementById('link-guest-open-turn');
+                    linkTurn?.addEventListener('click', (ev) => {
+                      ev.preventDefault();
+                      openNetworkSettings();
+                    });
+                  }
                 }
               };
             }
