@@ -57,8 +57,10 @@ c:\Users\TC\Documents\Paradice\Juegos\
 ├── hitbar.html                        # Juego 3: Hit Bar Rush 2.0
 ├── dados.html                         # Juego 4: Dice Battle
 ├── ruleta.html                        # Juego 5: Ruleta Paradice
+├── battleround.html                   # Juego 6: BattleRound (Duelo Multijugador P2P)
 ├── verificar.html                     # Módulo de Auditoría de Caja / Supervisor
-└── README.md                          # Este manual
+├── MANUAL_DE_FUNCIONAMIENTO.md        # Manual oficial completo paso a paso
+└── README.md                          # Este manual resumen
 ```
 
 ---
@@ -125,7 +127,11 @@ Puedes abrir cualquier archivo HTML (`index.html`, `minas.html`, etc.) directame
 | `hitbar.html` | **Hit Bar Rush 2.0** | Velocidad y reflejo al milisegundo en cinta láser | ¡Super Promo 2x1! |
 | `dados.html` | **Dice Battle** | Duelo de 3 dados de hielo en 3D (Tríos y escaleras) | ¡Super Promo 2x1! |
 | `ruleta.html` | **Ruleta Paradice** | Ruleta de 12 sectores con física de inercia y aguja | ¡Super Promo 2x1! |
+| `battleround.html` | **BattleRound Paradice** | Duelo Multijugador en vivo P2P vía WebRTC (6x6) | El perdedor paga la ronda |
 | `verificar.html`| **Auditoría de Caja** | Verificación criptográfica de vouchers y registro POS | N/A (Administración) |
+
+> 📖 **Para una explicación detallada paso a paso de cada juego, arquitectura MVC, algoritmos y reglas, consulta:**  
+> 👉 [**MANUAL_DE_FUNCIONAMIENTO.md**](file:///c:/Users/TC/Documents/Paradice/Juegos/MANUAL_DE_FUNCIONAMIENTO.md)
 
 ---
 

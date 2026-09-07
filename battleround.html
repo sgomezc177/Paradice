@@ -728,7 +728,9 @@
         connections: [], // Conexiones activas en caso de host
         heartbeatInterval: null,
         connectionTimeoutTimer: null,
-        connectionPhaseTimer: null
+        connectionPhaseTimer: null,
+        joinRetryInterval: null,
+        isJoinAccepted: false
       };
 
       // 2. Referencias DOM
@@ -998,6 +1000,11 @@
           if (state.heartbeatInterval) clearInterval(state.heartbeatInterval);
           if (state.connectionTimeoutTimer) clearTimeout(state.connectionTimeoutTimer);
           if (state.connectionPhaseTimer) clearTimeout(state.connectionPhaseTimer);
+          if (state.joinRetryInterval) {
+            clearInterval(state.joinRetryInterval);
+            state.joinRetryInterval = null;
+          }
+          state.isJoinAccepted = false;
           dom.viewRoomWaiting.classList.add('hidden');
           dom.viewGame.classList.add('hidden');
           dom.viewLobby.classList.remove('hidden');
@@ -1056,15 +1063,15 @@
       });
 
       // =========================================================================
-      // 4. Conexión P2P con PeerJS (WebRTC Local y a Distancia con STUN/TURN)
+      // 4. Conexión P2P con PeerJS (WebRTC Local y a Distancia con STUN)
       // =========================================================================
 
       // Configuración opcional de servidores TURN dedicados (ej: Metered.ca con 50GB/mes gratis)
-      // Si el anfitrión o desarrollador añade credenciales aquí, se priorizan sobre los públicos.
+      // Si el anfitrión o desarrollador añade credenciales aquí, se priorizan para atravesar NATs simétricos estrictos.
       const CUSTOM_TURN_SERVERS = [];
 
-      // Configuración de red WebRTC de alta resiliencia para GitHub Pages
-      // Utiliza STUN multi-región global y servidores TURN Relay comunitarios oficiales de PeerJS
+      // Configuración de red WebRTC de alta resiliencia y velocidad
+      // Utiliza servidores STUN multi-región probados y de respuesta ultra-rápida (<25ms)
       const PEER_CONFIG = {
         host: '0.peerjs.com',
         port: 443,
@@ -1074,24 +1081,16 @@
         config: {
           iceServers: [
             ...CUSTOM_TURN_SERVERS,
-            // 1. Google Public STUN
+            // Google Public STUN
             { urls: 'stun:stun.l.google.com:19302' },
             { urls: 'stun:stun1.l.google.com:19302' },
             { urls: 'stun:stun2.l.google.com:19302' },
-            // 2. Cloudflare & Twilio STUN
+            { urls: 'stun:stun3.l.google.com:19302' },
+            { urls: 'stun:stun4.l.google.com:19302' },
+            // Cloudflare & Twilio STUN
             { urls: 'stun:stun.cloudflare.com:3478' },
-            { urls: 'stun:global.stun.twilio.com:3478' },
-            // 3. Servidores TURN Relay oficiales de PeerJS (Activos con credenciales oficiales)
-            {
-              urls: [
-                'turn:eu-0.turn.peerjs.com:3478',
-                'turn:us-0.turn.peerjs.com:3478'
-              ],
-              username: 'peerjs',
-              credential: 'peerjsp'
-            }
+            { urls: 'stun:global.stun.twilio.com:3478' }
           ],
-          iceCandidatePoolSize: 10,
           iceTransportPolicy: 'all',
           sdpSemantics: 'unified-plan'
         },
@@ -1190,8 +1189,11 @@
 
         activarWakeLock();
 
-        // Renderizar Código QR
-        const joinUrl = `${window.location.origin}${window.location.pathname}?room=${roomCode}`;
+        // Renderizar Código QR (compatible con GitHub Pages y file:///)
+        let joinUrl = `${window.location.origin}${window.location.pathname}?room=${roomCode}`;
+        if (!window.location.origin || window.location.origin === 'null' || window.location.protocol === 'file:') {
+          joinUrl = `https://sgomezc177.github.io/Paradice/battleround.html?room=${roomCode}`;
+        }
         dom.roomQrcode.innerHTML = '';
         if (typeof QRCode !== 'undefined') {
           new QRCode(dom.roomQrcode, {
@@ -1217,7 +1219,15 @@
 
         iniciarHeartbeat();
 
-        // Inicializar PeerJS Broker con STUN y TURN configurados
+        const registrarConexion = (conn) => {
+          if (!conn) return;
+          if (!state.connections.some(c => c === conn || c.peer === conn.peer)) {
+            state.connections.push(conn);
+            console.log('Conexión registrada en state.connections para:', conn.peer, 'Total:', state.connections.length);
+          }
+        };
+
+        // Inicializar PeerJS Broker con STUN multi-servidor
         try {
           state.peer = new Peer(fullPeerId, PEER_CONFIG);
           
@@ -1227,15 +1237,17 @@
 
           state.peer.on('connection', (conn) => {
             console.log('Solicitud de conexión entrante de:', conn.peer);
+            registrarConexion(conn);
 
             conn.on('open', () => {
               console.log('Canal WebRTC DataChannel establecido con:', conn.peer);
-              if (!state.connections.some(c => c.peer === conn.peer)) {
-                state.connections.push(conn);
-              }
+              registrarConexion(conn);
             });
 
-            conn.on('data', (data) => handlePeerMessage(data, conn));
+            conn.on('data', (data) => {
+              registrarConexion(conn);
+              handlePeerMessage(data, conn);
+            });
 
             conn.on('close', () => {
               console.log('Conexión cerrada con cliente:', conn.peer);
@@ -1293,10 +1305,15 @@
           clearTimeout(state.connectionPhaseTimer);
           state.connectionPhaseTimer = null;
         }
+        if (state.joinRetryInterval) {
+          clearInterval(state.joinRetryInterval);
+          state.joinRetryInterval = null;
+        }
 
         const cleanCode = code.trim().toUpperCase();
         state.roomCode = cleanCode;
         state.isHost = false;
+        state.isJoinAccepted = false;
         state.hostConnection = null;
         const hostPeerId = `${PEER_PREFIX}${cleanCode}`;
 
@@ -1313,70 +1330,85 @@
         if (hostTip) hostTip.classList.add('hidden');
 
         // Fase 1 (0s): Notificación de conexión
-        mostrarEstadoConexion(`📡 Conectando a distancia con la sala #${cleanCode}...`, 'connecting');
+        mostrarEstadoConexion(`📡 Conectando con la sala #${cleanCode}...`, 'connecting');
 
         const myGuestId = `guest-${cleanCode}-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
         state.myPlayerId = myGuestId;
 
-        // Fase 2 (7s): Notificar negociación WebRTC en redes móviles
+        // Fase 2 (6s): Notificar negociación WebRTC en redes móviles
         state.connectionPhaseTimer = setTimeout(() => {
-          if (!state.hostConnection || !state.hostConnection.open) {
+          if (!state.isJoinAccepted) {
             mostrarEstadoConexion(
-              `⚡ Enlazando con el anfitrión vía WebRTC / Relay...<br><span class="text-[10px] text-cyan-300/80">En redes móviles (4G/5G) esto puede tardar unos segundos.</span>`,
+              `⚡ Enlazando con el anfitrión vía WebRTC...<br><span class="text-[10px] text-cyan-300/80">En redes móviles (4G/5G) esto puede tardar unos segundos.</span>`,
               'connecting'
             );
           }
-        }, 7000);
+        }, 6000);
 
-        // Fase 3 (20s): En lugar de abortar o colgar un error fatal, advertir amigablemente y ofrecer reintento
+        // Fase 3 (18s): Advertir amigablemente y ofrecer reintento
         state.connectionTimeoutTimer = setTimeout(() => {
-          if (!state.hostConnection || !state.hostConnection.open) {
+          if (!state.isJoinAccepted) {
             mostrarEstadoConexion(
-              `⏳ La conexión está tardando más de lo habitual.<br><span class="text-[10px] text-amber-200">Asegúrate de que el anfitrión tenga abierta la sala en su pantalla.</span>`,
+              `⏳ La conexión está tardando más de lo habitual.<br><span class="text-[10px] text-amber-200">Asegúrate de que el anfitrión tenga la sala abierta en su pantalla.</span>`,
               'warning',
               true
             );
           }
-        }, 20000);
+        }, 18000);
 
         try {
           state.peer = new Peer(myGuestId, PEER_CONFIG);
 
           state.peer.on('open', (id) => {
             console.log('Guest registrado con ID:', id, 'Conectando con Host:', hostPeerId);
-            if (!state.hostConnection || !state.hostConnection.open) {
+            if (!state.isJoinAccepted) {
               mostrarEstadoConexion('🔗 Negociando canal seguro con el anfitrión...', 'connecting');
             }
 
             const conn = state.peer.connect(hostPeerId, {
-              reliable: true,
-              serialization: 'json'
+              reliable: true
             });
 
+            const enviarPlayerJoin = () => {
+              if (state.isJoinAccepted) return;
+              try {
+                conn.send({
+                  type: 'PLAYER_JOIN',
+                  player: {
+                    id: state.myPlayerId,
+                    name: state.myPlayerName,
+                    avatar: state.myAvatar,
+                    score: 0,
+                    isBot: false,
+                    mines: 0
+                  }
+                });
+                console.log('PLAYER_JOIN enviado al host');
+              } catch (e) {
+                console.warn('Error enviando PLAYER_JOIN:', e);
+              }
+            };
+
             conn.on('open', () => {
-              if (state.connectionPhaseTimer) {
-                clearTimeout(state.connectionPhaseTimer);
-                state.connectionPhaseTimer = null;
-              }
-              if (state.connectionTimeoutTimer) {
-                clearTimeout(state.connectionTimeoutTimer);
-                state.connectionTimeoutTimer = null;
-              }
               console.log('¡Conexión WebRTC exitosa con el Host!');
               state.hostConnection = conn;
-              mostrarEstadoConexion('✅ ¡Conectado con éxito! Esperando que el anfitrión inicie...', 'connected');
+              mostrarEstadoConexion('✅ Canal WebRTC establecido. Registrándose en la sala...', 'connecting');
 
-              conn.send({
-                type: 'PLAYER_JOIN',
-                player: {
-                  id: state.myPlayerId,
-                  name: state.myPlayerName,
-                  avatar: state.myAvatar,
-                  score: 0,
-                  isBot: false,
-                  mines: 0
+              enviarPlayerJoin();
+
+              // Bucle de reintento activo de handshake hasta recibir JOIN_ACCEPTED
+              if (state.joinRetryInterval) clearInterval(state.joinRetryInterval);
+              let joinAttempts = 0;
+              state.joinRetryInterval = setInterval(() => {
+                if (state.isJoinAccepted || joinAttempts >= 8) {
+                  clearInterval(state.joinRetryInterval);
+                  state.joinRetryInterval = null;
+                  return;
                 }
-              });
+                joinAttempts++;
+                console.log(`Reintentando envío de PLAYER_JOIN (${joinAttempts}/8)...`);
+                enviarPlayerJoin();
+              }, 1200);
 
               iniciarHeartbeat();
               activarWakeLock();
@@ -1386,6 +1418,10 @@
 
             conn.on('close', () => {
               console.warn('Conexión con el host cerrada');
+              if (state.joinRetryInterval) {
+                clearInterval(state.joinRetryInterval);
+                state.joinRetryInterval = null;
+              }
               mostrarEstadoConexion('⚠️ La conexión con el anfitrión se ha cerrado.', 'error', true);
             });
 
@@ -1420,6 +1456,10 @@
               clearTimeout(state.connectionTimeoutTimer);
               state.connectionTimeoutTimer = null;
             }
+            if (state.joinRetryInterval) {
+              clearInterval(state.joinRetryInterval);
+              state.joinRetryInterval = null;
+            }
             if (err.type === 'peer-unavailable') {
               mostrarEstadoConexion(`❌ La sala #${cleanCode} no responde o no existe.<br><span class="text-[10px] text-slate-300">Pídele al anfitrión que mantenga abierta la pantalla de la sala.</span>`, 'error', true);
             } else {
@@ -1449,24 +1489,46 @@
           return; // Mantener vivo el canal y el NAT sin procesar lógica
         } else if (msg.type === 'PLAYER_JOIN' && state.isHost) {
           if (state.players.length >= 6) return;
+          if (connSender) {
+            if (!state.connections.some(c => c === connSender || c.peer === connSender.peer)) {
+              state.connections.push(connSender);
+            }
+          }
           const exists = state.players.some(p => p.id === msg.player.id);
           if (!exists) {
             state.players.push(msg.player);
           }
           renderWaitingPlayers();
           // Respuesta directa inmediata al que se acaba de unir
-          if (connSender && connSender.open) {
-            connSender.send({
-              type: 'JOIN_ACCEPTED',
-              players: state.players,
-              turnIndex: state.currentTurnIndex
-            });
+          if (connSender) {
+            try {
+              connSender.send({
+                type: 'JOIN_ACCEPTED',
+                players: state.players,
+                turnIndex: state.currentTurnIndex
+              });
+            } catch(e) {
+              console.warn('Error al responder JOIN_ACCEPTED directo:', e);
+            }
           }
           broadcast({ type: 'UPDATE_PLAYERS', players: state.players });
         } else if (msg.type === 'JOIN_ACCEPTED') {
+          state.isJoinAccepted = true;
+          if (state.joinRetryInterval) {
+            clearInterval(state.joinRetryInterval);
+            state.joinRetryInterval = null;
+          }
+          if (state.connectionPhaseTimer) {
+            clearTimeout(state.connectionPhaseTimer);
+            state.connectionPhaseTimer = null;
+          }
+          if (state.connectionTimeoutTimer) {
+            clearTimeout(state.connectionTimeoutTimer);
+            state.connectionTimeoutTimer = null;
+          }
           state.players = msg.players;
           renderWaitingPlayers();
-          mostrarEstadoConexion('✅ ¡Conectado con éxito! Esperando inicio...', 'connected');
+          mostrarEstadoConexion('✅ ¡Conectado con éxito! Esperando que el anfitrión inicie...', 'connected');
         } else if (msg.type === 'UPDATE_PLAYERS') {
           state.players = msg.players;
           renderWaitingPlayers();
