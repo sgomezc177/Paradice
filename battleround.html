@@ -139,6 +139,12 @@
       box-shadow: 0 0 20px rgba(250, 204, 21, 0.8) !important;
     }
 
+    .battle-tile.planting-target .battle-tile-back {
+      animation: pulse 1.2s infinite ease-in-out;
+      border-color: #facc15 !important;
+      box-shadow: 0 0 25px rgba(250, 204, 21, 0.85), inset 0 0 12px rgba(250, 204, 21, 0.4) !important;
+    }
+
     /* Cara Trasera */
     .battle-tile-back {
       transform: rotateY(180deg);
@@ -518,9 +524,15 @@
         </div>
       </div>
 
-      <!-- Banner de Alerta / Siembra de Mina -->
-      <div id="action-banner-prompt" class="w-full py-1.5 px-3 rounded-xl bg-cyan-950/80 border border-cyan-400/50 text-cyan-200 text-[11px] font-bold text-center mb-2.5 shadow-[0_0_15px_rgba(0,240,255,0.2)]">
-        👉 Toca una casilla oculta para destapar un granizado.
+      <!-- Notificación Flotante de Siembra de Mina -->
+      <div id="action-banner-prompt" class="fixed top-14 sm:top-16 left-1/2 -translate-x-1/2 z-40 pointer-events-none opacity-0 -translate-y-4 transition-all duration-300 ease-out max-w-[92vw] sm:max-w-md w-auto px-4 py-2.5 rounded-2xl bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border-2 border-emerald-400 text-emerald-300 text-xs sm:text-sm font-black text-center shadow-[0_10px_35px_rgba(52,211,153,0.5)] flex flex-col items-center justify-center gap-1.5 backdrop-blur-md select-none overflow-hidden">
+        <div class="flex items-center justify-center gap-2">
+          <span class="text-base animate-bounce">💣</span>
+          <span>Puedes sembrar una mina en este cubo haciendo doble click</span>
+        </div>
+        <div id="planting-progress-bar" class="w-full h-1 bg-emerald-950/80 rounded-full overflow-hidden">
+          <div id="planting-progress-fill" class="h-full bg-emerald-400 rounded-full" style="width: 100%;"></div>
+        </div>
       </div>
 
       <!-- Tablero de Hielos 6x6 -->
@@ -841,6 +853,8 @@
         board: [], // 36 casillas: { index, type: 'GRANIZADO'|'DOBLE'|'SHOT'|'HIELO', points: 100, revealed: false, mineBy: null }
         myMinesCount: 0,
         isPlantingMode: false,
+        plantableTileIndex: null,
+        plantingTimer: null,
         isGameOver: false,
         botsList: [
           { name: 'Mateo', avatar: '🥃' },
@@ -1156,6 +1170,7 @@
             state.joinRetryInterval = null;
           }
           state.isJoinAccepted = false;
+          ocultarNotificacionSiembra();
           dom.viewRoomWaiting.classList.add('hidden');
           dom.viewGame.classList.add('hidden');
           dom.viewLobby.classList.remove('hidden');
@@ -1769,6 +1784,8 @@
           state.currentTurnIndex = msg.turnIndex;
           state.isGameOver = false;
           state.isPlantingMode = false;
+          state.plantableTileIndex = null;
+          ocultarNotificacionSiembra();
           // Inicializar las 36 casillas en el Guest
           state.board = Array.from({ length: 36 }, (_, idx) => ({
             index: idx,
@@ -1813,7 +1830,7 @@
             state.myMinesCount = Math.max(1, state.myMinesCount);
             dom.playerMinesCount.textContent = state.myMinesCount;
             if (audio && audio.playCoinWin) audio.playCoinWin();
-            mostrarOpcionesCuboLimpio(msg.tileIndex);
+            mostrarNotificacionSiembra(msg.tileIndex);
           }
         } else if (msg.type === 'TILE_EXPLODED') {
           const tile = state.board[msg.tileIndex];
@@ -1952,8 +1969,19 @@
           `;
 
           el.addEventListener('click', () => onTileUserClick(idx));
+          el.addEventListener('dblclick', (e) => {
+            e.preventDefault();
+            onTileUserDoubleClick(idx);
+          });
           dom.battleGrid.appendChild(el);
           actualizarTileVisual(idx);
+        }
+      }
+
+      function onTileUserDoubleClick(tileIndex) {
+        if (state.isGameOver) return;
+        if (state.isPlantingMode && state.plantableTileIndex === tileIndex) {
+          confirmarSiembraMina(tileIndex);
         }
       }
 
@@ -1962,16 +1990,11 @@
         const currentActivePlayer = state.players[state.currentTurnIndex];
         if (!currentActivePlayer) return;
 
-        // Si estamos en modo de siembra de mina
+        // Si estamos en modo de siembra de mina: el segundo click o doble tap en el cubo confirma la siembra
         if (state.isPlantingMode) {
-          const tile = state.board[tileIndex];
-          if (!tile) return;
-          // REGLA CLAVE: La casilla SOLO se desactiva si un usuario detonó una mina y murió
-          if (tile.isExplosion) {
-            alert('Esta casilla quedó destruida por una explosión mortal. Por favor elige otro hielo.');
-            return;
+          if (state.plantableTileIndex === tileIndex) {
+            confirmarSiembraMina(tileIndex);
           }
-          plantarMina(tileIndex, state.myPlayerId);
           return;
         }
 
@@ -2077,8 +2100,8 @@
 
           logEvent(`🍧 ¡Descubriste <strong>${tile.name}</strong> (+${puntosGanados} pts)! El cubo está <strong>Limpio</strong>.`);
 
-          // Ofrecerle sembrar una mina aquí en secreto, en otro hielo o pasar turno
-          mostrarOpcionesCuboLimpio(tileIndex);
+          // Notificación flotante de siembra con doble click
+          mostrarNotificacionSiembra(tileIndex);
 
           broadcast({
             type: 'PLAYER_EXPLORED_CLEAN',
@@ -2124,32 +2147,14 @@
         }
       }
 
-      function mostrarOpcionesCuboLimpio(tileIndex) {
-        state.isPlantingMode = true;
-        state.lastCleanTileIndex = tileIndex;
+      function mostrarNotificacionSiembra(tileIndex) {
+        if (state.plantingTimer) {
+          clearTimeout(state.plantingTimer);
+          state.plantingTimer = null;
+        }
 
-        dom.actionBannerPrompt.className = 'w-full py-2 px-3 rounded-xl bg-gradient-to-r from-emerald-950 via-slate-900 to-emerald-950 border-2 border-emerald-400 text-white text-[11px] shadow-[0_0_20px_rgba(52,211,153,0.5)] flex flex-col sm:flex-row items-center justify-between gap-2 mb-2.5';
-        
-        dom.actionBannerPrompt.innerHTML = `
-          <div class="flex items-center gap-1.5 min-w-0">
-            <span class="text-base">✨</span>
-            <div class="text-left leading-tight">
-              <span class="font-black text-emerald-300">¡Cubo Limpio Asegurado!</span>
-              <span class="text-[10px] text-slate-300 block">Puedes sembrar una mina trampa en este cubo o en otro hielo sin que los rivales lo sepan.</span>
-            </div>
-          </div>
-          <div class="flex items-center gap-1.5 flex-shrink-0">
-            <button id="btn-plant-current-clean" class="px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-black text-[11px] shadow-[0_0_10px_rgba(244,63,94,0.7)] cursor-pointer transition active:scale-95">
-              💣 SEMBRAR AQUÍ
-            </button>
-            <button id="btn-plant-other-tile" class="px-2 py-1 rounded-lg bg-cyan-800 hover:bg-cyan-700 text-cyan-200 font-bold text-[10px] cursor-pointer transition">
-              🧊 OTRO HIELO
-            </button>
-            <button id="btn-skip-plant-turn" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 font-bold text-[10px] cursor-pointer transition">
-              PASAR
-            </button>
-          </div>
-        `;
+        state.isPlantingMode = true;
+        state.plantableTileIndex = tileIndex;
 
         // Resaltar la casilla limpia actual
         const tileEl = dom.battleGrid.querySelector(`.battle-tile[data-index="${tileIndex}"]`);
@@ -2157,58 +2162,67 @@
           tileEl.classList.add('planting-target');
         }
 
-        document.getElementById('btn-plant-current-clean')?.addEventListener('click', (e) => {
-          e.stopPropagation();
-          plantarMina(tileIndex, state.myPlayerId);
-        });
+        // Mostrar notificación flotante
+        if (dom.actionBannerPrompt) {
+          dom.actionBannerPrompt.classList.remove('opacity-0', '-translate-y-4');
+          dom.actionBannerPrompt.classList.add('opacity-100', 'translate-y-0');
 
-        document.getElementById('btn-plant-other-tile')?.addEventListener('click', (e) => {
-          e.stopPropagation();
-          activarModoSiembraCualquierHielo();
-        });
-
-        document.getElementById('btn-skip-plant-turn')?.addEventListener('click', (e) => {
-          e.stopPropagation();
-          state.isPlantingMode = false;
-          if (tileEl) tileEl.classList.remove('planting-target');
-          dom.battleGrid.querySelectorAll('.planting-target').forEach(el => el.classList.remove('planting-target'));
-          dom.actionBannerPrompt.className = 'w-full py-1.5 px-3 rounded-xl bg-slate-900 border border-slate-700 text-slate-300 text-[11px] font-bold text-center mb-2.5';
-          dom.actionBannerPrompt.innerHTML = '✅ Turno completado sin sembrar mina.';
-          if (state.isHost) {
-            pasarSiguienteTurno();
-          } else {
-            broadcast({ type: 'PASS_TURN', playerId: state.myPlayerId });
+          // Reiniciar barra de tiempo visual (3.8 segundos)
+          const fill = document.getElementById('planting-progress-fill');
+          if (fill) {
+            fill.style.transition = 'none';
+            fill.style.width = '100%';
+            void fill.offsetWidth; // Forzar reflow
+            fill.style.transition = 'width 3.8s linear';
+            fill.style.width = '0%';
           }
-        });
+        }
+
+        // Temporizador para auto-desaparecer y pasar el turno sin sembrar
+        state.plantingTimer = setTimeout(() => {
+          finalizarTurnoSinSiembra(tileIndex);
+        }, 3800);
       }
 
-      function activarModoSiembraCualquierHielo() {
-        state.isPlantingMode = true;
-        dom.actionBannerPrompt.className = 'w-full py-1.5 px-3 rounded-xl bg-gradient-to-r from-amber-500 to-rose-500 text-slate-950 text-[11px] font-black text-center mb-2.5 shadow-[0_0_20px_rgba(250,204,21,0.6)] animate-pulse';
-        dom.actionBannerPrompt.innerHTML = '💣 Toca cualquier hielo activo del tablero para sembrar tu mina trampa en secreto.';
+      function ocultarNotificacionSiembra() {
+        if (state.plantingTimer) {
+          clearTimeout(state.plantingTimer);
+          state.plantingTimer = null;
+        }
+        if (dom.actionBannerPrompt) {
+          dom.actionBannerPrompt.classList.remove('opacity-100', 'translate-y-0');
+          dom.actionBannerPrompt.classList.add('opacity-0', '-translate-y-4');
+        }
+        dom.battleGrid.querySelectorAll('.planting-target').forEach(el => el.classList.remove('planting-target'));
+      }
 
-        dom.battleGrid.querySelectorAll('.battle-tile').forEach(t => {
-          const idx = parseInt(t.dataset.index, 10);
-          const tData = state.board[idx];
-          if (tData && !tData.isExplosion) {
-            const front = t.querySelector('.battle-tile-front');
-            if (front) front.classList.add('planting-target');
-          }
-        });
+      function finalizarTurnoSinSiembra(tileIndex) {
+        state.isPlantingMode = false;
+        state.plantableTileIndex = null;
+        ocultarNotificacionSiembra();
+
+        if (state.isHost) {
+          pasarSiguienteTurno();
+        } else {
+          broadcast({ type: 'PASS_TURN', playerId: state.myPlayerId });
+        }
+      }
+
+      function confirmarSiembraMina(tileIndex) {
+        if (!state.isPlantingMode || state.plantableTileIndex !== tileIndex) return;
+        ocultarNotificacionSiembra();
+        plantarMina(tileIndex, state.myPlayerId);
       }
 
       function plantarMina(tileIndex, planterId) {
         state.isPlantingMode = false;
+        state.plantableTileIndex = null;
+        ocultarNotificacionSiembra();
+
         state.myMinesCount = Math.max(0, state.myMinesCount - 1);
         dom.playerMinesCount.textContent = state.myMinesCount;
 
-        // Remover resaltados de siembra
-        dom.battleGrid.querySelectorAll('.planting-target').forEach(el => el.classList.remove('planting-target'));
-
         registrarMinaPlantada(tileIndex, planterId);
-
-        dom.actionBannerPrompt.className = 'w-full py-1.5 px-3 rounded-xl bg-cyan-950/90 border border-cyan-400/60 text-cyan-200 text-[11px] font-bold text-center mb-2.5';
-        dom.actionBannerPrompt.innerHTML = '✅ ¡Mina trampa sembrada en secreto! Espera tu siguiente turno.';
 
         logEvent(`💣 Sembraste una mina trampa secreta en el cubo <strong>#${tileIndex + 1}</strong>.`);
 
@@ -2332,12 +2346,6 @@
         dom.currentTurnBadge.className = isMe 
           ? 'px-2.5 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-400 font-black text-xs animate-pulse truncate max-w-[150px]'
           : 'px-2.5 py-0.5 rounded-full bg-slate-900 text-slate-400 border border-slate-700 font-bold text-xs truncate max-w-[150px]';
-
-        if (!state.isPlantingMode) {
-          dom.actionBannerPrompt.textContent = isMe 
-            ? '👉 Es tu turno: Toca un hielo oculto para sumar puntos.' 
-            : `⏳ Esperando a que ${currentActive.name} elija una casilla...`;
-        }
       }
 
       function actualizarScoreboard() {
@@ -2373,6 +2381,7 @@
 
       function finalizarPartida() {
         state.isGameOver = true;
+        ocultarNotificacionSiembra();
         desactivarWakeLock();
         const sorted = [...state.players].sort((a, b) => b.score - a.score);
         const winner = sorted[0];
