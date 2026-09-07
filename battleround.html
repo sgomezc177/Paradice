@@ -480,6 +480,22 @@
         <div id="room-players-list" class="space-y-1.5 max-h-36 overflow-y-auto pr-1 text-xs">
           <!-- Jugadores agregados dinámicamente -->
         </div>
+      <!-- Selector de Meta de Puntos (Antes de Iniciar) -->
+      <div id="target-points-box" class="w-full my-3 p-3.5 rounded-2xl bg-slate-950/80 border border-amber-500/40 text-left shadow-md">
+        <div class="flex items-center justify-between text-xs font-black uppercase text-amber-300 mb-2">
+          <span class="flex items-center gap-1.5">
+            <span>🎯</span> <span>Meta de Puntos para Ganar:</span>
+          </span>
+          <span id="target-points-badge" class="font-mono text-cyan-300 font-black px-2 py-0.5 rounded-md bg-cyan-950 border border-cyan-500/50">2500 pts</span>
+        </div>
+        <p class="text-[10px] text-slate-400 mb-2">El primer jugador en llegar a la meta asegura el 1er Lugar y los demás disputan el podio.</p>
+        <div id="target-points-options" class="grid grid-cols-5 gap-1.5">
+          <button type="button" class="target-opt py-1.5 px-1 rounded-xl text-xs font-black border border-slate-700 bg-slate-900 text-slate-300 hover:border-amber-400 transition cursor-pointer" data-points="1000">1000</button>
+          <button type="button" class="target-opt py-1.5 px-1 rounded-xl text-xs font-black border border-amber-400 bg-amber-500 text-slate-950 shadow-[0_0_12px_rgba(250,204,21,0.6)] transition cursor-pointer" data-points="2500">2500</button>
+          <button type="button" class="target-opt py-1.5 px-1 rounded-xl text-xs font-black border border-slate-700 bg-slate-900 text-slate-300 hover:border-amber-400 transition cursor-pointer" data-points="3700">3700</button>
+          <button type="button" class="target-opt py-1.5 px-1 rounded-xl text-xs font-black border border-slate-700 bg-slate-900 text-slate-300 hover:border-amber-400 transition cursor-pointer" data-points="4500">4500</button>
+          <button type="button" class="target-opt py-1.5 px-1 rounded-xl text-xs font-black border border-slate-700 bg-slate-900 text-slate-300 hover:border-amber-400 transition cursor-pointer" data-points="5000">5000</button>
+        </div>
       </div>
 
       <!-- Acciones de Sala (Host / Guest) -->
@@ -509,19 +525,32 @@
     <div id="app-container" class="w-full max-w-[440px] flex flex-col items-center relative">
       
       <!-- Banner de Turno & Notificación de Emboscada -->
-      <div class="w-full flex items-center justify-between p-2.5 rounded-2xl bg-slate-900/90 border border-red-500/40 mb-2.5 backdrop-blur-sm text-xs">
-        <div class="flex items-center space-x-2">
-          <span class="text-rose-400 font-black text-xs">TURNO:</span>
-          <span id="current-turn-badge" class="px-2.5 py-0.5 rounded-full bg-rose-950 text-rose-200 border border-rose-500/50 font-black text-xs truncate max-w-[150px]">
+      <div class="w-full flex items-center justify-between p-2.5 rounded-2xl bg-slate-900/90 border border-red-500/40 mb-2.5 backdrop-blur-sm text-xs gap-1.5">
+        <div class="flex items-center space-x-1.5">
+          <span class="text-rose-400 font-black text-[11px]">TURNO:</span>
+          <span id="current-turn-badge" class="px-2 py-0.5 rounded-full bg-rose-950 text-rose-200 border border-rose-500/50 font-black text-xs truncate max-w-[110px] sm:max-w-[140px]">
             Tu Turno
           </span>
         </div>
 
+        <!-- Meta de Puntos de la Partida -->
+        <div class="flex items-center space-x-1 px-2 py-0.5 rounded-full bg-amber-950/80 border border-amber-500/60 text-amber-300 font-bold text-[11px]">
+          <span>🎯</span>
+          <span id="game-target-score" class="font-mono text-white font-black">2500</span>
+          <span class="text-[9px] text-amber-400">pts</span>
+        </div>
+
         <!-- Inventario de Minas del Jugador -->
-        <div id="mine-inventory-box" class="flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-slate-950 border border-amber-500/50 text-amber-300 font-bold text-xs">
-          <span>💣 Minas:</span>
+        <div id="mine-inventory-box" class="flex items-center space-x-1 px-2 py-0.5 rounded-full bg-slate-950 border border-amber-500/50 text-amber-300 font-bold text-xs">
+          <span>💣</span>
           <span id="player-mines-count" class="font-mono text-cyan-300 font-black">0</span>
         </div>
+      </div>
+
+      <!-- Banner de Modo Espectador (Para ganadores que aseguraron podio) -->
+      <div id="spectator-banner" class="hidden w-full py-2 px-3 rounded-2xl bg-gradient-to-r from-amber-500/20 via-yellow-500/30 to-amber-500/20 border-2 border-amber-400 text-amber-200 text-xs font-black text-center mb-2.5 shadow-[0_0_20px_rgba(250,204,21,0.4)] animate-pulse flex items-center justify-center gap-2">
+        <span class="text-base">👑</span>
+        <span id="spectator-banner-text">¡Alcanzaste la meta! Modo Espectador activo viendo la disputa del podio.</span>
       </div>
 
       <!-- Notificación Flotante de Siembra de Mina -->
@@ -588,47 +617,74 @@
   <!-- 5. MODAL FINAL: PODIO Y RETO DEL PERDEDOR (PAGA LA RONDA)                 -->
   <!-- ========================================================================= -->
   <div id="modal-game-over" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-4 hidden">
-    <div class="w-full max-w-md bg-gradient-to-b from-slate-900 via-rose-950/40 to-slate-900 border-2 border-red-500 rounded-3xl p-6 shadow-[0_0_50px_rgba(244,63,94,0.6)] flex flex-col items-center text-center">
+    <div class="w-full max-w-md bg-gradient-to-b from-slate-900 via-rose-950/40 to-slate-900 border-2 border-red-500 rounded-3xl p-5 sm:p-6 shadow-[0_0_50px_rgba(244,63,94,0.6)] flex flex-col items-center text-center max-h-[95vh] overflow-y-auto">
       
-      <div class="w-16 h-16 rounded-full bg-rose-950 border border-rose-400 flex items-center justify-center text-3xl mb-2 animate-bounce">
-        🍻
+      <div class="w-14 h-14 rounded-full bg-rose-950 border border-rose-400 flex items-center justify-center text-3xl mb-2 animate-bounce">
+        🏆
       </div>
 
       <span class="px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-red-950 text-rose-300 border border-red-500/50 mb-1">
         ¡RONDA FINALIZADA!
       </span>
 
-      <h2 class="text-2xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-200 to-rose-400 uppercase tracking-tight">
+      <h2 class="text-2xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-200 to-rose-400 uppercase tracking-tight mb-2">
         PODIO DE BATALLA
       </h2>
 
-      <!-- Ganador 1er Lugar -->
-      <div class="w-full my-3 p-3 rounded-2xl bg-emerald-950/40 border border-emerald-500/50 flex items-center justify-between">
-        <div class="flex items-center space-x-2.5">
-          <span class="text-2xl">👑</span>
-          <div class="text-left">
-            <span class="text-[10px] uppercase font-black text-emerald-400">1er Lugar • Campeón</span>
-            <div id="winner-name-display" class="font-black text-white text-sm">---</div>
+      <!-- Contenedor del Podio Completo -->
+      <div id="podium-container" class="w-full space-y-2 my-2">
+        <!-- 1er Lugar (Oro) -->
+        <div id="podium-1st" class="w-full p-2.5 rounded-2xl bg-amber-950/40 border-2 border-amber-400/80 flex items-center justify-between shadow-[0_0_15px_rgba(250,204,21,0.3)]">
+          <div class="flex items-center space-x-2.5 min-w-0">
+            <span class="text-2xl flex-shrink-0">🥇</span>
+            <div class="text-left truncate">
+              <span class="text-[9px] uppercase font-black text-amber-400 tracking-wider block">1er Lugar • Campeón</span>
+              <div id="podium-1st-name" class="font-black text-white text-xs sm:text-sm truncate">---</div>
+            </div>
           </div>
+          <div id="podium-1st-score" class="font-mono font-black text-amber-300 text-xs sm:text-sm flex-shrink-0">0 pts</div>
         </div>
-        <div id="winner-score-display" class="font-mono font-black text-emerald-300 text-sm">0 pts</div>
+
+        <!-- 2do Lugar (Plata) -->
+        <div id="podium-2nd" class="w-full p-2.5 rounded-2xl bg-slate-900/90 border border-slate-400/60 flex items-center justify-between">
+          <div class="flex items-center space-x-2.5 min-w-0">
+            <span class="text-2xl flex-shrink-0">🥈</span>
+            <div class="text-left truncate">
+              <span class="text-[9px] uppercase font-black text-slate-300 tracking-wider block">2do Lugar • Subcampeón</span>
+              <div id="podium-2nd-name" class="font-black text-white text-xs sm:text-sm truncate">---</div>
+            </div>
+          </div>
+          <div id="podium-2nd-score" class="font-mono font-black text-slate-200 text-xs sm:text-sm flex-shrink-0">0 pts</div>
+        </div>
+
+        <!-- 3er Lugar (Bronce) -->
+        <div id="podium-3rd" class="w-full p-2.5 rounded-2xl bg-amber-950/20 border border-amber-700/60 flex items-center justify-between">
+          <div class="flex items-center space-x-2.5 min-w-0">
+            <span class="text-2xl flex-shrink-0">🥉</span>
+            <div class="text-left truncate">
+              <span class="text-[9px] uppercase font-black text-amber-600 tracking-wider block">3er Lugar • Tercer Puesto</span>
+              <div id="podium-3rd-name" class="font-black text-white text-xs sm:text-sm truncate">---</div>
+            </div>
+          </div>
+          <div id="podium-3rd-score" class="font-mono font-black text-amber-500 text-xs sm:text-sm flex-shrink-0">0 pts</div>
+        </div>
       </div>
 
       <!-- El Perdedor Paga la Ronda -->
-      <div class="w-full my-1.5 p-4 rounded-2xl bg-gradient-to-r from-rose-950/80 via-red-900/60 to-rose-950/80 border-2 border-rose-500 shadow-[0_0_25px_rgba(244,63,94,0.5)] flex flex-col items-center animate-glow-red">
-        <span class="text-[11px] font-black uppercase tracking-wider text-rose-300 flex items-center gap-1">
+      <div id="podium-loser" class="w-full my-1.5 p-3 rounded-2xl bg-gradient-to-r from-rose-950/80 via-red-900/60 to-rose-950/80 border-2 border-rose-500 shadow-[0_0_25px_rgba(244,63,94,0.5)] flex flex-col items-center animate-glow-red">
+        <span class="text-[10px] font-black uppercase tracking-wider text-rose-300 flex items-center gap-1">
           <span>💀</span> <span>EL PERDEDOR DE LA NOCHE</span> <span>💀</span>
         </span>
-        <div id="loser-name-display" class="text-xl font-black text-white my-1">
+        <div id="loser-name-display" class="text-base sm:text-lg font-black text-white my-0.5">
           ---
         </div>
-        <p class="text-xs text-rose-200 font-bold">
+        <p class="text-[11px] text-rose-200 font-bold">
           ¡LE TOCA PAGAR LA RONDA DE GRANIZADOS EN PARADICE! 🍸🍻
         </p>
       </div>
 
       <!-- Acciones Finales -->
-      <div class="w-full space-y-2 mt-4">
+      <div class="w-full space-y-2 mt-3">
         <a id="btn-share-whatsapp" href="#" target="_blank" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(52,211,153,0.5)] active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer">
           <span>📱</span> <span>COBRAR LA RONDA POR WHATSAPP</span>
         </a>
@@ -852,6 +908,9 @@
         currentTurnIndex: 0,
         board: [], // 36 casillas: { index, type: 'GRANIZADO'|'DOBLE'|'SHOT'|'HIELO', points: 100, revealed: false, mineBy: null }
         myMinesCount: 0,
+        targetScore: 2500,
+        podium: [],
+        isSpectator: false,
         isPlantingMode: false,
         plantableTileIndex: null,
         plantingTimer: null,
@@ -893,6 +952,14 @@
         btnStartGame: document.getElementById('btn-start-game'),
         headerRoomBadge: document.getElementById('header-room-badge'),
         headerRoomCode: document.getElementById('header-room-code'),
+        // Target Points
+        targetPointsBox: document.getElementById('target-points-box'),
+        targetPointsBadge: document.getElementById('target-points-badge'),
+        targetOptions: document.querySelectorAll('.target-opt'),
+        gameTargetScore: document.getElementById('game-target-score'),
+        // Spectator Banner
+        spectatorBanner: document.getElementById('spectator-banner'),
+        spectatorBannerText: document.getElementById('spectator-banner-text'),
         // Game Board
         battleGrid: document.getElementById('battle-grid'),
         currentTurnBadge: document.getElementById('current-turn-badge'),
@@ -900,10 +967,18 @@
         actionBannerPrompt: document.getElementById('action-banner-prompt'),
         liveScoreboard: document.getElementById('live-scoreboard'),
         battleLog: document.getElementById('battle-log'),
-        // Modal Game Over
+        // Modal Game Over & Podio
         modalGameOver: document.getElementById('modal-game-over'),
-        winnerNameDisplay: document.getElementById('winner-name-display'),
-        winnerScoreDisplay: document.getElementById('winner-score-display'),
+        podiumContainer: document.getElementById('podium-container'),
+        podium1st: document.getElementById('podium-1st'),
+        podium1stName: document.getElementById('podium-1st-name'),
+        podium1stScore: document.getElementById('podium-1st-score'),
+        podium2nd: document.getElementById('podium-2nd'),
+        podium2ndName: document.getElementById('podium-2nd-name'),
+        podium2ndScore: document.getElementById('podium-2nd-score'),
+        podium3rd: document.getElementById('podium-3rd'),
+        podium3rdName: document.getElementById('podium-3rd-name'),
+        podium3rdScore: document.getElementById('podium-3rd-score'),
         loserNameDisplay: document.getElementById('loser-name-display'),
         btnShareWhatsapp: document.getElementById('btn-share-whatsapp'),
         btnPlayAgain: document.getElementById('btn-play-again'),
@@ -1059,11 +1134,28 @@
             avatar: availableBot.avatar,
             score: 0,
             isBot: true,
-            mines: 0
+            mines: 0,
+            stealPct: 10
           };
           state.players.push(botPlayer);
           renderWaitingPlayers();
           broadcast({ type: 'UPDATE_PLAYERS', players: state.players });
+        });
+
+        // Selector de Meta de Puntos
+        dom.targetOptions?.forEach(btn => {
+          btn.addEventListener('click', () => {
+            if (!state.isHost && state.roomCode && state.roomCode !== 'LOCAL-BOTS') {
+              return;
+            }
+            const pts = parseInt(btn.dataset.points, 10);
+            if (pts && [1000, 2500, 3700, 4500, 5000].includes(pts)) {
+              actualizarMetaPuntos(pts);
+              if (state.isHost) {
+                broadcast({ type: 'TARGET_SCORE_CHANGED', targetScore: pts });
+              }
+            }
+          });
         });
 
         // Iniciar Partida
@@ -1072,14 +1164,22 @@
             alert('Se necesitan al menos 2 jugadores. ¡Puedes pulsar "Añadir Bot de Prueba" para probar ya mismo!');
             return;
           }
-          generarTableroBatalla();
-          state.currentTurnIndex = 0;
+          state.podium = [];
+          state.isSpectator = false;
           state.isGameOver = false;
+          state.currentTurnIndex = 0;
+          state.players.forEach(p => {
+            p.score = 0;
+            p.stealPct = 10;
+          });
+
+          generarTableroBatalla();
 
           const gameStartData = {
             type: 'START_GAME',
             players: state.players,
-            turnIndex: state.currentTurnIndex
+            turnIndex: state.currentTurnIndex,
+            targetScore: state.targetScore
           };
 
           broadcast(gameStartData);
@@ -1089,11 +1189,15 @@
         // Reiniciar / Jugar otra
         dom.btnPlayAgain.addEventListener('click', () => {
           dom.modalGameOver.classList.add('hidden');
+          if (dom.spectatorBanner) dom.spectatorBanner.classList.add('hidden');
+          state.isGameOver = false;
+          state.isSpectator = false;
+          state.podium = [];
           if (state.isHost) {
             dom.btnStartGame.click();
           } else {
             dom.viewGame.classList.add('hidden');
-            dom.viewLobby.classList.remove('hidden');
+            dom.viewRoomWaiting.classList.remove('hidden');
           }
         });
 
@@ -1593,7 +1697,8 @@
           avatar: state.myAvatar,
           score: 0,
           isBot: false,
-          mines: 0
+          mines: 0,
+          stealPct: 10
         }];
         renderWaitingPlayers();
         actualizarBadgeRed();
@@ -1686,7 +1791,8 @@
                 avatar: state.myAvatar,
                 score: 0,
                 isBot: false,
-                mines: 0
+                mines: 0,
+                stealPct: 10
               }
             });
             console.log('[Guest] PLAYER_JOIN enviado al host por Cloud Relay');
@@ -1751,16 +1857,22 @@
           if (state.players.length >= 6) return;
           const exists = state.players.some(p => p.id === msg.player.id);
           if (!exists) {
-            state.players.push(msg.player);
+            state.players.push({
+              ...msg.player,
+              stealPct: msg.player.stealPct || 10
+            });
           }
           renderWaitingPlayers();
           broadcast({
             type: 'JOIN_ACCEPTED',
             targetPlayerId: msg.player.id,
             players: state.players,
-            turnIndex: state.currentTurnIndex
+            turnIndex: state.currentTurnIndex,
+            targetScore: state.targetScore
           });
           broadcast({ type: 'UPDATE_PLAYERS', players: state.players });
+        } else if (msg.type === 'TARGET_SCORE_CHANGED') {
+          actualizarMetaPuntos(msg.targetScore);
         } else if (msg.type === 'JOIN_ACCEPTED') {
           if (!msg.targetPlayerId || msg.targetPlayerId === state.myPlayerId || !state.isJoinAccepted) {
             state.isJoinAccepted = true;
@@ -1773,6 +1885,9 @@
               state.connectionTimeoutTimer = null;
             }
             state.players = msg.players;
+            if (msg.targetScore) {
+              actualizarMetaPuntos(msg.targetScore);
+            }
             renderWaitingPlayers();
             mostrarEstadoConexion('✅ ¡Conectado con éxito! Esperando que el anfitrión inicie...', 'connected');
           }
@@ -1782,10 +1897,14 @@
         } else if (msg.type === 'START_GAME') {
           state.players = msg.players;
           state.currentTurnIndex = msg.turnIndex;
+          state.targetScore = msg.targetScore || state.targetScore || 2500;
+          state.podium = [];
+          state.isSpectator = false;
           state.isGameOver = false;
           state.isPlantingMode = false;
           state.plantableTileIndex = null;
           ocultarNotificacionSiembra();
+          if (dom.spectatorBanner) dom.spectatorBanner.classList.add('hidden');
           // Inicializar las 36 casillas en el Guest
           state.board = Array.from({ length: 36 }, (_, idx) => ({
             index: idx,
@@ -1839,17 +1958,18 @@
             tile.publiclyRevealed = true;
             tile.victimAvatar = msg.victimAvatar;
             tile.victimName = msg.victimName;
-            tile.pointsLabel = `-${msg.stolenPoints} pts`;
+            tile.pointsLabel = `-${msg.stolenPoints} pts (${msg.stealRate || 10}%)`;
             actualizarTileVisual(msg.tileIndex);
           }
-          state.players = msg.players;
+          if (msg.players) state.players = msg.players;
+          if (msg.podium) state.podium = msg.podium;
           actualizarScoreboard();
           if (audio && audio.playExplosion) audio.playExplosion();
           dom.battleGrid.classList.add('animate-shake');
           setTimeout(() => dom.battleGrid.classList.remove('animate-shake'), 500);
           const victim = state.players.find(p => p.id === msg.victimId);
           const planter = state.players.find(p => p.id === msg.planterId);
-          logEvent(`💥 <strong>¡EMBOSCADA!</strong> ${msg.victimAvatar || '👤'} ${victim ? victim.name : 'Un rival'} pisó la mina secreta de <strong>${planter ? planter.name : 'un rival'}</strong>. ¡${planter ? planter.name : 'Rival'} le robó ${msg.stolenPoints} pts!`);
+          logEvent(`💥 <strong>¡EMBOSCADA!</strong> ${msg.victimAvatar || '👤'} ${victim ? victim.name : 'Un rival'} pisó la mina de <strong>${planter ? planter.name : 'un rival'}</strong>. ¡${planter ? planter.name : 'Rival'} le robó el <strong>${msg.stealRate || 10}%</strong> (${msg.stolenPoints} pts)!`);
         } else if (msg.type === 'PLAYER_EXPLORED_CLEAN') {
           state.players = msg.players;
           actualizarScoreboard();
@@ -1857,11 +1977,41 @@
           if (p && p.id !== state.myPlayerId) {
             logEvent(`❄️ ${p.avatar || '👤'} ${p.name} exploró una casilla de hielo.`);
           }
+        } else if (msg.type === 'PLAYER_REACHED_GOAL') {
+          if (msg.podium) state.podium = msg.podium;
+          if (msg.players) state.players = msg.players;
+          const winnerEntry = state.podium.find(p => p.id === msg.playerId);
+          if (winnerEntry) {
+            const medal = winnerEntry.rank === 1 ? '🥇' : (winnerEntry.rank === 2 ? '🥈' : '🥉');
+            const rankName = winnerEntry.rank === 1 ? '1er Lugar • Campeón' : (winnerEntry.rank === 2 ? '2do Lugar • Subcampeón' : '3er Lugar • Tercer Puesto');
+            logEvent(`👑 ¡${medal} <strong>${winnerEntry.avatar} ${winnerEntry.name}</strong> alcanzó la meta (${winnerEntry.score}/${state.targetScore} pts) y asegura el <strong>${rankName}</strong>!`);
+          }
+          if (msg.playerId === state.myPlayerId) {
+            state.isSpectator = true;
+            if (dom.spectatorBanner) {
+              dom.spectatorBanner.classList.remove('hidden');
+              if (dom.spectatorBannerText && winnerEntry) {
+                const medal = winnerEntry.rank === 1 ? '🥇' : (winnerEntry.rank === 2 ? '🥈' : '🥉');
+                dom.spectatorBannerText.textContent = `¡Alcanzaste la meta con ${winnerEntry.score} pts! Aseguraste el ${medal} ${winnerEntry.rank}º Lugar. Modo Espectador activo.`;
+              }
+            }
+          }
+          actualizarScoreboard();
+          actualizarTurnoUI();
         } else if (msg.type === 'GAME_SYNC') {
           state.players = msg.players;
           state.currentTurnIndex = msg.turnIndex;
+          if (msg.podium) state.podium = msg.podium;
           actualizarScoreboard();
           actualizarTurnoUI();
+        } else if (msg.type === 'GAME_OVER') {
+          state.isGameOver = true;
+          state.podium = msg.podium || state.podium;
+          if (msg.players) state.players = msg.players;
+          ocultarNotificacionSiembra();
+          desactivarWakeLock();
+          const loser = msg.loser || (state.podium[state.podium.length - 1]);
+          mostrarModalFinJuego(state.podium, loser);
         }
       }
 
@@ -1887,10 +2037,13 @@
       function iniciarPartidaBots() {
         state.isHost = true;
         state.roomCode = 'LOCAL-BOTS';
+        state.podium = [];
+        state.isSpectator = false;
+        state.isGameOver = false;
         state.players = [
-          { id: state.myPlayerId, name: state.myPlayerName, avatar: state.myAvatar, score: 0, isBot: false, mines: 0 },
-          { id: 'bot-1', name: 'Mateo', avatar: '🥃', score: 0, isBot: true, mines: 0 },
-          { id: 'bot-2', name: 'Valentina', avatar: '🍧', score: 0, isBot: true, mines: 0 }
+          { id: state.myPlayerId, name: state.myPlayerName, avatar: state.myAvatar, score: 0, isBot: false, mines: 0, stealPct: 10 },
+          { id: 'bot-1', name: 'Mateo', avatar: '🥃', score: 0, isBot: true, mines: 0, stealPct: 10 },
+          { id: 'bot-2', name: 'Valentina', avatar: '🍧', score: 0, isBot: true, mines: 0, stealPct: 10 }
         ];
         generarTableroBatalla();
         state.currentTurnIndex = 0;
@@ -1936,11 +2089,77 @@
         }
       }
 
+      function actualizarMetaPuntos(pts) {
+        state.targetScore = pts;
+        if (dom.targetPointsBadge) {
+          dom.targetPointsBadge.textContent = `${pts} pts`;
+        }
+        if (dom.gameTargetScore) {
+          dom.gameTargetScore.textContent = `${pts}`;
+        }
+        dom.targetOptions?.forEach(btn => {
+          const btnPts = parseInt(btn.dataset.points, 10);
+          if (btnPts === pts) {
+            btn.className = 'target-opt py-1.5 px-1 rounded-xl text-xs font-black border border-amber-400 bg-amber-500 text-slate-950 shadow-[0_0_12px_rgba(250,204,21,0.6)] transition cursor-pointer';
+          } else {
+            btn.className = 'target-opt py-1.5 px-1 rounded-xl text-xs font-black border border-slate-700 bg-slate-900 text-slate-300 hover:border-amber-400 transition cursor-pointer';
+          }
+        });
+      }
+
+      function verificarPuestoPodio(player) {
+        if (!player) return null;
+        if (player.score >= state.targetScore && !state.podium.some(p => p.id === player.id)) {
+          const rank = state.podium.length + 1;
+          const entry = {
+            id: player.id,
+            name: player.name,
+            avatar: player.avatar,
+            score: player.score,
+            rank: rank
+          };
+          state.podium.push(entry);
+
+          const medal = rank === 1 ? '🥇' : (rank === 2 ? '🥈' : '🥉');
+          const rankName = rank === 1 ? '1er Lugar • Campeón' : (rank === 2 ? '2do Lugar • Subcampeón' : '3er Lugar • Tercer Puesto');
+          logEvent(`👑 ¡${medal} <strong>${player.avatar} ${player.name}</strong> alcanzó la meta (${player.score}/${state.targetScore} pts) y asegura el <strong>${rankName}</strong>!`);
+
+          if (player.id === state.myPlayerId) {
+            state.isSpectator = true;
+            if (dom.spectatorBanner) {
+              dom.spectatorBanner.classList.remove('hidden');
+              if (dom.spectatorBannerText) {
+                dom.spectatorBannerText.textContent = `¡Alcanzaste la meta con ${player.score} pts! Aseguraste el ${medal} ${rankName}. Modo Espectador activo viendo la disputa del podio.`;
+              }
+            }
+          }
+
+          if (state.isHost) {
+            broadcast({
+              type: 'PLAYER_REACHED_GOAL',
+              podium: state.podium,
+              playerId: player.id,
+              players: state.players
+            });
+          }
+
+          return entry;
+        }
+        return null;
+      }
+
       function iniciarPantallaJuego() {
         activarWakeLock();
         dom.viewLobby.classList.add('hidden');
         dom.viewRoomWaiting.classList.add('hidden');
         dom.viewGame.classList.remove('hidden');
+
+        if (dom.gameTargetScore) {
+          dom.gameTargetScore.textContent = `${state.targetScore}`;
+        }
+        if (dom.spectatorBanner) {
+          dom.spectatorBanner.classList.add('hidden');
+        }
 
         renderTableroVisual();
         actualizarScoreboard();
@@ -1979,14 +2198,14 @@
       }
 
       function onTileUserDoubleClick(tileIndex) {
-        if (state.isGameOver) return;
+        if (state.isGameOver || state.isSpectator) return;
         if (state.isPlantingMode && state.plantableTileIndex === tileIndex) {
           confirmarSiembraMina(tileIndex);
         }
       }
 
       function onTileUserClick(tileIndex) {
-        if (state.isGameOver) return;
+        if (state.isGameOver || state.isSpectator) return;
         const currentActivePlayer = state.players[state.currentTurnIndex];
         if (!currentActivePlayer) return;
 
@@ -2033,21 +2252,37 @@
         // 1. ¿Había una mina plantada aquí por otro rival?
         if (tile.mineBy && tile.mineBy !== playerId) {
           const planter = state.players.find(p => p.id === tile.mineBy);
-          const stolenPoints = player.score; // Le roba todos los puntos
-          player.score = 0;
-          if (planter) planter.score += Math.max(stolenPoints, 250);
+
+          // REGLA NUEVA: Robo progresivo del 10% al 70%
+          const stealRate = planter ? (planter.stealPct || 10) : 10;
+          let stolenPoints = Math.round(player.score * (stealRate / 100));
+          if (player.score > 0) {
+            stolenPoints = Math.min(player.score, Math.max(stolenPoints, 50));
+          } else {
+            stolenPoints = 0;
+          }
+
+          player.score = Math.max(0, player.score - stolenPoints);
+          if (planter) {
+            planter.score += Math.max(stolenPoints, 100);
+            verificarPuestoPodio(planter);
+          }
+
+          // La víctima murió: su función de robar puntos se reinicia a 10%
+          player.stealPct = 10;
 
           // AQUÍ Y SOLO AQUÍ LA CASILLA SE DESACTIVA PARA TODOS LOS JUGADORES
           tile.isExplosion = true;
           tile.publiclyRevealed = true;
           tile.victimAvatar = player.avatar;
           tile.victimName = player.name;
-          tile.pointsLabel = `-${stolenPoints} pts`;
+          tile.pointsLabel = `-${stolenPoints} pts (${stealRate}%)`;
 
           if (audio && audio.playExplosion) audio.playExplosion();
           else if (audio && audio.playFailSound) audio.playFailSound();
 
-          logEvent(`💥 <strong>¡EMBOSCADA!</strong> ${player.avatar || '👤'} ${player.name} pisó la mina secreta de <strong>${planter ? planter.name : 'un rival'}</strong>. ¡${planter ? planter.name : 'Rival'} le robó ${stolenPoints} pts!`);
+          logEvent(`💥 <strong>¡EMBOSCADA!</strong> ${player.avatar || '👤'} ${player.name} pisó la mina de <strong>${planter ? planter.name : 'un rival'}</strong>. ¡${planter ? planter.name : 'Rival'} le robó el <strong>${stealRate}%</strong> (${stolenPoints} pts)!`);
+          logEvent(`⚠️ La racha de robo de ${player.name} se reinicia al 10%.`);
 
           // Shake animation en el tablero
           dom.battleGrid.classList.add('animate-shake');
@@ -2064,7 +2299,9 @@
             victimName: player.name,
             planterId: tile.mineBy,
             stolenPoints,
-            players: state.players
+            stealRate,
+            players: state.players,
+            podium: state.podium
           });
 
           pasarSiguienteTurno();
@@ -2083,11 +2320,17 @@
           tile.points = 0; // Premio reclamado
         }
 
+        // REGLA NUEVA: Sobrevivió limpio sin morir -> aumenta de a 10% hasta 70% máximo
+        player.stealPct = Math.min(70, (player.stealPct || 10) + 10);
+
         // Otorga 1 mina disponible al jugador que acertó
         if (playerId === state.myPlayerId) {
           state.myMinesCount = Math.max(1, state.myMinesCount);
           dom.playerMinesCount.textContent = state.myMinesCount;
         }
+
+        // Verificar si el jugador alcanzó la meta de puntos
+        verificarPuestoPodio(player);
 
         actualizarScoreboard();
 
@@ -2302,23 +2545,54 @@
       function pasarSiguienteTurno() {
         if (!state.isHost) return;
 
-        // La partida finaliza cuando todas las casillas han explotado
-        const quedanActivas = state.board.some(t => !t.isExplosion);
-        if (!quedanActivas) {
+        // 1. Verificar si la partida ya debe finalizar:
+        // - Se llenaron los 3 primeros lugares del podio
+        // - O solo quedan <= 1 jugadores activos compitiendo
+        // - O no quedan casillas de hielo sin explotar
+        const jugadoresActivos = state.players.filter(p => !state.podium.some(pod => pod.id === p.id));
+        const quedanHielosActivos = state.board.some(t => !t.isExplosion);
+
+        const podioCompleto = state.podium.length >= 3;
+        const dueloFinalizado = state.players.length <= 2 && state.podium.length >= 1;
+        const unSoloCompetidorRestante = jugadoresActivos.length <= 1 && state.podium.length >= 1;
+
+        if (podioCompleto || dueloFinalizado || unSoloCompetidorRestante || !quedanHielosActivos) {
           finalizarPartida();
           return;
         }
 
-        state.currentTurnIndex = (state.currentTurnIndex + 1) % state.players.length;
+        // 2. Avanzar el turno solo a jugadores que NO estén en el podio (no espectadores)
+        let foundNext = false;
+        let attempts = 0;
+        let nextIndex = state.currentTurnIndex;
+
+        while (attempts < state.players.length) {
+          nextIndex = (nextIndex + 1) % state.players.length;
+          attempts++;
+          const candidate = state.players[nextIndex];
+          if (candidate && !state.podium.some(p => p.id === candidate.id)) {
+            state.currentTurnIndex = nextIndex;
+            foundNext = true;
+            break;
+          }
+        }
+
+        if (!foundNext) {
+          finalizarPartida();
+          return;
+        }
+
         actualizarTurnoUI();
+        actualizarScoreboard();
 
         broadcast({
           type: 'GAME_SYNC',
           players: state.players,
-          turnIndex: state.currentTurnIndex
+          turnIndex: state.currentTurnIndex,
+          podium: state.podium
         });
 
-        // Si el siguiente turno es de un Bot
+        // Si el siguiente turno es de un Bot activo
         const nextPlayer = state.players[state.currentTurnIndex];
         if (nextPlayer && nextPlayer.isBot) {
           setTimeout(() => ejecutarTurnoBot(nextPlayer), 1200);
@@ -2326,7 +2600,7 @@
       }
 
       function ejecutarTurnoBot(bot) {
-        if (state.isGameOver) return;
+        if (state.isGameOver || state.podium.some(p => p.id === bot.id)) return;
         const elegibles = state.board.filter(t => !t.isExplosion && (!t.revealedTo || !t.revealedTo.includes(bot.id)));
         if (elegibles.length === 0) {
           finalizarPartida();
@@ -2338,6 +2612,12 @@
       }
 
       function actualizarTurnoUI() {
+        if (state.isSpectator) {
+          dom.currentTurnBadge.textContent = '👀 Modo Espectador';
+          dom.currentTurnBadge.className = 'px-2.5 py-0.5 rounded-full bg-amber-950 text-amber-300 border border-amber-500 font-bold text-xs truncate max-w-[150px]';
+          return;
+        }
+
         const currentActive = state.players[state.currentTurnIndex];
         if (!currentActive) return;
 
@@ -2349,24 +2629,44 @@
       }
 
       function actualizarScoreboard() {
-        const sorted = [...state.players].sort((a, b) => b.score - a.score);
+        // Ordenar: primero los del podio en orden de llegada (rank), luego el resto por puntos desc
+        const enPodio = [...state.podium].map(podEntry => {
+          const livePlayer = state.players.find(p => p.id === podEntry.id) || podEntry;
+          return { ...livePlayer, podiumRank: podEntry.rank };
+        });
+        const noEnPodio = state.players
+          .filter(p => !state.podium.some(pod => pod.id === p.id))
+          .sort((a, b) => b.score - a.score)
+          .map((p, idx) => ({ ...p, podiumRank: null, standing: enPodio.length + idx + 1 }));
+
+        const sorted = [...enPodio, ...noEnPodio];
         dom.liveScoreboard.innerHTML = '';
 
-        sorted.forEach((p, rank) => {
+        sorted.forEach((p, idx) => {
           const isMe = p.id === state.myPlayerId;
-          const medal = rank === 0 ? '👑' : (rank === sorted.length - 1 ? '💀' : `${rank + 1}.`);
+          let medal = '';
+          if (p.podiumRank === 1) medal = '🥇 1º';
+          else if (p.podiumRank === 2) medal = '🥈 2º';
+          else if (p.podiumRank === 3) medal = '🥉 3º';
+          else if (idx === sorted.length - 1) medal = '💀';
+          else medal = `${p.standing || idx + 1}.`;
+
+          const steal = p.stealPct || 10;
           const row = document.createElement('div');
           row.className = `flex items-center justify-between p-2 rounded-xl text-xs transition ${
             isMe ? 'bg-gradient-to-r from-red-950/90 to-rose-950/70 border border-red-500/60 shadow-sm' : 'bg-slate-950/60 border border-slate-800'
           }`;
 
           row.innerHTML = `
-            <div class="flex items-center space-x-2 truncate">
-              <span class="font-bold ${rank === 0 ? 'text-amber-300' : (rank === sorted.length - 1 ? 'text-rose-400' : 'text-slate-400')}">${medal}</span>
-              <span>${p.avatar}</span>
-              <span class="font-bold text-white truncate max-w-[120px]">${p.name}</span>
+            <div class="flex items-center space-x-2 truncate min-w-0">
+              <span class="font-black text-xs ${p.podiumRank ? 'text-amber-400' : (idx === sorted.length - 1 ? 'text-rose-400' : 'text-slate-400')}">${medal}</span>
+              <span class="text-sm">${p.avatar}</span>
+              <span class="font-bold text-white truncate max-w-[100px] sm:max-w-[120px]">${p.name}</span>
+              <span class="px-1.5 py-0.5 rounded text-[9px] font-black ${steal >= 50 ? 'bg-rose-950 text-rose-300 border border-rose-500/50' : 'bg-slate-900 text-amber-300 border border-slate-700'}" title="Racha de Robo actual">💣 ${steal}%</span>
             </div>
-            <div class="font-mono font-black text-cyan-300">${p.score} pts</div>
+            <div class="font-mono font-black text-cyan-300 flex-shrink-0 text-right">
+              ${p.score} <span class="text-[9px] text-slate-400 font-normal">/ ${state.targetScore}</span>
+            </div>
           `;
           dom.liveScoreboard.appendChild(row);
         });
@@ -2383,27 +2683,90 @@
         state.isGameOver = true;
         ocultarNotificacionSiembra();
         desactivarWakeLock();
-        const sorted = [...state.players].sort((a, b) => b.score - a.score);
-        const winner = sorted[0];
-        const loser = sorted[sorted.length - 1];
 
+        // Completar los puestos del podio con los jugadores restantes ordenados por puntaje desc
+        const jugadoresRestantes = state.players
+          .filter(p => !state.podium.some(pod => pod.id === p.id))
+          .sort((a, b) => b.score - a.score);
+
+        jugadoresRestantes.forEach(p => {
+          state.podium.push({
+            id: p.id,
+            name: p.name,
+            avatar: p.avatar,
+            score: p.score,
+            rank: state.podium.length + 1
+          });
+        });
+
+        // El perdedor es el que quedó en el último puesto absoluto
+        const loser = state.podium[state.podium.length - 1] || state.players[state.players.length - 1];
+
+        // Transmitir inmediatamente a todos los clientes (Host & Guests)
+        if (state.isHost) {
+          broadcast({
+            type: 'GAME_OVER',
+            podium: state.podium,
+            players: state.players,
+            loser: loser
+          });
+        }
+
+        mostrarModalFinJuego(state.podium, loser);
+      }
+
+      function mostrarModalFinJuego(podium, loser) {
         if (window.confetti) {
           window.confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
         }
         if (audio && audio.playJackpot) audio.playJackpot();
 
-        dom.winnerNameDisplay.textContent = `${winner.avatar} ${winner.name}`;
-        dom.winnerScoreDisplay.textContent = `${winner.score} pts`;
-        dom.loserNameDisplay.textContent = `${loser.avatar} ${loser.name} (${loser.score} pts)`;
+        // 1er Lugar
+        const first = podium[0];
+        if (first && dom.podium1stName && dom.podium1stScore) {
+          dom.podium1stName.textContent = `${first.avatar} ${first.name}`;
+          dom.podium1stScore.textContent = `${first.score} pts`;
+        }
+
+        // 2do Lugar
+        const second = podium[1];
+        if (second && dom.podium2nd && dom.podium2ndName && dom.podium2ndScore) {
+          dom.podium2nd.classList.remove('hidden');
+          dom.podium2ndName.textContent = `${second.avatar} ${second.name}`;
+          dom.podium2ndScore.textContent = `${second.score} pts`;
+        } else if (dom.podium2nd) {
+          dom.podium2nd.classList.add('hidden');
+        }
+
+        // 3er Lugar
+        const third = podium[2];
+        if (third && dom.podium3rd && dom.podium3rdName && dom.podium3rdScore) {
+          dom.podium3rd.classList.remove('hidden');
+          dom.podium3rdName.textContent = `${third.avatar} ${third.name}`;
+          dom.podium3rdScore.textContent = `${third.score} pts`;
+        } else if (dom.podium3rd) {
+          dom.podium3rd.classList.add('hidden');
+        }
+
+        // El Perdedor Paga la Ronda
+        if (loser && dom.loserNameDisplay) {
+          dom.loserNameDisplay.textContent = `${loser.avatar} ${loser.name} (${loser.score} pts)`;
+        }
 
         // URL de WhatsApp para cobrar la ronda
+        const winner = first || { name: 'Campeón', score: 0 };
+        const loserName = loser ? loser.name : 'Alguien';
         const waMsg = encodeURIComponent(
           `🍻 ¡Ronda finalizada en BattleRound Paradice!\n\n` +
-          `👑 Ganador: ${winner.name} con ${winner.score} pts.\n` +
-          `💀 Perdedor: ${loser.name} con ${loser.score} pts.\n\n` +
-          `🍸 ¡A ${loser.name} le toca pagar la ronda de granizados en Paradice! Nos vemos allá.`
+          `🥇 1er Lugar: ${winner.name} (${winner.score} pts)\n` +
+          (second ? `🥈 2do Lugar: ${second.name} (${second.score} pts)\n` : '') +
+          (third ? `🥉 3er Lugar: ${third.name} (${third.score} pts)\n` : '') +
+          `💀 Perdedor: ${loserName} (${loser ? loser.score : 0} pts)\n\n` +
+          `🍸 ¡A ${loserName} le toca pagar la ronda de granizados en Paradice! Nos vemos allá.`
         );
-        dom.btnShareWhatsapp.href = `https://wa.me/?text=${waMsg}`;
+        if (dom.btnShareWhatsapp) {
+          dom.btnShareWhatsapp.href = `https://wa.me/?text=${waMsg}`;
+        }
 
         dom.modalGameOver.classList.remove('hidden');
       }
