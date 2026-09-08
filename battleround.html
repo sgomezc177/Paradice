@@ -75,18 +75,120 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* Tablero de Batalla 6x6 */
+    /* Tablero de Batalla 6x6 y 7x7 */
     .battle-grid {
       display: grid;
       grid-template-columns: repeat(6, minmax(0, 1fr));
       gap: 6px;
       perspective: 1000px;
+      transition: all 0.3s ease;
+    }
+
+    .battle-grid.grid-7x7 {
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 4px;
     }
 
     @media (min-width: 640px) {
       .battle-grid {
         gap: 8px;
       }
+      .battle-grid.grid-7x7 {
+        gap: 6px;
+      }
+    }
+
+    /* Ajuste de escala para casillas en tablero 7x7 (6 jugadores) */
+    .battle-grid.grid-7x7 .tile-front-icon {
+      font-size: 1.15rem;
+    }
+    .battle-grid.grid-7x7 .tile-back-icon {
+      font-size: 1.3rem;
+    }
+    @media (min-width: 640px) {
+      .battle-grid.grid-7x7 .tile-front-icon {
+        font-size: 1.4rem;
+      }
+      .battle-grid.grid-7x7 .tile-back-icon {
+        font-size: 1.6rem;
+      }
+    }
+    .battle-grid.grid-7x7 .battle-tile-front span:last-child {
+      font-size: 8px;
+    }
+    .battle-grid.grid-7x7 .battle-tile-back span:last-child {
+      font-size: 8px;
+    }
+
+    /* Ocultar barra de scroll para el selector horizontal de avatares */
+    #avatar-selector {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    #avatar-selector::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Temas Dinámicos de Color para la Rebancha */
+    .battle-grid.theme-rebancha-1 {
+      border-color: rgba(251, 191, 36, 0.75) !important;
+      box-shadow: 0 0 35px rgba(245, 158, 11, 0.45) !important;
+      background: radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.12), rgba(15, 23, 42, 0.95)) !important;
+    }
+    .battle-grid.theme-rebancha-1 .battle-tile-front {
+      border-color: rgba(251, 191, 36, 0.4) !important;
+      box-shadow: inset 0 0 10px rgba(245, 158, 11, 0.2) !important;
+    }
+
+    .battle-grid.theme-rebancha-2 {
+      border-color: rgba(236, 72, 153, 0.75) !important;
+      box-shadow: 0 0 35px rgba(217, 70, 239, 0.45) !important;
+      background: radial-gradient(circle at 50% 50%, rgba(217, 70, 239, 0.12), rgba(15, 23, 42, 0.95)) !important;
+    }
+    .battle-grid.theme-rebancha-2 .battle-tile-front {
+      border-color: rgba(236, 72, 153, 0.4) !important;
+      box-shadow: inset 0 0 10px rgba(217, 70, 239, 0.2) !important;
+    }
+
+    .battle-grid.theme-rebancha-3 {
+      border-color: rgba(52, 211, 153, 0.75) !important;
+      box-shadow: 0 0 35px rgba(16, 185, 129, 0.45) !important;
+      background: radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.12), rgba(15, 23, 42, 0.95)) !important;
+    }
+    .battle-grid.theme-rebancha-3 .battle-tile-front {
+      border-color: rgba(52, 211, 153, 0.4) !important;
+      box-shadow: inset 0 0 10px rgba(16, 185, 129, 0.2) !important;
+    }
+
+    .battle-grid.theme-rebancha-4 {
+      border-color: rgba(168, 85, 247, 0.75) !important;
+      box-shadow: 0 0 35px rgba(147, 51, 234, 0.45) !important;
+      background: radial-gradient(circle at 50% 50%, rgba(147, 51, 234, 0.12), rgba(15, 23, 42, 0.95)) !important;
+    }
+    .battle-grid.theme-rebancha-4 .battle-tile-front {
+      border-color: rgba(168, 85, 247, 0.4) !important;
+      box-shadow: inset 0 0 10px rgba(147, 51, 234, 0.2) !important;
+    }
+
+    /* Animación de Transición de Rebancha */
+    @keyframes rebanchaTileWave {
+      0% {
+        transform: scale(0.5) rotateY(180deg);
+        opacity: 0;
+      }
+      60% {
+        transform: scale(1.1) rotateY(-10deg);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1) rotateY(0deg);
+        opacity: 1;
+      }
+    }
+
+    .battle-tile.rebancha-anim {
+      animation: rebanchaTileWave 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards;
     }
 
     /* Casilla de Hielo 3D */
@@ -99,7 +201,8 @@
     }
 
     .battle-tile.revealed {
-      transform: rotateY(180deg);
+      transform: rotateY(180deg) !important;
+      animation: none !important;
       cursor: default;
     }
 
@@ -376,15 +479,28 @@
         </div>
 
         <div>
-          <label class="block text-[10px] font-black uppercase text-slate-400 tracking-wider mb-1">Elige tu Trago / Avatar:</label>
-          <div id="avatar-selector" class="flex items-center justify-between gap-1 p-1 rounded-xl bg-slate-950 border border-slate-800">
-            <button class="avatar-opt w-9 h-9 rounded-lg text-lg flex items-center justify-center bg-rose-600 text-white transition active:scale-95" data-avatar="🍹">🍹</button>
-            <button class="avatar-opt w-9 h-9 rounded-lg text-lg flex items-center justify-center hover:bg-slate-800 text-slate-400 transition active:scale-95" data-avatar="🥃">🥃</button>
-            <button class="avatar-opt w-9 h-9 rounded-lg text-lg flex items-center justify-center hover:bg-slate-800 text-slate-400 transition active:scale-95" data-avatar="🍧">🍧</button>
-            <button class="avatar-opt w-9 h-9 rounded-lg text-lg flex items-center justify-center hover:bg-slate-800 text-slate-400 transition active:scale-95" data-avatar="🍸">🍸</button>
-            <button class="avatar-opt w-9 h-9 rounded-lg text-lg flex items-center justify-center hover:bg-slate-800 text-slate-400 transition active:scale-95" data-avatar="🍺">🍺</button>
-            <button class="avatar-opt w-9 h-9 rounded-lg text-lg flex items-center justify-center hover:bg-slate-800 text-slate-400 transition active:scale-95" data-avatar="⚡">⚡</button>
-            <button class="avatar-opt w-9 h-9 rounded-lg text-lg flex items-center justify-center hover:bg-slate-800 text-slate-400 transition active:scale-95" data-avatar="👑">👑</button>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Elige tu Avatar / Trago:</label>
+            <span class="text-[11px] font-bold text-rose-400 flex items-center gap-1">
+              <span>Activo:</span>
+              <span id="selected-avatar-icon" class="text-base">🍹</span>
+            </span>
+          </div>
+          <div class="relative flex items-center">
+            <!-- Botón Deslizar Izquierda -->
+            <button type="button" id="btn-avatar-prev" aria-label="Anterior" class="absolute -left-2 z-10 w-7 h-7 rounded-full bg-slate-900/90 hover:bg-rose-600 border border-slate-700 hover:border-rose-500 text-white flex items-center justify-center text-xs font-black shadow-lg transition active:scale-90 cursor-pointer">
+              ‹
+            </button>
+
+            <!-- Carrusel Deslizable Horizontal -->
+            <div id="avatar-selector" class="w-full flex items-center gap-2 px-6 py-2 rounded-xl bg-slate-950 border border-slate-800 overflow-x-auto scrollbar-none scroll-smooth select-none">
+              <!-- Los avatares se generan dinámicamente en JS -->
+            </div>
+
+            <!-- Botón Deslizar Derecha -->
+            <button type="button" id="btn-avatar-next" aria-label="Siguiente" class="absolute -right-2 z-10 w-7 h-7 rounded-full bg-slate-900/90 hover:bg-rose-600 border border-slate-700 hover:border-rose-500 text-white flex items-center justify-center text-xs font-black shadow-lg transition active:scale-90 cursor-pointer">
+              ›
+            </button>
           </div>
         </div>
       </div>
@@ -492,14 +608,13 @@
           <span class="flex items-center gap-1.5">
             <span>🎯</span> <span>Meta de Puntos para Ganar:</span>
           </span>
-          <span id="target-points-badge" class="font-mono text-cyan-300 font-black px-2 py-0.5 rounded-md bg-cyan-950 border border-cyan-500/50">2500 pts</span>
+          <span id="target-points-badge" class="font-mono text-cyan-300 font-black px-2 py-0.5 rounded-md bg-cyan-950 border border-cyan-500/50">1250 pts</span>
         </div>
         <p class="text-[10px] text-slate-400 mb-2">El primer jugador en llegar a la meta asegura el 1er Lugar y los demás disputan el podio.</p>
-        <div id="target-points-options" class="grid grid-cols-5 gap-1.5">
-          <button type="button" class="target-opt py-1.5 px-1 rounded-xl text-xs font-black border border-slate-700 bg-slate-900 text-slate-300 hover:border-amber-400 transition cursor-pointer" data-points="1000">1000</button>
-          <button type="button" class="target-opt py-1.5 px-1 rounded-xl text-xs font-black border border-amber-400 bg-amber-500 text-slate-950 shadow-[0_0_12px_rgba(250,204,21,0.6)] transition cursor-pointer" data-points="2500">2500</button>
-          <button type="button" class="target-opt py-1.5 px-1 rounded-xl text-xs font-black border border-slate-700 bg-slate-900 text-slate-300 hover:border-amber-400 transition cursor-pointer" data-points="3700">3700</button>
-          <button type="button" class="target-opt py-1.5 px-1 rounded-xl text-xs font-black border border-slate-700 bg-slate-900 text-slate-300 hover:border-amber-400 transition cursor-pointer" data-points="4500">4500</button>
+        <div id="target-points-options" class="grid grid-cols-4 gap-1.5">
+          <button type="button" class="target-opt py-1.5 px-1 rounded-xl text-xs font-black border border-amber-400 bg-amber-500 text-slate-950 shadow-[0_0_12px_rgba(250,204,21,0.6)] transition cursor-pointer" data-points="1250">1250</button>
+          <button type="button" class="target-opt py-1.5 px-1 rounded-xl text-xs font-black border border-slate-700 bg-slate-900 text-slate-300 hover:border-amber-400 transition cursor-pointer" data-points="2500">2500</button>
+          <button type="button" class="target-opt py-1.5 px-1 rounded-xl text-xs font-black border border-slate-700 bg-slate-900 text-slate-300 hover:border-amber-400 transition cursor-pointer" data-points="3750">3750</button>
           <button type="button" class="target-opt py-1.5 px-1 rounded-xl text-xs font-black border border-slate-700 bg-slate-900 text-slate-300 hover:border-amber-400 transition cursor-pointer" data-points="5000">5000</button>
         </div>
       </div>
@@ -530,27 +645,54 @@
     <!-- COLUMNA IZQUIERDA: TABLERO 6x6 -->
     <div id="app-container" class="w-full max-w-[440px] flex flex-col items-center relative">
       
-      <!-- Banner de Turno & Notificación de Emboscada -->
-      <div class="w-full flex items-center justify-between p-2.5 rounded-2xl bg-slate-900/90 border border-red-500/40 mb-2.5 backdrop-blur-sm text-xs gap-1.5">
-        <div class="flex items-center space-x-1.5">
-          <span class="text-rose-400 font-black text-[11px]">TURNO:</span>
-          <span id="current-turn-badge" class="px-2 py-0.5 rounded-full bg-rose-950 text-rose-200 border border-rose-500/50 font-black text-xs truncate max-w-[110px] sm:max-w-[140px]">
-            Tu Turno
-          </span>
+      <!-- Cabecera de Turno, HUD de Puntos y Notificador Dinámico de Rebancha -->
+      <div id="game-header-bar" class="w-full relative min-h-[48px] p-2 sm:p-2.5 rounded-2xl bg-slate-900/90 border border-red-500/40 mb-2.5 backdrop-blur-sm text-xs transition-all duration-500 overflow-hidden shadow-lg">
+        
+        <!-- ESTADO BASE: Turno y HUD Rediseñado de Puntos -->
+        <div id="header-base-content" class="w-full flex items-center justify-between gap-2 transition-all duration-300 opacity-100 translate-y-0">
+          <!-- Turno Actual -->
+          <div class="flex items-center space-x-1.5 min-w-0">
+            <span class="text-rose-400 font-black text-[10px] sm:text-[11px] tracking-wider uppercase flex items-center gap-1">
+              <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse inline-block"></span>
+              TURNO:
+            </span>
+            <span id="current-turn-badge" class="px-2.5 py-1 rounded-xl bg-gradient-to-r from-rose-950 to-slate-950 text-rose-200 border border-rose-500/50 font-black text-xs truncate max-w-[120px] sm:max-w-[155px] shadow-sm">
+              Tu Turno
+            </span>
+          </div>
+
+          <!-- Rediseño del Contador de Puntos (HUD con Meta y Multiplicador) -->
+          <div id="header-points-hud" class="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-gradient-to-r from-amber-950/80 via-slate-950 to-amber-950/80 border border-amber-500/50 text-amber-300 font-black text-xs shadow-[0_0_15px_rgba(245,158,11,0.2)]">
+            <span class="text-sm">🎯</span>
+            <div class="flex items-baseline gap-1">
+              <span class="text-[9px] text-amber-400/80 font-bold uppercase hidden xs:inline">META</span>
+              <span id="game-target-score" class="font-mono text-white text-xs sm:text-sm font-black tracking-tight">1250</span>
+              <span class="text-[9px] text-amber-400 font-bold">pts</span>
+            </div>
+            <!-- Multiplicador Progresivo de Rebancha (x2, x4, x8) -->
+            <span id="header-rebancha-mult-badge" class="hidden px-1.5 py-0.5 rounded-lg bg-gradient-to-r from-amber-400 to-rose-500 text-slate-950 font-black text-[9px] uppercase shadow-[0_0_10px_rgba(245,158,11,0.6)] animate-pulse">
+              x2
+            </span>
+          </div>
         </div>
 
-        <!-- Meta de Puntos de la Partida -->
-        <div class="flex items-center space-x-1 px-2 py-0.5 rounded-full bg-amber-950/80 border border-amber-500/60 text-amber-300 font-bold text-[11px]">
-          <span>🎯</span>
-          <span id="game-target-score" class="font-mono text-white font-black">2500</span>
-          <span class="text-[9px] text-amber-400">pts</span>
+        <!-- ESTADO NOTIFICADOR: Banner Integrado de Rebancha con Retorno Automático -->
+        <div id="header-notif-content" class="absolute inset-0 w-full h-full flex items-center justify-between px-3 py-1.5 bg-gradient-to-r from-amber-500/20 via-slate-950 to-rose-500/20 transition-all duration-300 opacity-0 -translate-y-full pointer-events-none">
+          <div class="flex items-center gap-2 min-w-0">
+            <span id="header-notif-icon" class="text-xl sm:text-2xl animate-bounce flex-shrink-0">🔥</span>
+            <div class="flex flex-col min-w-0">
+              <div class="flex items-center gap-1.5">
+                <span id="header-notif-title" class="font-black text-xs sm:text-sm uppercase tracking-wider text-amber-300 truncate">¡REBANCHA #1!</span>
+                <span id="header-notif-mult-tag" class="px-1.5 py-0.5 rounded-md bg-amber-400 text-slate-950 font-black text-[9px] uppercase shadow">PUNTOS x2</span>
+              </div>
+              <span id="header-notif-desc" class="text-[10px] text-slate-300 font-semibold truncate">¡Puntos al doble y nueva matriz!</span>
+            </div>
+          </div>
+          <div id="header-notif-theme-tag" class="flex-shrink-0 text-[10px] font-mono font-black text-amber-400 uppercase tracking-tight bg-slate-950/90 border border-amber-500/50 px-2 py-0.5 rounded-lg ml-1">
+            Dorado VIP
+          </div>
         </div>
 
-        <!-- Inventario de Minas del Jugador -->
-        <div id="mine-inventory-box" class="flex items-center space-x-1 px-2 py-0.5 rounded-full bg-slate-950 border border-amber-500/50 text-amber-300 font-bold text-xs">
-          <span>💣</span>
-          <span id="player-mines-count" class="font-mono text-cyan-300 font-black">0</span>
-        </div>
       </div>
 
       <!-- Banner de Modo Espectador (Para ganadores que aseguraron podio) -->
@@ -575,13 +717,13 @@
         </div>
       </div>
 
-      <!-- Tablero de Hielos 6x6 -->
+      <!-- Tablero de Hielos Dinámico (6x6 o 7x7) -->
       <div id="battle-grid" class="battle-grid w-full p-2.5 rounded-3xl bg-slate-950/80 border-2 border-cyan-500/30 shadow-[0_0_30px_rgba(0,240,255,0.2)]">
-        <!-- 36 Casillas generadas dinámicamente -->
+        <!-- Casillas generadas dinámicamente -->
       </div>
 
-      <p class="text-[10px] text-slate-400 mt-2 text-center">
-        🍧 +100 | 🍹 +250 | 🥃 +500 | 💣 Siembra minas secretas para robar los puntos del rival.
+      <p id="board-footer-legend" class="text-[10px] text-slate-400 mt-2 text-center transition-all duration-300">
+        🧊 5 | 🍋 10 | 🍒 20 | 🍧 25 | 🍹 50 | 🍸 75 | 🥃 100 pts • 💣 Siembra minas secretas para robar el doble.
       </p>
 
     </div>
@@ -706,7 +848,7 @@
       </div>
 
     </div>
-  </div>
+
 
   <!-- Modal Instrucciones de BattleRound -->
   <div id="modal-instructions" class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-[#040814]/85 backdrop-blur-md hidden">
@@ -917,9 +1059,10 @@
         myAvatar: '🍹',
         players: [], // { id, name, avatar, score, isBot }
         currentTurnIndex: 0,
-        board: [], // 36 casillas: { index, type: 'GRANIZADO'|'DOBLE'|'SHOT'|'HIELO', points: 100, revealed: false, mineBy: null }
+        board: [], // Casillas dinámicas (36 casillas en 2-5 jugadores, 49 casillas en 6 jugadores)
         myMinesCount: 0,
-        targetScore: 2500,
+        targetScore: 1250,
+        revanchaCount: 0,
         podium: [],
         isSpectator: false,
         isPlantingMode: false,
@@ -930,7 +1073,12 @@
           { name: 'Mateo', avatar: '🥃' },
           { name: 'Valentina', avatar: '🍧' },
           { name: 'DJ Santi', avatar: '⚡' },
-          { name: 'Camila', avatar: '🍸' }
+          { name: 'Camila', avatar: '🍸' },
+          { name: 'Lucía', avatar: '🍒' },
+          { name: 'Sebas', avatar: '👑' },
+          { name: 'Nico', avatar: '🚀' },
+          { name: 'Aleja', avatar: '💎' },
+          { name: 'Dani', avatar: '🥂' }
         ],
         heartbeatInterval: null,
         connectionTimeoutTimer: null,
@@ -949,7 +1097,10 @@
         btnCreateRoom: document.getElementById('btn-create-room'),
         btnJoinRoom: document.getElementById('btn-join-room'),
         btnQuickPlayBots: document.getElementById('btn-quick-play-bots'),
-        avatarOptions: document.querySelectorAll('.avatar-opt'),
+        avatarSelector: document.getElementById('avatar-selector'),
+        btnAvatarPrev: document.getElementById('btn-avatar-prev'),
+        btnAvatarNext: document.getElementById('btn-avatar-next'),
+        selectedAvatarIcon: document.getElementById('selected-avatar-icon'),
         // Waiting Room
         roomCodeDisplay: document.getElementById('room-code-display'),
         roomQrcode: document.getElementById('room-qrcode'),
@@ -972,10 +1123,20 @@
         // Spectator Banner
         spectatorBanner: document.getElementById('spectator-banner'),
         spectatorBannerText: document.getElementById('spectator-banner-text'),
-        // Game Board
+        // Game Board, Cabecera y Notificador Dinámico
+        gameHeaderBar: document.getElementById('game-header-bar'),
+        headerBaseContent: document.getElementById('header-base-content'),
+        headerPointsHud: document.getElementById('header-points-hud'),
+        headerRebanchaMultBadge: document.getElementById('header-rebancha-mult-badge'),
+        headerNotifContent: document.getElementById('header-notif-content'),
+        headerNotifIcon: document.getElementById('header-notif-icon'),
+        headerNotifTitle: document.getElementById('header-notif-title'),
+        headerNotifMultTag: document.getElementById('header-notif-mult-tag'),
+        headerNotifDesc: document.getElementById('header-notif-desc'),
+        headerNotifThemeTag: document.getElementById('header-notif-theme-tag'),
+        boardFooterLegend: document.getElementById('board-footer-legend'),
         battleGrid: document.getElementById('battle-grid'),
         currentTurnBadge: document.getElementById('current-turn-badge'),
-        playerMinesCount: document.getElementById('player-mines-count'),
         actionBannerPrompt: document.getElementById('action-banner-prompt'),
         btnSkipPlanting: document.getElementById('btn-skip-planting'),
         liveScoreboard: document.getElementById('live-scoreboard'),
@@ -1027,6 +1188,109 @@
         btnRunNetDiag: document.getElementById('btn-run-net-diag'),
         netDiagResults: document.getElementById('net-diag-results')
       };
+
+      // 2.1 Paletas Neón de Color, Íconos y Categorías para la Rebancha
+      const REBANCHA_THEMES = [
+        {
+          id: null,
+          name: 'Hielo Cíber',
+          coverIcon: '🧊',
+          themeIcon: '🧊',
+          borderColor: 'border-cyan-400',
+          textColor: 'text-cyan-400',
+          badgeBg: 'bg-cyan-500',
+          tiers: [
+            { type: 'HIELO', icon: '🧊', name: 'Cubo de Hielo', points: 5 },
+            { type: 'CITRICO', icon: '🍋', name: 'Rodaja Cítrica', points: 10 },
+            { type: 'CEREZA', icon: '🍒', name: 'Cereza Silvestre', points: 20 },
+            { type: 'GRANIZADO', icon: '🍧', name: 'Granizado Suave', points: 25 },
+            { type: 'COPA', icon: '🍹', name: 'Copa Refrescante', points: 50 },
+            { type: 'COCTEL', icon: '🍸', name: 'Cóctel de Autor', points: 75 },
+            { type: 'SHOT', icon: '🥃', name: 'Shot Prémium', points: 100 }
+          ]
+        },
+        {
+          id: 'theme-rebancha-1',
+          name: 'Dorado VIP',
+          coverIcon: '🧊',
+          themeIcon: '🥂',
+          borderColor: 'border-amber-400',
+          textColor: 'text-amber-400',
+          badgeBg: 'bg-amber-500',
+          tiers: [
+            { type: 'FICHA_ORO', icon: '🪙', name: 'Ficha VIP', points: 5 },
+            { type: 'VASO_ENERGIA', icon: '🥤', name: 'Bebida Energizante', points: 10 },
+            { type: 'BRINDIS_HELADO', icon: '🍻', name: 'Brindis Helado', points: 20 },
+            { type: 'GRANIZADO_ORO', icon: '🍧', name: 'Granizado Dorado', points: 25 },
+            { type: 'COPA_ORO', icon: '🍹', name: 'Copa Tropical Dorada', points: 50 },
+            { type: 'BRINDIS_IMPERIAL', icon: '🥂', name: 'Brindis Imperial', points: 75 },
+            { type: 'BOTELLA_VIP', icon: '🍾', name: 'Botella de Celebración', points: 100 }
+          ]
+        },
+        {
+          id: 'theme-rebancha-2',
+          name: 'Rubí Glamour',
+          coverIcon: '🧊',
+          themeIcon: '💎',
+          borderColor: 'border-pink-400',
+          textColor: 'text-pink-400',
+          badgeBg: 'bg-pink-500',
+          tiers: [
+            { type: 'CHISPA_ROSA', icon: '✨', name: 'Chispa Neón', points: 5 },
+            { type: 'COCO_LOCO', icon: '🥥', name: 'Coco Loco Frío', points: 10 },
+            { type: 'COPA_RUBI', icon: '🍷', name: 'Copa Rubí Selección', points: 20 },
+            { type: 'GRANIZADO_ROSA', icon: '🍧', name: 'Granizado Rosé', points: 25 },
+            { type: 'COPA_GLAMOUR', icon: '🍹', name: 'Copa Glamour Rosa', points: 50 },
+            { type: 'COCTEL_COSMO', icon: '🍸', name: 'Cóctel Cosmopolitan', points: 75 },
+            { type: 'SHOT_DIAMANTE', icon: '💎', name: 'Shot Diamante Rosa', points: 100 }
+          ]
+        },
+        {
+          id: 'theme-rebancha-3',
+          name: 'Esmeralda Cool',
+          coverIcon: '🧊',
+          themeIcon: '🍸',
+          borderColor: 'border-emerald-400',
+          textColor: 'text-emerald-400',
+          badgeBg: 'bg-emerald-500',
+          tiers: [
+            { type: 'TREBOL_SUERTE', icon: '🍀', name: 'Trébol de la Suerte', points: 5 },
+            { type: 'SODA_LIMA', icon: '🥤', name: 'Soda Refrescante Lima', points: 10 },
+            { type: 'JARRA_FROSTED', icon: '🍺', name: 'Jarra Helada Frosted', points: 20 },
+            { type: 'GRANIZADO_MENTA', icon: '🍧', name: 'Granizado de Menta', points: 25 },
+            { type: 'COPA_MOJITO', icon: '🍹', name: 'Copa Mojito Cool', points: 50 },
+            { type: 'COCTEL_VERDE', icon: '🍸', name: 'Cóctel Green Paradise', points: 75 },
+            { type: 'CORONA_VERDE', icon: '👑', name: 'Corona Esmeralda', points: 100 }
+          ]
+        },
+        {
+          id: 'theme-rebancha-4',
+          name: 'Violeta Ultra',
+          coverIcon: '🧊',
+          themeIcon: '🏆',
+          borderColor: 'border-purple-400',
+          textColor: 'text-purple-400',
+          badgeBg: 'bg-purple-500',
+          tiers: [
+            { type: 'ESTRELLA_VIP', icon: '⭐', name: 'Estrella Neón VIP', points: 5 },
+            { type: 'BEAT_FIESTA', icon: '🎧', name: 'Beat de Fiesta', points: 10 },
+            { type: 'BRINDIS_NOCHE', icon: '🍻', name: 'Brindis Doble Neón', points: 20 },
+            { type: 'GRANIZADO_BLUE', icon: '🍧', name: 'Granizado Blue Velvet', points: 25 },
+            { type: 'COPA_VIOLETA', icon: '🍹', name: 'Copa Púrpura Night', points: 50 },
+            { type: 'COCTEL_ASTRAL', icon: '🍸', name: 'Cóctel Black Light', points: 75 },
+            { type: 'TROFEO_NOCHE', icon: '🏆', name: 'Trofeo Campeón', points: 100 }
+          ]
+        }
+      ];
+
+      function getThemeForRevancha(count = 0) {
+        if (count <= 0) return REBANCHA_THEMES[0];
+        const themeIdx = ((count - 1) % (REBANCHA_THEMES.length - 1)) + 1;
+        return REBANCHA_THEMES[themeIdx] || REBANCHA_THEMES[0];
+      }
+
+      // Multiplicador de robo por mina: 2 veces (el doble) del valor limpio de la casilla
+      const MINE_STEAL_MULTIPLIER = 2;
 
       const audio = window.audioManager || window.ParadiceAudio;
 
@@ -1117,19 +1381,54 @@
         }
       }
 
-      function bindEvents() {
-        // Selector de avatar
-        dom.avatarOptions.forEach(btn => {
+      const AVAILABLE_AVATARS = [
+        '🍹', '🥃', '🍧', '🍸', '🍺', '🥂', '🍷', '🍾', '🥤', '🥥',
+        '⚡', '🔥', '👑', '💎', '🎉', '✨', '⭐', '🍒', '🍋', '🍉',
+        '🕶️', '🎧', '🤖', '👾', '🚀', '💣', '🦄', '🐉', '🦁', '🐺', '🦊', '🐯', '🐼'
+      ];
+
+      function initAvatarSelector() {
+        if (!dom.avatarSelector) return;
+        dom.avatarSelector.innerHTML = '';
+        AVAILABLE_AVATARS.forEach((av, idx) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.dataset.avatar = av;
+          const isSelected = av === state.myAvatar || (idx === 0 && !state.myAvatar);
+          if (isSelected) {
+            state.myAvatar = av;
+            btn.className = 'avatar-opt flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-xl text-lg sm:text-xl flex items-center justify-center bg-rose-600 text-white shadow-[0_0_12px_rgba(244,63,94,0.6)] scale-105 border border-rose-400 transition active:scale-95 cursor-pointer';
+          } else {
+            btn.className = 'avatar-opt flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-xl text-lg sm:text-xl flex items-center justify-center bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 transition active:scale-95 cursor-pointer';
+          }
+          btn.textContent = av;
           btn.addEventListener('click', () => {
-            dom.avatarOptions.forEach(b => {
-              b.classList.remove('bg-rose-600', 'text-white');
-              b.classList.add('text-slate-400');
+            dom.avatarSelector.querySelectorAll('.avatar-opt').forEach(b => {
+              b.className = 'avatar-opt flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-xl text-lg sm:text-xl flex items-center justify-center bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 transition active:scale-95 cursor-pointer';
             });
-            btn.classList.add('bg-rose-600', 'text-white');
-            btn.classList.remove('text-slate-400');
-            state.myAvatar = btn.dataset.avatar;
+            btn.className = 'avatar-opt flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-xl text-lg sm:text-xl flex items-center justify-center bg-rose-600 text-white shadow-[0_0_12px_rgba(244,63,94,0.6)] scale-105 border border-rose-400 transition active:scale-95 cursor-pointer';
+            state.myAvatar = av;
+            if (dom.selectedAvatarIcon) dom.selectedAvatarIcon.textContent = av;
+            btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
           });
+          dom.avatarSelector.appendChild(btn);
         });
+
+        if (dom.btnAvatarPrev) {
+          dom.btnAvatarPrev.addEventListener('click', () => {
+            dom.avatarSelector.scrollBy({ left: -140, behavior: 'smooth' });
+          });
+        }
+        if (dom.btnAvatarNext) {
+          dom.btnAvatarNext.addEventListener('click', () => {
+            dom.avatarSelector.scrollBy({ left: 140, behavior: 'smooth' });
+          });
+        }
+      }
+
+      function bindEvents() {
+        // Selector de avatar deslizable
+        initAvatarSelector();
 
         // Crear Sala
         dom.btnCreateRoom.addEventListener('click', async () => {
@@ -1170,8 +1469,7 @@
             avatar: availableBot.avatar,
             score: 0,
             isBot: true,
-            mines: 0,
-            stealPct: 10
+            mines: 0
           };
           state.players.push(botPlayer);
           renderWaitingPlayers();
@@ -1186,7 +1484,7 @@
               return;
             }
             const pts = parseInt(btn.dataset.points, 10);
-            if (pts && [1000, 2500, 3700, 4500, 5000].includes(pts)) {
+            if (pts && [1250, 2500, 3750, 5000].includes(pts)) {
               actualizarMetaPuntos(pts);
               if (state.isHost) {
                 broadcast({ type: 'TARGET_SCORE_CHANGED', targetScore: pts });
@@ -1205,18 +1503,23 @@
           state.isSpectator = false;
           state.isGameOver = false;
           state.currentTurnIndex = 0;
+          state.revanchaCount = 0;
+          aplicarTemaTablero(0);
           state.players.forEach(p => {
             p.score = 0;
-            p.stealPct = 10;
           });
 
           generarTableroBatalla();
 
+          const is6p = state.players.length >= 6;
           const gameStartData = {
             type: 'START_GAME',
             players: state.players,
             turnIndex: state.currentTurnIndex,
             targetScore: state.targetScore,
+            boardSize: state.board.length,
+            boardRows: is6p ? 7 : 6,
+            boardCols: is6p ? 7 : 6,
             musicSync: audio ? {
               trackIndex: audio.currentTrackIndex,
               currentTime: audio.audioEl ? audio.audioEl.currentTime : 0
@@ -1234,6 +1537,8 @@
           state.isGameOver = false;
           state.isSpectator = false;
           state.podium = [];
+          state.revanchaCount = 0;
+          aplicarTemaTablero(0);
           if (state.isHost) {
             dom.btnStartGame.click();
           } else {
@@ -1756,8 +2061,7 @@
           avatar: state.myAvatar,
           score: 0,
           isBot: false,
-          mines: 0,
-          stealPct: 10
+          mines: 0
         }];
         renderWaitingPlayers();
         actualizarBadgeRed();
@@ -1871,8 +2175,7 @@
                 avatar: state.myAvatar,
                 score: 0,
                 isBot: false,
-                mines: 0,
-                stealPct: 10
+                mines: 0
               }
             });
             console.log('[Guest] PLAYER_JOIN enviado al host por Cloud Relay');
@@ -1938,8 +2241,7 @@
           const exists = state.players.some(p => p.id === msg.player.id);
           if (!exists) {
             state.players.push({
-              ...msg.player,
-              stealPct: msg.player.stealPct || 10
+              ...msg.player
             });
             notificarConexionJugador(msg.player.name);
           }
@@ -1993,17 +2295,20 @@
           }
         } else if (msg.type === 'START_GAME') {
           state.players = msg.players;
-          state.currentTurnIndex = msg.turnIndex;
-          state.targetScore = msg.targetScore || state.targetScore || 2500;
+          state.currentTurnIndex = msg.turnIndex || 0;
+          state.targetScore = msg.targetScore || state.targetScore || 1250;
           state.podium = [];
           state.isSpectator = false;
           state.isGameOver = false;
           state.isPlantingMode = false;
           state.plantableTileIndex = null;
+          state.revanchaCount = 0;
+          aplicarTemaTablero(0);
           ocultarNotificacionSiembra();
           if (dom.spectatorBanner) dom.spectatorBanner.classList.add('hidden');
-          // Inicializar las 36 casillas en el Guest
-          state.board = Array.from({ length: 36 }, (_, idx) => ({
+          // Inicializar las casillas en el Guest (36 para 2-5 jugadores, 49 para 6 jugadores)
+          const totalTiles = msg.boardSize || (state.players.length >= 6 ? 49 : 36);
+          state.board = Array.from({ length: totalTiles }, (_, idx) => ({
             index: idx,
             revealedTo: [],
             publiclyRevealed: false,
@@ -2020,6 +2325,43 @@
             updateAudioUI();
           }
           iniciarPantallaJuego();
+        } else if (msg.type === 'BOARD_REVANCHA') {
+          if (state.isPlantingMode) {
+            state.isPlantingMode = false;
+            state.plantableTileIndex = null;
+            ocultarNotificacionSiembra();
+          }
+          state.revanchaCount = msg.revanchaCount || 1;
+          if (msg.players) state.players = msg.players;
+          if (typeof msg.turnIndex === 'number') state.currentTurnIndex = msg.turnIndex;
+          const totalTiles = msg.boardSize || (state.players.length >= 6 ? 49 : 36);
+          const count = state.revanchaCount;
+          const activeTheme = getThemeForRevancha(count);
+          state.board = Array.from({ length: totalTiles }, (_, idx) => ({
+            index: idx,
+            revealedTo: [],
+            publiclyRevealed: false,
+            isExplosion: false,
+            mineBy: null,
+            victimAvatar: null,
+            victimName: null,
+            pointsLabel: '',
+            icon: activeTheme.coverIcon || '🧊',
+            coverIcon: activeTheme.coverIcon || '🧊',
+            name: 'Hielo'
+          }));
+          aplicarTemaTablero(state.revanchaCount);
+          renderTableroVisual(true);
+          actualizarScoreboard();
+          actualizarTurnoUI();
+          mostrarBannerRebancha(state.revanchaCount);
+          if (msg.musicSync && audio && !state.isHost) {
+            audio.syncTrack(msg.musicSync.trackIndex, msg.musicSync.currentTime || 0);
+            updateAudioUI();
+          } else if (audio && audio.playCoinWin) {
+            audio.playCoinWin();
+          }
+          logEvent(`🔥 <strong>¡REBANCHA #${state.revanchaCount}!</strong> Nueva matriz (${activeTheme.name} ${activeTheme.themeIcon || '✨'}) y nueva música. ¡Puntos conservados!`);
         } else if (msg.type === 'TILE_CLICK') {
           if (state.isHost) {
             procesarClicCasilla(msg.tileIndex, msg.playerId);
@@ -2043,12 +2385,13 @@
             if (msg.tileInfo) {
               tile.icon = msg.tileInfo.icon;
               tile.name = msg.tileInfo.name;
+              tile.points = msg.tileInfo.points;
+              tile.pointsLabel = msg.tileInfo.pointsLabel || `+${msg.tileInfo.points} pts`;
             }
             if (msg.players) state.players = msg.players;
             actualizarTileVisual(msg.tileIndex);
             actualizarScoreboard();
             state.myMinesCount = Math.max(1, state.myMinesCount);
-            dom.playerMinesCount.textContent = state.myMinesCount;
             if (audio && audio.playCoinWin) audio.playCoinWin();
             mostrarNotificacionSiembra(msg.tileIndex);
           }
@@ -2059,7 +2402,7 @@
             tile.publiclyRevealed = true;
             tile.victimAvatar = msg.victimAvatar;
             tile.victimName = msg.victimName;
-            tile.pointsLabel = `-${msg.stolenPoints} pts (${msg.stealRate || 10}%)`;
+            tile.pointsLabel = `-${msg.stolenPoints} pts`;
             actualizarTileVisual(msg.tileIndex);
           }
           if (msg.players) state.players = msg.players;
@@ -2070,7 +2413,7 @@
           setTimeout(() => dom.battleGrid.classList.remove('animate-shake'), 500);
           const victim = state.players.find(p => p.id === msg.victimId);
           const planter = state.players.find(p => p.id === msg.planterId);
-          logEvent(`💥 <strong>¡EMBOSCADA!</strong> ${msg.victimAvatar || '👤'} ${victim ? victim.name : 'Un rival'} pisó la mina de <strong>${planter ? planter.name : 'un rival'}</strong>. ¡${planter ? planter.name : 'Rival'} le robó el <strong>${msg.stealRate || 10}%</strong> (${msg.stolenPoints} pts)!`);
+          logEvent(`💥 <strong>¡EMBOSCADA!</strong> ${msg.victimAvatar || '👤'} ${victim ? victim.name : 'Un rival'} pisó la mina de <strong>${planter ? planter.name : 'un rival'}</strong>. ¡${planter ? planter.name : 'Rival'} le robó <strong>${msg.stolenPoints} pts</strong>!`);
         } else if (msg.type === 'PLAYER_EXPLORED_CLEAN') {
           state.players = msg.players;
           actualizarScoreboard();
@@ -2208,10 +2551,12 @@
         state.podium = [];
         state.isSpectator = false;
         state.isGameOver = false;
+        state.revanchaCount = 0;
+        aplicarTemaTablero(0);
         state.players = [
-          { id: state.myPlayerId, name: state.myPlayerName, avatar: state.myAvatar, score: 0, isBot: false, mines: 0, stealPct: 10 },
-          { id: 'bot-1', name: 'Mateo', avatar: '🥃', score: 0, isBot: true, mines: 0, stealPct: 10 },
-          { id: 'bot-2', name: 'Valentina', avatar: '🍧', score: 0, isBot: true, mines: 0, stealPct: 10 }
+          { id: state.myPlayerId, name: state.myPlayerName, avatar: state.myAvatar, score: 0, isBot: false, mines: 0 },
+          { id: 'bot-1', name: 'Mateo', avatar: '🥃', score: 0, isBot: true, mines: 0 },
+          { id: 'bot-2', name: 'Valentina', avatar: '🍧', score: 0, isBot: true, mines: 0 }
         ];
         generarTableroBatalla();
         state.currentTurnIndex = 0;
@@ -2219,42 +2564,67 @@
       }
 
       // =========================================================================
-      // 5. Lógica del Tablero 6x6 y Batalla
+      // 5. Lógica del Tablero Dinámico (6x6 o 7x7) y Batalla
       // =========================================================================
       function generarTableroBatalla() {
         state.board = [];
-        // 36 Casillas distribuidas:
-        // 8 Granizados (+100)
-        // 6 Vasos Dobles (+250)
-        // 3 Tequila Shots (+500)
-        // 19 Hielos Comunes (+50)
-        const items = [
-          ...Array(8).fill({ type: 'GRANIZADO', icon: '🍧', name: 'Granizado', points: 100 }),
-          ...Array(6).fill({ type: 'DOBLE', icon: '🍹', name: 'Vaso Doble', points: 250 }),
-          ...Array(3).fill({ type: 'SHOT', icon: '🥃', name: 'Tequila Shot', points: 500 }),
-          ...Array(19).fill({ type: 'HIELO', icon: '🧊', name: 'Hielo Frío', points: 50 })
-        ];
+        const is6Players = state.players.length >= 6;
+        const totalTiles = is6Players ? 49 : 36;
 
-        // Barajar aleatoriamente (Fisher-Yates)
+        // Multiplicador progresivo de rebancha: Ronda 0 = 1x, Rebancha 1 = 2x, Rebancha 2 = 4x, Rebancha 3 = 8x...
+        const count = state.revanchaCount || 0;
+        const rebanchaMultiplier = count > 0 ? Math.pow(2, count) : 1;
+
+        // Seleccionar paleta temática según el número de Rebancha actual
+        const activeTheme = getThemeForRevancha(count);
+        const rawTiers = activeTheme.tiers;
+        const POINT_DEFINITIONS = rawTiers.map(def => ({
+          ...def,
+          points: def.points * rebanchaMultiplier
+        }));
+
+        let items = [];
+        if (is6Players) {
+          // Tablero 7x7 (49 casillas): 7 de cada una de las 7 categorías (7 * 7 = 49 casillas)
+          POINT_DEFINITIONS.forEach(def => {
+            for (let k = 0; k < 7; k++) {
+              items.push({ ...def });
+            }
+          });
+        } else {
+          // Tablero 6x6 (36 casillas): 5 de cada una de las 7 categorías (35 casillas) + 1 extra balanceado
+          POINT_DEFINITIONS.forEach(def => {
+            for (let k = 0; k < 5; k++) {
+              items.push({ ...def });
+            }
+          });
+          items.push({ ...POINT_DEFINITIONS[4] }); // Categoría intermedia extra
+        }
+
+        // Barajar aleatoriamente en el tablero (Fisher-Yates)
         for (let i = items.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
           [items[i], items[j]] = [items[j], items[i]];
         }
 
-        for (let idx = 0; idx < 36; idx++) {
+        for (let idx = 0; idx < totalTiles; idx++) {
           state.board.push({
             index: idx,
             type: items[idx].type,
             icon: items[idx].icon,
             name: items[idx].name,
             points: items[idx].points,
+            initialPoints: items[idx].points,
             revealedTo: [], // Jugadores que lo han explorado en privado
             publiclyRevealed: false,
             isExplosion: false,
             mineBy: null, // ID del jugador que plantó la mina aquí (secreto)
-            pointsLabel: ''
+            pointsLabel: `+${items[idx].points} pts`,
+            coverIcon: activeTheme.coverIcon || '🧊'
           });
         }
+
+        actualizarLeyendaTablero(count);
       }
 
       function actualizarMetaPuntos(pts) {
@@ -2316,6 +2686,151 @@
         return null;
       }
 
+      function aplicarTemaTablero(revanchaCount = 0) {
+        if (!dom.battleGrid) return;
+        REBANCHA_THEMES.forEach(th => {
+          if (th.id) dom.battleGrid.classList.remove(th.id);
+        });
+
+        if (revanchaCount > 0) {
+          const theme = getThemeForRevancha(revanchaCount);
+          if (theme.id) {
+            dom.battleGrid.classList.add(theme.id);
+          }
+        }
+      }
+
+      function actualizarLeyendaTablero(count = 0) {
+        if (!dom.boardFooterLegend) return;
+        const mult = count > 0 ? Math.pow(2, count) : 1;
+        const activeTheme = getThemeForRevancha(count);
+        const tiers = activeTheme.tiers;
+        const tierSummary = tiers.map(t => `${t.icon} ${t.points * mult}`).join(' | ');
+        if (mult > 1) {
+          dom.boardFooterLegend.innerHTML = `<span class="font-black text-amber-300">⚡ REBANCHA #${count} (PUNTOS x${mult}):</span> ${tierSummary} pts • 💣 Minas roban el doble (${MINE_STEAL_MULTIPLIER}x).`;
+        } else {
+          dom.boardFooterLegend.innerHTML = `${tierSummary} pts • 💣 Siembra minas secretas para robar el doble (${MINE_STEAL_MULTIPLIER}x de la casilla).`;
+        }
+      }
+
+      let rebanchaNotifTimer = null;
+      function mostrarBannerRebancha(count) {
+        if (!dom.gameHeaderBar) return;
+        const theme = getThemeForRevancha(count);
+        const mult = count > 0 ? Math.pow(2, count) : 1;
+
+        // 1. Multiplicador progresivo en el HUD de puntos
+        if (dom.headerRebanchaMultBadge) {
+          if (mult > 1) {
+            dom.headerRebanchaMultBadge.textContent = `x${mult}`;
+            dom.headerRebanchaMultBadge.classList.remove('hidden');
+          } else {
+            dom.headerRebanchaMultBadge.classList.add('hidden');
+          }
+        }
+
+        // 2. Capa de Notificación integrada en la cabecera
+        if (dom.headerNotifIcon) {
+          dom.headerNotifIcon.textContent = theme.themeIcon || theme.coverIcon || '🔥';
+        }
+        if (dom.headerNotifTitle) {
+          dom.headerNotifTitle.textContent = `¡REBANCHA #${count}!`;
+        }
+        if (dom.headerNotifMultTag) {
+          dom.headerNotifMultTag.textContent = `PUNTOS x${mult}`;
+          dom.headerNotifMultTag.className = `px-1.5 py-0.5 rounded-md font-black text-[9px] uppercase shadow ${theme.badgeBg || 'bg-amber-400'} text-slate-950`;
+        }
+        if (dom.headerNotifDesc) {
+          dom.headerNotifDesc.textContent = `¡Nueva matriz temática y puntos multiplicados x${mult}!`;
+        }
+        if (dom.headerNotifThemeTag) {
+          dom.headerNotifThemeTag.textContent = theme.name;
+          dom.headerNotifThemeTag.className = `flex-shrink-0 text-[10px] font-mono font-black ${theme.textColor || 'text-amber-400'} uppercase tracking-tight bg-slate-950/90 border ${theme.borderColor || 'border-amber-500/50'} px-2 py-0.5 rounded-lg ml-1`;
+        }
+
+        // 3. Estilizar el contenedor de la cabecera con el color temático
+        dom.gameHeaderBar.className = `w-full relative min-h-[48px] p-2 sm:p-2.5 rounded-2xl bg-slate-900/95 border-2 ${theme.borderColor || 'border-amber-400'} mb-2.5 backdrop-blur-sm text-xs shadow-[0_0_25px_rgba(255,255,255,0.15)] transition-all duration-500 overflow-hidden`;
+
+        // 4. Animación de cambio: ocultar base y deslizar hacia adentro la notificación
+        if (dom.headerBaseContent) {
+          dom.headerBaseContent.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
+          dom.headerBaseContent.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+        }
+        if (dom.headerNotifContent) {
+          dom.headerNotifContent.classList.remove('opacity-0', '-translate-y-full', 'pointer-events-none');
+          dom.headerNotifContent.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
+        }
+
+        // 5. Retorno automático a su estado base tras 3.4 segundos
+        if (rebanchaNotifTimer) clearTimeout(rebanchaNotifTimer);
+        rebanchaNotifTimer = setTimeout(() => {
+          if (dom.headerNotifContent) {
+            dom.headerNotifContent.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
+            dom.headerNotifContent.classList.add('opacity-0', '-translate-y-full', 'pointer-events-none');
+          }
+          if (dom.headerBaseContent) {
+            dom.headerBaseContent.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+            dom.headerBaseContent.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
+          }
+        }, 3400);
+
+        actualizarLeyendaTablero(count);
+      }
+
+      function ejecutarRevanchaTablero() {
+        if (!state.isHost) return;
+
+        if (state.isPlantingMode) {
+          state.isPlantingMode = false;
+          state.plantableTileIndex = null;
+          ocultarNotificacionSiembra();
+        }
+
+        state.revanchaCount = (state.revanchaCount || 0) + 1;
+        const count = state.revanchaCount;
+
+        // 1. Cambiar canción a la siguiente pista sincronizada para la Rebancha
+        if (audio && audio.nextTrack) {
+          audio.nextTrack();
+          updateAudioUI();
+        }
+
+        // 2. Generar nuevo tablero con los puntos aleatorios y el tema activo
+        generarTableroBatalla();
+
+        // 3. Aplicar nuevo color al tablero
+        aplicarTemaTablero(count);
+
+        // 4. Renderizar el tablero visualmente con la animación de transición en ola
+        renderTableroVisual(true);
+
+        // 5. Mostrar la notificación temporal de REBANCHA que aparece y desaparece sola
+        mostrarBannerRebancha(count);
+
+        if (audio && audio.playCoinWin) {
+          audio.playCoinWin();
+        }
+
+        const theme = getThemeForRevancha(count);
+        logEvent(`🔥 <strong>¡REBANCHA #${count}!</strong> El tablero se agotó sin ganador. ¡Nueva matriz temática (${theme.name} ${theme.themeIcon || '✨'}) y nueva música! Puntos acumulados conservados.`);
+
+        // 6. Transmitir a todos los dispositivos en la partida (incluyendo musicSync)
+        broadcast({
+          type: 'BOARD_REVANCHA',
+          revanchaCount: count,
+          boardSize: state.board.length,
+          players: state.players,
+          turnIndex: state.currentTurnIndex,
+          musicSync: audio ? { trackIndex: audio.currentTrackIndex, currentTime: 0 } : null
+        });
+
+        // 7. Si el turno le corresponde a un bot, activarlo tras la animación
+        const nextPlayer = state.players[state.currentTurnIndex];
+        if (nextPlayer && nextPlayer.isBot) {
+          setTimeout(() => ejecutarTurnoBot(nextPlayer), 2400);
+        }
+      }
+
       function iniciarPantallaJuego() {
         activarWakeLock();
         dom.viewLobby.classList.add('hidden');
@@ -2329,29 +2844,74 @@
           dom.spectatorBanner.classList.add('hidden');
         }
 
+        aplicarTemaTablero(state.revanchaCount || 0);
+        if (state.revanchaCount === 0) {
+          if (dom.headerRebanchaMultBadge) dom.headerRebanchaMultBadge.classList.add('hidden');
+          if (dom.gameHeaderBar) {
+            dom.gameHeaderBar.className = 'w-full relative min-h-[48px] p-2 sm:p-2.5 rounded-2xl bg-slate-900/90 border border-red-500/40 mb-2.5 backdrop-blur-sm text-xs transition-all duration-500 overflow-hidden shadow-lg';
+          }
+          if (dom.headerBaseContent) {
+            dom.headerBaseContent.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+            dom.headerBaseContent.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
+          }
+          if (dom.headerNotifContent) {
+            dom.headerNotifContent.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
+            dom.headerNotifContent.classList.add('opacity-0', '-translate-y-full', 'pointer-events-none');
+          }
+        }
+        actualizarLeyendaTablero(state.revanchaCount || 0);
         updateAudioUI();
         renderTableroVisual();
         actualizarScoreboard();
         actualizarTurnoUI();
       }
 
-      function renderTableroVisual() {
+      function renderTableroVisual(isRebancha = false) {
         dom.battleGrid.innerHTML = '';
-        for (let idx = 0; idx < 36; idx++) {
+        const totalTiles = state.board.length || (state.players.length >= 6 ? 49 : 36);
+        const is7x7 = totalTiles >= 49;
+        const cols = is7x7 ? 7 : 6;
+        if (is7x7) {
+          dom.battleGrid.classList.add('grid-7x7');
+        } else {
+          dom.battleGrid.classList.remove('grid-7x7');
+        }
+
+        const activeTheme = getThemeForRevancha(state.revanchaCount || 0);
+        const coverIcon = activeTheme.coverIcon || '🧊';
+
+        for (let idx = 0; idx < totalTiles; idx++) {
           const el = document.createElement('div');
           el.className = 'battle-tile select-none';
           el.dataset.index = idx;
 
+          if (isRebancha) {
+            el.classList.add('rebancha-anim');
+            const col = idx % cols;
+            const row = Math.floor(idx / cols);
+            const delay = (col * 35) + (row * 30);
+            el.style.animationDelay = `${delay}ms`;
+
+            const onAnimEnd = () => {
+              el.classList.remove('rebancha-anim');
+              el.style.animation = '';
+              el.style.animationDelay = '';
+              el.removeEventListener('animationend', onAnimEnd);
+            };
+            el.addEventListener('animationend', onAnimEnd);
+            setTimeout(onAnimEnd, delay + 650);
+          }
+
           el.innerHTML = `
-            <!-- Cara Frontal (Hielo) -->
+            <!-- Cara Frontal -->
             <div class="battle-tile-face battle-tile-front">
-              <span class="tile-front-icon text-xl sm:text-2xl">🧊</span>
+              <span class="tile-front-icon text-xl sm:text-2xl">${coverIcon}</span>
               <span class="text-[9px] font-mono text-cyan-300/60 mt-0.5">${idx + 1}</span>
             </div>
 
             <!-- Cara Trasera (Revelado / Seguro / Mina) -->
             <div class="battle-tile-face battle-tile-back battle-tile-safe">
-              <span class="tile-back-icon text-2xl sm:text-3xl">🧊</span>
+              <span class="tile-back-icon text-2xl sm:text-3xl">${coverIcon}</span>
               <span class="text-[9px] font-black text-white mt-0.5 uppercase tracking-wider"></span>
             </div>
           `;
@@ -2424,25 +2984,20 @@
         if (tile.mineBy && tile.mineBy !== playerId) {
           const planter = state.players.find(p => p.id === tile.mineBy);
 
-          // REGLA NUEVA: Robo progresivo del 10% al 70%
-          const stealRate = planter ? (planter.stealPct || 10) : 10;
-          let stolenPoints = Math.round(player.score * (stealRate / 100));
-          if (player.score > 0) {
-            stolenPoints = Math.min(player.score, Math.max(stolenPoints, 50));
-          } else {
-            stolenPoints = 0;
-          }
+          // REGLA: Robo por valor de la casilla (2 veces / el doble del valor en limpio de la casilla)
+          const baseTilePoints = tile.initialPoints || 10;
+          const stolenPoints = baseTilePoints * MINE_STEAL_MULTIPLIER;
 
           player.score = Math.max(0, player.score - stolenPoints);
           if (planter) {
-            planter.score += Math.max(stolenPoints, 100);
+            planter.score += stolenPoints;
             const winner = verificarPuestoPodio(planter);
             if (winner) {
               tile.isExplosion = true;
               tile.publiclyRevealed = true;
               tile.victimAvatar = player.avatar;
               tile.victimName = player.name;
-              tile.pointsLabel = `-${stolenPoints} pts (${stealRate}%)`;
+              tile.pointsLabel = `-${stolenPoints} pts`;
               actualizarTileVisual(tileIndex);
               actualizarScoreboard();
               finalizarPartida();
@@ -2450,21 +3005,17 @@
             }
           }
 
-          // La víctima murió: su función de robar puntos se reinicia a 10%
-          player.stealPct = 10;
-
           // AQUÍ Y SOLO AQUÍ LA CASILLA SE DESACTIVA PARA TODOS LOS JUGADORES
           tile.isExplosion = true;
           tile.publiclyRevealed = true;
           tile.victimAvatar = player.avatar;
           tile.victimName = player.name;
-          tile.pointsLabel = `-${stolenPoints} pts (${stealRate}%)`;
+          tile.pointsLabel = `-${stolenPoints} pts`;
 
           if (audio && audio.playExplosion) audio.playExplosion();
           else if (audio && audio.playFailSound) audio.playFailSound();
 
-          logEvent(`💥 <strong>¡EMBOSCADA!</strong> ${player.avatar || '👤'} ${player.name} pisó la mina de <strong>${planter ? planter.name : 'un rival'}</strong>. ¡${planter ? planter.name : 'Rival'} le robó el <strong>${stealRate}%</strong> (${stolenPoints} pts)!`);
-          logEvent(`⚠️ La racha de robo de ${player.name} se reinicia al 10%.`);
+          logEvent(`💥 <strong>¡EMBOSCADA!</strong> ${player.avatar || '👤'} ${player.name} pisó la mina de <strong>${planter ? planter.name : 'un rival'}</strong>. ¡${planter ? planter.name : 'Rival'} le robó <strong>${stolenPoints} pts</strong> (${MINE_STEAL_MULTIPLIER}x el valor limpio)!`);
 
           // Shake animation en el tablero
           dom.battleGrid.classList.add('animate-shake');
@@ -2481,7 +3032,6 @@
             victimName: player.name,
             planterId: tile.mineBy,
             stolenPoints,
-            stealRate,
             players: state.players,
             podium: state.podium
           });
@@ -2497,18 +3047,15 @@
         }
 
         const puntosGanados = tile.points || 0;
+        tile.pointsLabel = `+${puntosGanados} pts`;
         if (puntosGanados > 0) {
           player.score += puntosGanados;
           tile.points = 0; // Premio reclamado
         }
 
-        // REGLA NUEVA: Sobrevivió limpio sin morir -> aumenta de a 10% hasta 70% máximo
-        player.stealPct = Math.min(70, (player.stealPct || 10) + 10);
-
         // Otorga 1 mina disponible al jugador que acertó
         if (playerId === state.myPlayerId) {
           state.myMinesCount = Math.max(1, state.myMinesCount);
-          dom.playerMinesCount.textContent = state.myMinesCount;
         }
 
         // Verificar si el jugador alcanzó la meta de puntos
@@ -2529,7 +3076,7 @@
           if (audio && audio.playCoinWin) audio.playCoinWin();
           else if (audio && audio.playSuccessBeep) audio.playSuccessBeep();
 
-          logEvent(`🍧 ¡Descubriste <strong>${tile.name}</strong> (+${puntosGanados} pts)! El cubo está <strong>Limpio</strong>.`);
+          logEvent(`${tile.icon || '✨'} ¡Descubriste <strong>${tile.name}</strong> (+${puntosGanados} pts)! El cubo está <strong>Limpio</strong>.`);
 
           // Notificación flotante de siembra con doble click
           mostrarNotificacionSiembra(tileIndex);
@@ -2565,7 +3112,8 @@
                 type: tile.type,
                 icon: tile.icon,
                 name: tile.name,
-                points: puntosGanados
+                points: puntosGanados,
+                pointsLabel: `+${puntosGanados} pts`
               },
               players: state.players
             });
@@ -2651,7 +3199,6 @@
         ocultarNotificacionSiembra();
 
         state.myMinesCount = Math.max(0, state.myMinesCount - 1);
-        dom.playerMinesCount.textContent = state.myMinesCount;
 
         registrarMinaPlantada(tileIndex, planterId);
 
@@ -2695,13 +3242,22 @@
         const front = tileEl.querySelector('.battle-tile-front');
         const frontIcon = front ? front.querySelector('.tile-front-icon') : null;
 
+        const currentTheme = getThemeForRevancha(state.revanchaCount || 0);
+        const coverIcon = (tileData && tileData.coverIcon) || currentTheme.coverIcon || '🧊';
+
         if (isExploded) {
+          tileEl.classList.remove('rebancha-anim');
+          tileEl.style.animation = '';
+          tileEl.style.animationDelay = '';
           tileEl.classList.add('revealed', 'pointer-events-none', 'cursor-not-allowed');
           if (back) back.className = 'battle-tile-face battle-tile-back battle-tile-mine border-2 border-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.9)] bg-rose-950/90';
           if (iconEl) iconEl.innerHTML = `<div class="flex items-center justify-center gap-0.5 text-xs sm:text-sm leading-none"><span class="text-sm sm:text-base">${tileData.victimAvatar || '👤'}</span><span>💀</span><span class="text-sm sm:text-base">💥</span></div>`;
           if (labelEl) labelEl.innerHTML = `<span class="text-[9px] sm:text-[10px] text-rose-200 font-extrabold tracking-tight">${tileData.victimName ? tileData.victimName : 'RIVAL'} 💀</span>`;
         } else if (isRevealedToMe) {
           // Destapado exclusivamente para mí (cubo limpio verificado)
+          tileEl.classList.remove('rebancha-anim');
+          tileEl.style.animation = '';
+          tileEl.style.animationDelay = '';
           tileEl.classList.add('revealed');
           tileEl.classList.remove('pointer-events-none', 'cursor-not-allowed');
           if (isMinePlantedByMe) {
@@ -2710,18 +3266,18 @@
             if (labelEl) labelEl.textContent = 'MINA SECRETA';
           } else {
             if (back) back.className = 'battle-tile-face battle-tile-back battle-tile-safe';
-            if (iconEl) iconEl.textContent = tileData.icon || '🧊';
-            if (labelEl) labelEl.textContent = 'LIMPIO ✨';
+            if (iconEl) iconEl.textContent = tileData.icon || coverIcon;
+            if (labelEl) labelEl.textContent = tileData.pointsLabel || (tileData.initialPoints ? `+${tileData.initialPoints} pts` : 'LIMPIO ✨');
           }
         } else {
-          // No revelado para mí: sigue viéndose como hielo cubierto
+          // No revelado para mí: sigue viéndose cubierto con el ícono del tema activo
           tileEl.classList.remove('revealed', 'pointer-events-none', 'cursor-not-allowed');
           if (isMinePlantedByMe) {
             if (front) front.classList.add('mine-planted-by-me');
             if (frontIcon) frontIcon.textContent = '💣';
           } else {
             if (front) front.classList.remove('mine-planted-by-me');
-            if (frontIcon) frontIcon.textContent = '🧊';
+            if (frontIcon) frontIcon.textContent = coverIcon;
           }
         }
       }
@@ -2745,8 +3301,16 @@
         const algunJugadorTieneMovimientos = state.players.some(p => jugadorTieneMovimientos(p));
         const quedanHielosActivos = state.board.some(t => !t.isExplosion);
 
-        if (alguienGano || !algunJugadorTieneMovimientos || !quedanHielosActivos) {
+        // Si alguien alcanzó la meta de puntos, la partida finaliza con podio
+        if (alguienGano) {
           finalizarPartida();
+          return;
+        }
+
+        // Si el tablero se agotó sin que nadie alcance la meta:
+        // ¡REBANCHA! Se renueva la matriz de puntos, se mantienen todos los puntajes y cambia el color del tablero.
+        if (!algunJugadorTieneMovimientos || !quedanHielosActivos) {
+          ejecutarRevanchaTablero();
           return;
         }
 
@@ -2767,7 +3331,11 @@
         }
 
         if (!foundNext) {
-          finalizarPartida();
+          if (alguienGano) {
+            finalizarPartida();
+          } else {
+            ejecutarRevanchaTablero();
+          }
           return;
         }
 
@@ -2844,7 +3412,6 @@
           else if (idx === sorted.length - 1) medal = '💀';
           else medal = `${p.standing || idx + 1}.`;
 
-          const steal = p.stealPct || 10;
           const row = document.createElement('div');
           row.className = `flex items-center justify-between p-2 rounded-xl text-xs transition ${
             isMe ? 'bg-gradient-to-r from-red-950/90 to-rose-950/70 border border-red-500/60 shadow-sm' : 'bg-slate-950/60 border border-slate-800'
@@ -2854,8 +3421,7 @@
             <div class="flex items-center space-x-2 truncate min-w-0">
               <span class="font-black text-xs ${p.podiumRank ? 'text-amber-400' : (idx === sorted.length - 1 ? 'text-rose-400' : 'text-slate-400')}">${medal}</span>
               <span class="text-sm">${p.avatar}</span>
-              <span class="font-bold text-white truncate max-w-[100px] sm:max-w-[120px]">${p.name}</span>
-              <span class="px-1.5 py-0.5 rounded text-[9px] font-black ${steal >= 50 ? 'bg-rose-950 text-rose-300 border border-rose-500/50' : 'bg-slate-900 text-amber-300 border border-slate-700'}" title="Racha de Robo actual">💣 ${steal}%</span>
+              <span class="font-bold text-white truncate max-w-[120px] sm:max-w-[140px]">${p.name}</span>
             </div>
             <div class="font-mono font-black text-cyan-300 flex-shrink-0 text-right">
               ${p.score} <span class="text-[9px] text-slate-400 font-normal">/ ${state.targetScore}</span>
