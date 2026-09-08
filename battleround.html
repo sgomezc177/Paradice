@@ -435,9 +435,14 @@
       <!-- Banner de Estado de Conexión (Especial para Invitados / A Distancia) -->
       <div id="guest-connection-status" class="hidden w-full py-2.5 px-3 rounded-2xl mb-3 text-xs font-bold flex flex-col items-center justify-center gap-1.5 transition-all"></div>
 
-      <!-- Consejo de Mantener Pantalla Activa para el Anfitrión -->
-      <div id="host-keepalive-tip" class="hidden w-full py-2 px-3 rounded-2xl bg-amber-950/60 border border-amber-500/50 text-amber-300 text-[11px] text-center mb-3 font-medium">
-        💡 <strong>Consejo para el anfitrión:</strong> Mantén esta pantalla activa mientras tus amigos se unen.
+      <!-- Notificación Dinámica de Conexión (Texto que cambia de color al conectarse alguien) -->
+      <div id="connection-notify-box" class="w-full py-1.5 px-3 rounded-2xl bg-slate-950/70 border border-cyan-500/30 text-center mb-2 transition-all duration-300">
+        <div class="flex items-center justify-center gap-2">
+          <span id="conn-notify-icon" class="inline-block w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+          <span id="conn-notify-text" class="text-xs font-bold text-cyan-300 transition-colors duration-300">
+            Esperando que se unan jugadores...
+          </span>
+        </div>
       </div>
 
       <div class="my-2">
@@ -481,8 +486,8 @@
           <!-- Jugadores agregados dinámicamente -->
         </div>
       </div>
-      <!-- Selector de Meta de Puntos (Antes de Iniciar) -->
-      <div id="target-points-box" class="w-full my-3 p-3.5 rounded-2xl bg-slate-950/80 border border-amber-500/40 text-left shadow-md">
+      <!-- Selector de Meta de Puntos (Solo visible para el Anfitrión) -->
+      <div id="target-points-box" class="hidden w-full my-3 p-3.5 rounded-2xl bg-slate-950/80 border border-amber-500/40 text-left shadow-md">
         <div class="flex items-center justify-between text-xs font-black uppercase text-amber-300 mb-2">
           <span class="flex items-center gap-1.5">
             <span>🎯</span> <span>Meta de Puntos para Ganar:</span>
@@ -1140,6 +1145,7 @@
           };
           state.players.push(botPlayer);
           renderWaitingPlayers();
+          notificarConexionJugador(botPlayer.name);
           broadcast({ type: 'UPDATE_PLAYERS', players: state.players });
         });
 
@@ -1666,8 +1672,10 @@
         if (dom.guestConnectionStatus) {
           dom.guestConnectionStatus.classList.add('hidden');
         }
-        const hostTip = document.getElementById('host-keepalive-tip');
-        if (hostTip) hostTip.classList.remove('hidden');
+        if (dom.targetPointsBox) {
+          dom.targetPointsBox.classList.remove('hidden');
+        }
+        notificarConexionJugador();
 
         if (dom.btnAddBot) dom.btnAddBot.classList.remove('hidden');
         if (dom.btnStartGame) dom.btnStartGame.classList.remove('hidden');
@@ -1758,8 +1766,10 @@
         dom.headerRoomBadge.classList.remove('hidden');
         dom.headerRoomCode.textContent = cleanCode;
 
-        const hostTip = document.getElementById('host-keepalive-tip');
-        if (hostTip) hostTip.classList.add('hidden');
+        if (dom.targetPointsBox) {
+          dom.targetPointsBox.classList.add('hidden');
+        }
+        notificarConexionJugador();
 
         mostrarEstadoConexion(`📡 Conectando al servidor Cloud Relay para la sala #${cleanCode}...`, 'connecting');
 
@@ -1862,6 +1872,7 @@
               ...msg.player,
               stealPct: msg.player.stealPct || 10
             });
+            notificarConexionJugador(msg.player.name);
           }
           renderWaitingPlayers();
           broadcast({
@@ -1890,11 +1901,19 @@
               actualizarMetaPuntos(msg.targetScore);
             }
             renderWaitingPlayers();
+            notificarConexionJugador();
             mostrarEstadoConexion('✅ ¡Conectado con éxito! Esperando que el anfitrión inicie...', 'connected');
           }
         } else if (msg.type === 'UPDATE_PLAYERS') {
+          const prevCount = state.players.length;
           state.players = msg.players;
           renderWaitingPlayers();
+          if (state.players.length > prevCount) {
+            const newlyAdded = state.players[state.players.length - 1];
+            if (newlyAdded && newlyAdded.id !== state.myPlayerId) {
+              notificarConexionJugador(newlyAdded.name);
+            }
+          }
         } else if (msg.type === 'START_GAME') {
           state.players = msg.players;
           state.currentTurnIndex = msg.turnIndex;
@@ -2033,6 +2052,51 @@
           `;
           dom.roomPlayersList.appendChild(item);
         });
+      }
+
+      function notificarConexionJugador(nombreJugador) {
+        const box = document.getElementById('connection-notify-box');
+        const icon = document.getElementById('conn-notify-icon');
+        const text = document.getElementById('conn-notify-text');
+        if (!text) return;
+
+        if (nombreJugador) {
+          // Cambia de color dinámicamente: resplandor esmeralda / dorado que avisa que alguien se conectó
+          if (box) {
+            box.className = 'w-full py-2 px-3 rounded-2xl bg-emerald-950/90 border-2 border-emerald-400 text-center my-1.5 shadow-[0_0_25px_rgba(52,211,153,0.5)] transition-all duration-300 scale-102';
+          }
+          if (icon) {
+            icon.className = 'inline-block text-base animate-bounce';
+            icon.textContent = '🎉';
+          }
+          text.className = 'text-xs font-black text-emerald-200 uppercase tracking-wide';
+          text.textContent = `¡${nombreJugador} se acaba de conectar!`;
+
+          setTimeout(() => {
+            if (box) {
+              box.className = 'w-full py-1.5 px-3 rounded-2xl bg-slate-950/70 border border-amber-500/40 text-center my-1.5 transition-all duration-300';
+            }
+            if (icon) {
+              icon.className = 'inline-block w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse';
+              icon.textContent = '';
+            }
+            text.className = 'text-xs font-bold text-amber-300 transition-colors duration-300';
+            text.textContent = `👥 ${state.players.length} jugadores listos en la mesa`;
+          }, 3500);
+        } else {
+          // Estado inicial / espera
+          if (box) {
+            box.className = 'w-full py-1.5 px-3 rounded-2xl bg-slate-950/70 border border-cyan-500/30 text-center my-1.5 transition-all duration-300';
+          }
+          if (icon) {
+            icon.className = 'inline-block w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping';
+            icon.textContent = '';
+          }
+          text.className = 'text-xs font-bold text-cyan-300 transition-colors duration-300';
+          text.textContent = state.players.length > 1 
+            ? `👥 ${state.players.length} jugadores listos en la mesa` 
+            : 'Esperando que se unan jugadores...';
+        }
       }
 
       function iniciarPartidaBots() {
