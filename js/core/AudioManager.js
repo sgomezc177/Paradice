@@ -275,7 +275,7 @@
       window.dispatchEvent(event);
     }
 
-    playTrackByIndex(idx) {
+    playTrackByIndex(idx, startTime = 0) {
       if (idx < 0 || idx >= PLAYLIST_MUSIC.length) idx = 0;
       this.currentTrackIndex = idx;
       this.currentTrackName = PLAYLIST_MUSIC[idx];
@@ -285,11 +285,32 @@
       this.audioEl.volume = 0.5;
 
       if (!this.musicMuted) {
-        this.audioEl.play().catch(e => {
-          console.log('Interacción previa requerida para reproducir audio:', e);
-        });
+        const playPromise = this.audioEl.play();
+        if (playPromise !== undefined) {
+          playPromise.then(() => {
+            if (startTime > 0 && Number.isFinite(startTime)) {
+              this.audioEl.currentTime = startTime;
+            }
+          }).catch(e => {
+            console.log('Interacción previa requerida para reproducir audio:', e);
+          });
+        }
+      } else if (startTime > 0 && Number.isFinite(startTime)) {
+        this.audioEl.currentTime = startTime;
       }
       this.notifyTrackChange();
+    }
+
+    syncTrack(idx, currentTime = 0) {
+      if (idx < 0 || idx >= PLAYLIST_MUSIC.length) return;
+      const sameTrack = this.currentTrackIndex === idx;
+      const isPlaying = this.audioEl.src && !this.audioEl.paused;
+
+      if (!sameTrack || !isPlaying) {
+        this.playTrackByIndex(idx, currentTime);
+      } else if (currentTime > 0 && Number.isFinite(currentTime) && Math.abs(this.audioEl.currentTime - currentTime) > 2.5) {
+        this.audioEl.currentTime = currentTime;
+      }
     }
 
     playRandomTrack() {

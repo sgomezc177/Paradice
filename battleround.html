@@ -560,10 +560,15 @@
       </div>
 
       <!-- Notificación Flotante de Siembra de Mina -->
-      <div id="action-banner-prompt" class="fixed top-14 sm:top-16 left-1/2 -translate-x-1/2 z-40 pointer-events-none opacity-0 -translate-y-4 transition-all duration-300 ease-out max-w-[92vw] sm:max-w-md w-auto px-4 py-2.5 rounded-2xl bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border-2 border-emerald-400 text-emerald-300 text-xs sm:text-sm font-black text-center shadow-[0_10px_35px_rgba(52,211,153,0.5)] flex flex-col items-center justify-center gap-1.5 backdrop-blur-md select-none overflow-hidden">
-        <div class="flex items-center justify-center gap-2">
-          <span class="text-base animate-bounce">💣</span>
-          <span>Puedes sembrar una mina en este cubo haciendo doble click</span>
+      <div id="action-banner-prompt" class="fixed top-14 sm:top-16 left-1/2 -translate-x-1/2 z-40 pointer-events-none opacity-0 -translate-y-4 transition-all duration-300 ease-out max-w-[95vw] sm:max-w-lg w-auto px-4 py-2.5 rounded-2xl bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border-2 border-emerald-400 text-emerald-300 text-xs sm:text-sm font-black text-center shadow-[0_10px_35px_rgba(52,211,153,0.5)] flex flex-col items-center justify-center gap-2 backdrop-blur-md select-none overflow-hidden">
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-2.5 w-full">
+          <div class="flex items-center gap-1.5">
+            <span class="text-base animate-bounce">💣</span>
+            <span>Doble tap en el cubo para sembrar mina</span>
+          </div>
+          <button id="btn-skip-planting" class="pointer-events-auto px-3 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-amber-300 hover:text-white font-extrabold text-[11px] uppercase border border-amber-500/40 transition cursor-pointer flex items-center gap-1 shadow-sm">
+            <span>Dejar libre</span> <span>⏩</span>
+          </button>
         </div>
         <div id="planting-progress-bar" class="w-full h-1 bg-emerald-950/80 rounded-full overflow-hidden">
           <div id="planting-progress-fill" class="h-full bg-emerald-400 rounded-full" style="width: 100%;"></div>
@@ -971,6 +976,7 @@
         currentTurnBadge: document.getElementById('current-turn-badge'),
         playerMinesCount: document.getElementById('player-mines-count'),
         actionBannerPrompt: document.getElementById('action-banner-prompt'),
+        btnSkipPlanting: document.getElementById('btn-skip-planting'),
         liveScoreboard: document.getElementById('live-scoreboard'),
         battleLog: document.getElementById('battle-log'),
         // Modal Game Over & Podio
@@ -1059,6 +1065,13 @@
         window.addEventListener('audiotrackchange', (e) => {
           if (dom.musicTrackDisplay) {
             dom.musicTrackDisplay.textContent = `🎵 ${e.detail.title}`;
+          }
+          if (state.isHost && state.roomCode && state.roomCode !== 'LOCAL-BOTS' && audio) {
+            broadcast({
+              type: 'MUSIC_SYNC',
+              trackIndex: audio.currentTrackIndex,
+              currentTime: audio.audioEl ? audio.audioEl.currentTime : 0
+            });
           }
         });
       }
@@ -1186,7 +1199,11 @@
             type: 'START_GAME',
             players: state.players,
             turnIndex: state.currentTurnIndex,
-            targetScore: state.targetScore
+            targetScore: state.targetScore,
+            musicSync: audio ? {
+              trackIndex: audio.currentTrackIndex,
+              currentTime: audio.audioEl ? audio.audioEl.currentTime : 0
+            } : null
           };
 
           broadcast(gameStartData);
@@ -1230,9 +1247,21 @@
 
         dom.btnMusicNext.addEventListener('click', () => {
           if (audio) {
-            audio.nextTrack();
-            updateAudioUI();
+            if (!state.isHost && state.roomCode && state.roomCode !== 'LOCAL-BOTS') {
+              broadcast({
+                type: 'REQUEST_NEXT_TRACK',
+                from: state.myPlayerName || 'Un rival'
+              });
+            } else {
+              audio.nextTrack();
+              updateAudioUI();
+            }
           }
+        });
+
+        // Botón saltar siembra de mina ("Dejar libre")
+        dom.btnSkipPlanting?.addEventListener('click', () => {
+          finalizarTurnoSinSiembra();
         });
 
         // Instrucciones
@@ -1880,7 +1909,11 @@
             targetPlayerId: msg.player.id,
             players: state.players,
             turnIndex: state.currentTurnIndex,
-            targetScore: state.targetScore
+            targetScore: state.targetScore,
+            musicSync: audio ? {
+              trackIndex: audio.currentTrackIndex,
+              currentTime: audio.audioEl ? audio.audioEl.currentTime : 0
+            } : null
           });
           broadcast({ type: 'UPDATE_PLAYERS', players: state.players });
         } else if (msg.type === 'TARGET_SCORE_CHANGED') {
@@ -1899,6 +1932,10 @@
             state.players = msg.players;
             if (msg.targetScore) {
               actualizarMetaPuntos(msg.targetScore);
+            }
+            if (msg.musicSync && audio && !state.isHost) {
+              audio.syncTrack(msg.musicSync.trackIndex, msg.musicSync.currentTime);
+              updateAudioUI();
             }
             renderWaitingPlayers();
             notificarConexionJugador();
@@ -1938,6 +1975,10 @@
             icon: '🧊',
             name: 'Hielo'
           }));
+          if (msg.musicSync && audio && !state.isHost) {
+            audio.syncTrack(msg.musicSync.trackIndex, msg.musicSync.currentTime);
+            updateAudioUI();
+          }
           iniciarPantallaJuego();
         } else if (msg.type === 'TILE_CLICK') {
           if (state.isHost) {
@@ -2032,6 +2073,19 @@
           desactivarWakeLock();
           const loser = msg.loser || (state.podium[state.podium.length - 1]);
           mostrarModalFinJuego(state.podium, loser);
+        } else if (msg.type === 'MUSIC_SYNC') {
+          if (audio && !state.isHost) {
+            audio.syncTrack(msg.trackIndex, msg.currentTime);
+            updateAudioUI();
+          }
+        } else if (msg.type === 'REQUEST_NEXT_TRACK') {
+          if (state.isHost && audio) {
+            audio.nextTrack();
+            updateAudioUI();
+            if (msg.from) {
+              logEvent(`🎵 <strong>${msg.from}</strong> cambió la canción.`);
+            }
+          }
         }
       }
 
@@ -2274,10 +2328,12 @@
         const currentActivePlayer = state.players[state.currentTurnIndex];
         if (!currentActivePlayer) return;
 
-        // Si estamos en modo de siembra de mina: el segundo click o doble tap en el cubo confirma la siembra
+        // Si estamos en modo de siembra de mina: el segundo click o doble tap en el cubo confirma la siembra, o clic en otra casilla pasa el turno
         if (state.isPlantingMode) {
           if (state.plantableTileIndex === tileIndex) {
             confirmarSiembraMina(tileIndex);
+          } else {
+            finalizarTurnoSinSiembra(state.plantableTileIndex);
           }
           return;
         }
@@ -2330,7 +2386,18 @@
           player.score = Math.max(0, player.score - stolenPoints);
           if (planter) {
             planter.score += Math.max(stolenPoints, 100);
-            verificarPuestoPodio(planter);
+            const winner = verificarPuestoPodio(planter);
+            if (winner) {
+              tile.isExplosion = true;
+              tile.publiclyRevealed = true;
+              tile.victimAvatar = player.avatar;
+              tile.victimName = player.name;
+              tile.pointsLabel = `-${stolenPoints} pts (${stealRate}%)`;
+              actualizarTileVisual(tileIndex);
+              actualizarScoreboard();
+              finalizarPartida();
+              return;
+            }
           }
 
           // La víctima murió: su función de robar puntos se reinicia a 10%
@@ -2395,7 +2462,13 @@
         }
 
         // Verificar si el jugador alcanzó la meta de puntos
-        verificarPuestoPodio(player);
+        const winner = verificarPuestoPodio(player);
+        if (winner) {
+          actualizarTileVisual(tileIndex);
+          actualizarScoreboard();
+          finalizarPartida();
+          return;
+        }
 
         actualizarScoreboard();
 
@@ -2472,8 +2545,8 @@
 
         // Mostrar notificación flotante
         if (dom.actionBannerPrompt) {
-          dom.actionBannerPrompt.classList.remove('opacity-0', '-translate-y-4');
-          dom.actionBannerPrompt.classList.add('opacity-100', 'translate-y-0');
+          dom.actionBannerPrompt.classList.remove('opacity-0', '-translate-y-4', 'pointer-events-none');
+          dom.actionBannerPrompt.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
 
           // Reiniciar barra de tiempo visual (3.8 segundos)
           const fill = document.getElementById('planting-progress-fill');
@@ -2498,8 +2571,8 @@
           state.plantingTimer = null;
         }
         if (dom.actionBannerPrompt) {
-          dom.actionBannerPrompt.classList.remove('opacity-100', 'translate-y-0');
-          dom.actionBannerPrompt.classList.add('opacity-0', '-translate-y-4');
+          dom.actionBannerPrompt.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
+          dom.actionBannerPrompt.classList.add('opacity-0', '-translate-y-4', 'pointer-events-none');
         }
         dom.battleGrid.querySelectorAll('.planting-target').forEach(el => el.classList.remove('planting-target'));
       }
@@ -2607,26 +2680,27 @@
         actualizarTileVisual(tileIndex);
       }
 
+      function jugadorTieneMovimientos(p) {
+        return state.board.some(t => !t.isExplosion && (!t.revealedTo || !t.revealedTo.includes(p.id)));
+      }
+
       function pasarSiguienteTurno() {
         if (!state.isHost) return;
 
         // 1. Verificar si la partida ya debe finalizar:
-        // - Se llenaron los 3 primeros lugares del podio
-        // - O solo quedan <= 1 jugadores activos compitiendo
+        // - Alguien alcanzó la meta de puntos o ya hay podio registrado
+        // - O ningún jugador tiene movimientos válidos por descubrir
         // - O no quedan casillas de hielo sin explotar
-        const jugadoresActivos = state.players.filter(p => !state.podium.some(pod => pod.id === p.id));
+        const alguienGano = state.podium.length >= 1 || state.players.some(p => p.score >= state.targetScore);
+        const algunJugadorTieneMovimientos = state.players.some(p => jugadorTieneMovimientos(p));
         const quedanHielosActivos = state.board.some(t => !t.isExplosion);
 
-        const podioCompleto = state.podium.length >= 3;
-        const dueloFinalizado = state.players.length <= 2 && state.podium.length >= 1;
-        const unSoloCompetidorRestante = jugadoresActivos.length <= 1 && state.podium.length >= 1;
-
-        if (podioCompleto || dueloFinalizado || unSoloCompetidorRestante || !quedanHielosActivos) {
+        if (alguienGano || !algunJugadorTieneMovimientos || !quedanHielosActivos) {
           finalizarPartida();
           return;
         }
 
-        // 2. Avanzar el turno solo a jugadores que NO estén en el podio (no espectadores)
+        // 2. Avanzar el turno solo a jugadores que NO estén en el podio y que tengan movimientos disponibles
         let foundNext = false;
         let attempts = 0;
         let nextIndex = state.currentTurnIndex;
@@ -2635,7 +2709,7 @@
           nextIndex = (nextIndex + 1) % state.players.length;
           attempts++;
           const candidate = state.players[nextIndex];
-          if (candidate && !state.podium.some(p => p.id === candidate.id)) {
+          if (candidate && !state.podium.some(p => p.id === candidate.id) && jugadorTieneMovimientos(candidate)) {
             state.currentTurnIndex = nextIndex;
             foundNext = true;
             break;
@@ -2668,7 +2742,7 @@
         if (state.isGameOver || state.podium.some(p => p.id === bot.id)) return;
         const elegibles = state.board.filter(t => !t.isExplosion && (!t.revealedTo || !t.revealedTo.includes(bot.id)));
         if (elegibles.length === 0) {
-          finalizarPartida();
+          pasarSiguienteTurno();
           return;
         }
 

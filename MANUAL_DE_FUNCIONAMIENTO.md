@@ -690,4 +690,4 @@ Al tratarse de una arquitectura 100% estática basada en Vanilla JS, el desplieg
 ---
 
 **PARADICE © 2026** • *El Paraíso del Hielo & el Buen Ritmo*.  
-Todos los derechos reservados. Insumos para Granizados & Coctelería Frozen • La Dosis.
+Todos los derechos reservados. Experiencia Frozen & Coctelería de Autor.

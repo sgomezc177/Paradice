@@ -16,7 +16,7 @@
   root = root || (typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : this));
 
   const SECRET_KEY = "PARADICE_SECRET_SLOT_KEY_2026";
-  const WHATSAPP_PHONE = "573059274151";
+  const WHATSAPP_PHONE = "";
 
   const SecurityService = {
     /**
@@ -122,7 +122,7 @@
         `🔒 Código de Verificación: ${sig}\n\n` +
         `Quiero hacer mi pedido para redimir mi premio en mi granizado.`
       );
-      return `https://wa.me/${WHATSAPP_PHONE}?text=${text}`;
+      return WHATSAPP_PHONE ? `https://wa.me/${WHATSAPP_PHONE}?text=${text}` : `https://wa.me/?text=${text}`;
     }
   };
 
