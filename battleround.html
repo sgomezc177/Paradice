@@ -935,7 +935,8 @@
         heartbeatInterval: null,
         connectionTimeoutTimer: null,
         joinRetryInterval: null,
-        isJoinAccepted: false
+        isJoinAccepted: false,
+        musicSyncInterval: null
       };
 
       // 2. Referencias DOM
@@ -1074,6 +1075,22 @@
             });
           }
         });
+
+        if (audio) {
+          audio.onTrackEnded = () => {
+            if (state.isHost && state.roomCode && state.roomCode !== 'LOCAL-BOTS') {
+              audio.nextTrack();
+              updateAudioUI();
+            } else if (!state.isHost && state.roomCode && state.roomCode !== 'LOCAL-BOTS') {
+              broadcast({
+                type: 'REQUEST_NEXT_TRACK',
+                from: state.myPlayerName || 'Un rival'
+              });
+            } else {
+              audio.playRandomTrack();
+            }
+          };
+        }
       }
 
       function updateAudioUI() {
@@ -1304,6 +1321,10 @@
             state.cloudRelay = null;
           }
           if (state.heartbeatInterval) clearInterval(state.heartbeatInterval);
+          if (state.musicSyncInterval) {
+            clearInterval(state.musicSyncInterval);
+            state.musicSyncInterval = null;
+          }
           if (state.connectionTimeoutTimer) clearTimeout(state.connectionTimeoutTimer);
           if (state.joinRetryInterval) {
             clearInterval(state.joinRetryInterval);
@@ -1750,6 +1771,21 @@
           console.log('[Host] Conectado al Cloud Relay Broker:', brokerUrl);
           state.cloudRelay.subscribe(clientTopic);
           iniciarHeartbeat();
+
+          // Iniciar música en host si no ha arrancado y activar sincronización periódica (cada 4s)
+          if (audio && audio.currentTrackIndex < 0 && !audio.isMusicMuted()) {
+            audio.playRandomTrack();
+          }
+          if (state.musicSyncInterval) clearInterval(state.musicSyncInterval);
+          state.musicSyncInterval = setInterval(() => {
+            if (state.isHost && state.roomCode && state.cloudRelay && state.cloudRelay.connected && audio && audio.currentTrackIndex >= 0) {
+              broadcast({
+                type: 'MUSIC_SYNC',
+                trackIndex: audio.currentTrackIndex,
+                currentTime: audio.audioEl ? audio.audioEl.currentTime : 0
+              });
+            }
+          }, 4000);
         };
 
         state.cloudRelay.onMessage = (topic, payload) => {
@@ -1772,6 +1808,10 @@
         if (state.cloudRelay) {
           try { state.cloudRelay.destroy(); } catch(e) {}
           state.cloudRelay = null;
+        }
+        if (state.musicSyncInterval) {
+          clearInterval(state.musicSyncInterval);
+          state.musicSyncInterval = null;
         }
         if (state.connectionTimeoutTimer) {
           clearTimeout(state.connectionTimeoutTimer);
@@ -2063,6 +2103,10 @@
           state.players = msg.players;
           state.currentTurnIndex = msg.turnIndex;
           if (msg.podium) state.podium = msg.podium;
+          if (msg.musicSync && audio && !state.isHost) {
+            audio.syncTrack(msg.musicSync.trackIndex, msg.musicSync.currentTime);
+            updateAudioUI();
+          }
           actualizarScoreboard();
           actualizarTurnoUI();
         } else if (msg.type === 'GAME_OVER') {
@@ -2085,6 +2129,11 @@
             if (msg.from) {
               logEvent(`🎵 <strong>${msg.from}</strong> cambió la canción.`);
             }
+            broadcast({
+              type: 'MUSIC_SYNC',
+              trackIndex: audio.currentTrackIndex,
+              currentTime: audio.audioEl ? audio.audioEl.currentTime : 0
+            });
           }
         }
       }
@@ -2280,6 +2329,7 @@
           dom.spectatorBanner.classList.add('hidden');
         }
 
+        updateAudioUI();
         renderTableroVisual();
         actualizarScoreboard();
         actualizarTurnoUI();
@@ -2728,7 +2778,11 @@
           type: 'GAME_SYNC',
           players: state.players,
           turnIndex: state.currentTurnIndex,
-          podium: state.podium
+          podium: state.podium,
+          musicSync: audio && audio.currentTrackIndex >= 0 ? {
+            trackIndex: audio.currentTrackIndex,
+            currentTime: audio.audioEl ? audio.audioEl.currentTime : 0
+          } : null
         });
 
         // Si el siguiente turno es de un Bot activo

@@ -162,6 +162,7 @@
       this.hasUserInteracted = false;
       this.ctx = null;
       this.spinInterval = null;
+      this.onTrackEnded = null;
 
       // Cargar preferencias guardadas
       this.loadPreferences();
@@ -169,6 +170,10 @@
       // Transición automática al finalizar la pista
       this.audioEl.addEventListener('ended', () => {
         this.isWinPlaying = false;
+        if (typeof this.onTrackEnded === 'function') {
+          this.onTrackEnded();
+          return;
+        }
         if (!this.musicMuted) {
           this.playRandomTrack();
         }
@@ -209,8 +214,12 @@
         this.hasUserInteracted = true;
         this.initWebAudio();
 
-        if (!this.musicMuted && (!this.audioEl.src || this.audioEl.paused)) {
-          this.playRandomTrack();
+        if (!this.musicMuted) {
+          if (this.audioEl.src && this.currentTrackIndex >= 0) {
+            this.audioEl.play().catch(() => {});
+          } else if (!this.audioEl.src || this.audioEl.paused) {
+            this.playRandomTrack();
+          }
         }
 
         ['click', 'touchstart', 'keydown'].forEach(evt => {
@@ -281,22 +290,46 @@
       this.currentTrackName = PLAYLIST_MUSIC[idx];
       this.isWinPlaying = false;
 
-      this.audioEl.src = 'music/' + encodeURIComponent(this.currentTrackName);
+      const targetPath = 'music/' + encodeURIComponent(this.currentTrackName);
+      const currentSrc = this.audioEl.src ? decodeURIComponent(this.audioEl.src).split('/').pop() : '';
+      const isSameFile = currentSrc === this.currentTrackName;
+
+      if (!isSameFile) {
+        this.audioEl.src = targetPath;
+      }
       this.audioEl.volume = 0.5;
 
+      const applySeek = () => {
+        if (startTime > 0 && Number.isFinite(startTime)) {
+          try {
+            if (this.audioEl.duration && startTime < this.audioEl.duration) {
+              this.audioEl.currentTime = startTime;
+            } else {
+              this.audioEl.currentTime = startTime;
+            }
+          } catch (e) {
+            // Ignorar si el navegador aún no permite seek
+          }
+        }
+      };
+
       if (!this.musicMuted) {
+        if (this.audioEl.readyState >= 1) {
+          applySeek();
+        } else {
+          this.audioEl.addEventListener('loadedmetadata', applySeek, { once: true });
+        }
+
         const playPromise = this.audioEl.play();
         if (playPromise !== undefined) {
           playPromise.then(() => {
-            if (startTime > 0 && Number.isFinite(startTime)) {
-              this.audioEl.currentTime = startTime;
-            }
+            applySeek();
           }).catch(e => {
             console.log('Interacción previa requerida para reproducir audio:', e);
           });
         }
-      } else if (startTime > 0 && Number.isFinite(startTime)) {
-        this.audioEl.currentTime = startTime;
+      } else {
+        applySeek();
       }
       this.notifyTrackChange();
     }
@@ -304,12 +337,17 @@
     syncTrack(idx, currentTime = 0) {
       if (idx < 0 || idx >= PLAYLIST_MUSIC.length) return;
       const sameTrack = this.currentTrackIndex === idx;
-      const isPlaying = this.audioEl.src && !this.audioEl.paused;
+      const isPaused = !this.audioEl.src || this.audioEl.paused;
 
-      if (!sameTrack || !isPlaying) {
+      if (!sameTrack || isPaused) {
         this.playTrackByIndex(idx, currentTime);
-      } else if (currentTime > 0 && Number.isFinite(currentTime) && Math.abs(this.audioEl.currentTime - currentTime) > 2.5) {
-        this.audioEl.currentTime = currentTime;
+      } else if (currentTime > 0 && Number.isFinite(currentTime)) {
+        const drift = Math.abs(this.audioEl.currentTime - currentTime);
+        if (drift > 2.0) {
+          try {
+            this.audioEl.currentTime = currentTime;
+          } catch(e) {}
+        }
       }
     }
 
