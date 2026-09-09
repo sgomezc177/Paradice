@@ -21,7 +21,6 @@
       this.view = new root.MinasView();
       this.audio = root.audioManager;
       this.security = root.SecurityService;
-      this.timerService = root.TimerService;
       this.roundLifeConsumed = false;
     }
 
@@ -38,68 +37,36 @@
         }
       });
 
-
       this.iniciarNuevaRonda();
-
-      if (this.model.vidas < 3 && this.model.vidas > 0) {
-        this.iniciarTemporizadorTiro();
-      }
-    }
-
-    iniciarTemporizadorTiro() {
-      if (!this.timerService || this.model.vidas >= 3 || this.model.vidas <= 0) return;
-      this.timerService.startShotTimer(this.view.dom.shotTimerContainer, () => {
-        this.audio.playBombExplode();
-        this.model.consumirVida();
-        this.view.actualizarVidasUI(this.model.vidas);
-        this.view.mostrarModalExplosion(this.model.vidas);
-      });
-    }
-
-    detenerTemporizadorTiro() {
-      if (this.timerService) {
-        this.timerService.stopShotTimer(this.view.dom.shotTimerContainer);
-      }
     }
 
     bindEvents() {
-      // 1. Selector de número de minas
-      if (this.view.dom.minesSelect) {
-        this.view.dom.minesSelect.addEventListener('change', (e) => {
-          const count = parseInt(e.target.value, 10);
-          this.iniciarNuevaRonda(count);
-        });
-      }
-
-      // 2. Botón Cash-Out
+      // 1. Botón Cash-Out
       if (this.view.dom.cashOutBtn) {
         this.view.dom.cashOutBtn.addEventListener('click', () => {
           this.asegurarPromoYCanjear();
         });
       }
 
-      // 3. Volver a Jugar en Cupón
+      // 2. Volver a Jugar en Cupón
       if (this.view.dom.btnVoucherPlayAgain) {
         this.view.dom.btnVoucherPlayAgain.addEventListener('click', () => {
           this.view.ocultarModalVoucher();
           this.model.reiniciarVidas();
           this.view.actualizarVidasUI(this.model.vidas);
-          this.detenerTemporizadorTiro();
           this.iniciarNuevaRonda();
         });
       }
 
-      // 4. Acción de Modal Explosión
+      // 3. Acción de Modal Explosión
       if (this.view.dom.btnBlastAction) {
         this.view.dom.btnBlastAction.addEventListener('click', () => {
           this.view.ocultarModalExplosion();
           if (this.model.vidas > 0) {
             this.iniciarNuevaRonda();
-            this.iniciarTemporizadorTiro();
           } else {
             this.model.reiniciarVidas();
             this.view.actualizarVidasUI(this.model.vidas);
-            this.detenerTemporizadorTiro();
             this.iniciarNuevaRonda();
           }
         });
@@ -143,6 +110,13 @@
       if (this.view.dom.closeInstructionsBtnBottom) {
         this.view.dom.closeInstructionsBtnBottom.addEventListener('click', () => {
           if (this.view.dom.modalInstructions) this.view.dom.modalInstructions.classList.add('hidden');
+        });
+      }
+
+      // 7. Modal Restricción Vaso 9 oz
+      if (this.view.dom.closeCupRestrictionBtn) {
+        this.view.dom.closeCupRestrictionBtn.addEventListener('click', () => {
+          this.view.ocultarModalBloqueo9oz();
         });
       }
 
@@ -199,16 +173,12 @@
         this.roundLifeConsumed = true;
         this.model.consumirVida();
         this.view.actualizarVidasUI(this.model.vidas);
-        if (this.model.vidas < 3 && this.model.vidas > 0) {
-          this.iniciarTemporizadorTiro();
-        }
       }
 
       const resultado = this.model.revelarCasilla(index);
       if (!resultado) return;
 
       if (resultado.tipo === 'MINA') {
-        this.detenerTemporizadorTiro();
         this.audio.playIceShatter();
         this.view.revelarMina(tileEl, resultado.allMines);
 
@@ -230,7 +200,6 @@
     }
 
     asegurarPromoYCanjear() {
-      this.detenerTemporizadorTiro();
       const promo = this.model.obtenerPromoActual();
       if (!promo) return;
 
@@ -253,15 +222,27 @@
         hora,
         dispositivo: 'Minas Paradice',
         terminal,
-        sig
+        sig,
+        restriccion: promo.restriccion,
+        sku: promo.sku
       });
 
-      const waUrl = this.security.buildWhatsAppUrl('Minas Paradice', promo.title, terminal, sig);
+      const waUrl = this.security.buildWhatsAppUrl('Minas Paradice', promo.title, terminal, sig, promo.restriccion);
 
       this.view.mostrarModalVoucher({
         title: promo.title,
         desc: promo.desc,
+        badge: promo.badge,
         hits: this.model.safeHits,
+        mines: this.model.minesCount,
+        restriccion: promo.restriccion,
+        sku: promo.sku,
+        vasosRequeridos: promo.vasosRequeridos,
+        tipo: promo.tipo,
+        aditivo: promo.aditivo,
+        precioFijo: promo.precioFijo,
+        subtotalFijo: promo.subtotalFijo,
+        valorDescuento: promo.valorDescuento,
         terminal,
         sig,
         verificationUrl,

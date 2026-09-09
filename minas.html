@@ -161,25 +161,27 @@
       transform: scale(0.75);
     }
 
-    /* Efecto de tensión y peligro últimos 10s del temporizador */
-    .tension-danger-overlay::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 999;
-      box-shadow: inset 0 0 70px rgba(239, 68, 68, 0.75), inset 0 0 140px rgba(225, 29, 72, 0.45);
-      animation: tensionDangerPulse 0.7s infinite alternate ease-in-out;
-    }
-    @keyframes tensionDangerPulse {
+    /* Animación del Letrero de Cambio de Premio */
+    @keyframes prizePulseGlow {
       0% {
-        opacity: 0.35;
-        box-shadow: inset 0 0 50px rgba(239, 68, 68, 0.6), inset 0 0 100px rgba(225, 29, 72, 0.3);
+        transform: scale(0.98);
+        border-color: rgba(250, 204, 21, 0.4);
+        box-shadow: 0 0 10px rgba(250, 204, 21, 0.3);
+      }
+      50% {
+        transform: scale(1.02);
+        border-color: #facc15;
+        box-shadow: 0 0 25px rgba(250, 204, 21, 0.8), inset 0 0 15px rgba(250, 204, 21, 0.25);
       }
       100% {
-        opacity: 0.95;
-        box-shadow: inset 0 0 90px rgba(239, 68, 68, 0.9), inset 0 0 160px rgba(225, 29, 72, 0.65);
+        transform: scale(1);
+        border-color: rgba(56, 189, 248, 0.4);
+        box-shadow: 0 0 12px rgba(0, 240, 255, 0.2);
       }
+    }
+
+    .prize-updated-animation {
+      animation: prizePulseGlow 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
   </style>
 </head>
@@ -219,11 +221,6 @@
         <span id="life-2" class="life-heart text-xs sm:text-sm">❤️</span>
         <span id="life-3" class="life-heart text-xs sm:text-sm">❤️</span>
         <span id="lives-label" class="text-[10px] sm:text-xs font-bold text-rose-300 ml-1">3/3</span>
-      </div>
-
-      <!-- Temporizador de Tiro 30s (Activo tras perder la 1ra vida) -->
-      <div id="shot-timer-container" class="hidden flex items-center space-x-1 px-2.5 py-1 rounded-full bg-slate-950 border border-amber-500/50 shadow-[0_0_10px_rgba(250,204,21,0.3)] text-[10px] sm:text-xs font-bold text-amber-300">
-        <span>⏱️</span> <span id="shot-timer-display" class="timer-val font-mono">30s</span>
       </div>
 
       <!-- Botón Menú Lateral Desplegable -->
@@ -345,20 +342,33 @@
     <!-- COLUMNA IZQUIERDA: TABLERO 5x5 DE CUBOS DE HIELO -->
     <div id="app-container" class="w-full max-w-[420px] flex flex-col items-center relative">
       
-      <!-- Barra Superior del Tablero: Selector de Minas y Contador -->
-      <div class="w-full flex items-center justify-between p-2 sm:p-3 rounded-2xl bg-slate-900/90 border border-sky-500/30 mb-2.5 backdrop-blur-sm text-xs">
-        <div class="flex items-center space-x-1.5">
-          <span class="text-rose-400 font-bold">🧊💥 Minas:</span>
-          <select id="mines-count-select" class="bg-slate-950 border border-sky-500/50 text-cyan-300 rounded-lg px-2 py-1 text-xs font-bold outline-none cursor-pointer">
-            <option value="3" selected>3 Minas (Recomendado)</option>
-            <option value="5">5 Minas (Avanzado)</option>
-            <option value="7">7 Minas (Extremo)</option>
-          </select>
+      <!-- Barra Superior del Tablero: Letrero Animado de Premios y Contador -->
+      <div id="prize-notification-banner" class="w-full flex items-center justify-between p-2.5 sm:p-3 rounded-2xl bg-slate-900/90 border border-sky-500/30 mb-2.5 backdrop-blur-sm text-xs transition-all duration-300 relative overflow-hidden">
+        
+        <!-- Letrero de Premio Desbloqueado / Estado de Juego -->
+        <div class="flex items-center space-x-2 sm:space-x-2.5 min-w-0 flex-1 pr-2">
+          <div id="prize-banner-badge" class="w-8 h-8 rounded-xl bg-gradient-to-tr from-sky-500 to-cyan-400 p-0.5 shadow-sm flex-shrink-0 flex items-center justify-center text-base">
+            <span id="prize-banner-icon">🧊</span>
+          </div>
+          <div class="flex flex-col min-w-0">
+            <div class="flex items-center gap-1.5">
+              <span id="prize-banner-tag" class="text-[9px] font-black uppercase tracking-wider text-sky-400">Objetivo</span>
+              <span class="text-[9px] text-slate-500">•</span>
+              <span class="text-[9px] text-amber-400/90 font-bold">16 oz Exclusivo</span>
+            </div>
+            <div id="current-accumulated-promo" class="font-black text-xs sm:text-sm text-white truncate drop-shadow-sm transition-colors duration-200">
+              ¡Destapa tu primer hielo seguro!
+            </div>
+            <div id="current-accumulated-desc" class="text-[10px] text-slate-400 truncate">
+              Esquiva las 7 minas para acumular beneficios comerciales.
+            </div>
+          </div>
         </div>
 
-        <div class="flex items-center space-x-2">
-          <div class="px-2.5 py-0.5 rounded-lg bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 font-black text-[11px]">
-            🍧 <span id="safe-tiles-uncovered">0</span> / <span id="total-safe-tiles">22</span>
+        <!-- Contador de Hielos Seguros -->
+        <div class="flex items-center space-x-1.5 flex-shrink-0">
+          <div class="px-2.5 py-1.5 rounded-xl bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 font-black text-[11px] flex items-center gap-1 shadow-inner">
+            <span>🍧</span> <span id="safe-tiles-uncovered">0</span>/<span id="total-safe-tiles">18</span>
           </div>
         </div>
       </div>
@@ -377,91 +387,101 @@
     <!-- COLUMNA DERECHA: ESCALERA DE PROMOCIONES Y BOTÓN DE RETIRO -->
     <div class="w-full max-w-[360px] flex flex-col space-y-3">
       
-      <!-- Tarjeta del Premio Actual Acumulado -->
-      <div class="p-3.5 rounded-2xl bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 border-2 border-cyan-400/60 shadow-[0_0_25px_rgba(0,240,255,0.25)] flex flex-col items-center text-center">
-        <span class="text-[10px] font-black uppercase tracking-widest text-sky-400">Promoción Actual en Mano</span>
-        <div id="current-accumulated-promo" class="my-1.5 text-base sm:text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-400 drop-shadow-[0_0_10px_rgba(250,204,21,0.6)]">
-          ¡Destapa tu primer hielo!
-        </div>
-        <p id="current-accumulated-desc" class="text-[10px] text-slate-300">
-          Gana descuentos directos o promociones 2x1 para tus bebidas Paradice.
-        </p>
-      </div>
-
       <!-- Botón Principal: ASEGURAR PROMO / RECLAMAR CUPÓN (CASH OUT) -->
       <button id="btn-cash-out" disabled class="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-slate-800 to-slate-900 text-slate-500 font-black text-xs sm:text-sm uppercase tracking-wider border border-slate-700 transition-all duration-300 flex items-center justify-center gap-2 cursor-not-allowed shadow-none">
         <span>🍸</span> <span>ASEGURAR PROMO Y CANJEAR</span>
       </button>
 
-      <!-- Escalera Visual de Promociones (Enfocada en Ventas) -->
+      <!-- Escalera Visual de Promociones (Enfocada en Ventas 16 oz) -->
       <div class="p-3 rounded-2xl bg-slate-900/80 border border-slate-800 backdrop-blur-md">
         <div class="flex items-center justify-between pb-2 border-b border-slate-800 text-[10px] font-black uppercase tracking-wider text-slate-400">
-          <span>Escalera de Promociones</span>
-          <span class="text-amber-400">Objetivo 2x1 ⭐</span>
+          <span>Escalera de Premios (7 Niveles)</span>
+          <span class="text-amber-400 font-bold">Solo 16 oz ⭐</span>
         </div>
 
         <div id="promo-ladder-list" class="space-y-1.5 pt-2 text-[11px]">
-          <!-- Nivel 7: Combo Amigos -->
-          <div class="promo-ladder-item flex items-center justify-between p-1.5 rounded-xl border border-purple-500/40 bg-purple-950/30" data-hits="8">
+          <!-- Nivel 7: Combo Rumba: 2 (16oz) + 2 Shots x $25k -->
+          <div class="promo-ladder-item flex items-center justify-between p-1.5 rounded-xl border border-amber-400/50 bg-amber-950/30" data-hits="7">
             <div class="flex items-center space-x-1.5">
-              <span class="text-xs">👥</span>
-              <span class="font-bold text-purple-300">8+ Aciertos</span>
+              <span class="text-xs">🔥</span>
+              <div class="flex flex-col">
+                <span class="font-extrabold text-amber-300">7 Hielos: Combo Rumba 25k</span>
+                <span class="text-[9px] text-sky-400 font-medium">2 Vasos 16 oz + 2 Shots x $25.000</span>
+              </div>
             </div>
-            <span class="font-black text-amber-300 text-[10px] bg-amber-950/80 px-2 py-0.5 rounded border border-amber-500/40">2 Granizados Dobles x23k</span>
+            <span class="font-black text-slate-950 bg-amber-400 px-2 py-0.5 rounded text-[10px]">Combo 25k</span>
           </div>
 
-          <!-- Nivel 6: Super Promo 2x1 (Jackpot) -->
-          <div class="promo-ladder-item flex items-center justify-between p-1.5 rounded-xl border border-amber-400/50 bg-amber-950/30" data-hits="6">
-            <div class="flex items-center space-x-1.5">
-              <span class="text-xs">⭐</span>
-              <span class="font-extrabold text-amber-300">6+ Aciertos</span>
-            </div>
-            <span class="font-black text-slate-950 bg-amber-400 px-2 py-0.5 rounded text-[10px]">¡SUPER PROMO 2x1!</span>
-          </div>
-
-          <!-- Nivel 5: 50% OFF en 2do -->
-          <div class="promo-ladder-item flex items-center justify-between p-1.5 rounded-xl border border-sky-500/30 bg-slate-950" data-hits="5">
+          <!-- Nivel 6: El 2do a Mitad de Precio (50% OFF) -->
+          <div class="promo-ladder-item flex items-center justify-between p-1.5 rounded-xl border border-purple-500/40 bg-purple-950/30" data-hits="6">
             <div class="flex items-center space-x-1.5">
               <span class="text-xs">🍹</span>
-              <span class="font-bold text-sky-300">5 Aciertos</span>
+              <div class="flex flex-col">
+                <span class="font-bold text-purple-300">6 Hielos: 2do a Mitad (50%)</span>
+                <span class="text-[9px] text-sky-400 font-medium">2 Vasos 16 oz x $22.500 ($15k + $7.5k)</span>
+              </div>
             </div>
-            <span class="font-bold text-sky-200 text-[10px]">50% OFF en el 2do</span>
+            <span class="font-bold text-purple-200 text-[10px] bg-purple-900/60 px-2 py-0.5 rounded border border-purple-500/40">50% OFF</span>
           </div>
 
-          <!-- Nivel 4: Shot Extra -->
-          <div class="promo-ladder-item flex items-center justify-between p-1.5 rounded-xl border border-pink-500/30 bg-slate-950" data-hits="4">
+          <!-- Nivel 5: Combo: 16 oz + Shot x $13,000 -->
+          <div class="promo-ladder-item flex items-center justify-between p-1.5 rounded-xl border border-sky-500/30 bg-slate-950" data-hits="5">
             <div class="flex items-center space-x-1.5">
               <span class="text-xs">🥃</span>
-              <span class="font-bold text-pink-300">4 Aciertos</span>
+              <div class="flex flex-col">
+                <span class="font-bold text-sky-300">5 Hielos: Combo 16oz + Shot</span>
+                <span class="text-[9px] text-sky-400 font-medium">1 Vaso 16 oz + Shot x $13.000</span>
+              </div>
             </div>
-            <span class="font-bold text-pink-200 text-[10px]">Shot Extra Gratis</span>
+            <span class="font-bold text-sky-200 text-[10px]">Combo $13k</span>
           </div>
 
-          <!-- Nivel 3: Topping de Gomitas -->
-          <div class="promo-ladder-item flex items-center justify-between p-1.5 rounded-xl border border-fuchsia-500/30 bg-slate-950" data-hits="3">
+          <!-- Nivel 4: Granizado 16 oz a $11,000 -->
+          <div class="promo-ladder-item flex items-center justify-between p-1.5 rounded-xl border border-pink-500/30 bg-slate-950" data-hits="4">
             <div class="flex items-center space-x-1.5">
-              <span class="text-xs">🍬</span>
-              <span class="font-bold text-fuchsia-300">3 Aciertos</span>
+              <span class="text-xs">🍧</span>
+              <div class="flex flex-col">
+                <span class="font-bold text-pink-300">4 Hielos: Granizado 16 oz</span>
+                <span class="text-[9px] text-sky-400 font-medium">1 Vaso 16 oz a $11.000 cerrado</span>
+              </div>
             </div>
-            <span class="font-bold text-fuchsia-200 text-[10px]">Topping de Gomitas</span>
+            <span class="font-bold text-pink-200 text-[10px]">16 oz $11k</span>
           </div>
 
-          <!-- Nivel 2: -$1.000 COP -->
-          <div class="promo-ladder-item flex items-center justify-between p-1.5 rounded-xl border border-emerald-500/30 bg-slate-950" data-hits="2">
+          <!-- Nivel 3: -$2,000 COP de Descuento -->
+          <div class="promo-ladder-item flex items-center justify-between p-1.5 rounded-xl border border-emerald-500/30 bg-slate-950" data-hits="3">
             <div class="flex items-center space-x-1.5">
               <span class="text-xs">💵</span>
-              <span class="font-bold text-emerald-300">2 Aciertos</span>
+              <div class="flex flex-col">
+                <span class="font-bold text-emerald-300">3 Hielos: Descuento -$2.000</span>
+                <span class="text-[9px] text-sky-400 font-medium">1 Vaso 16 oz (-$2.000 COP)</span>
+              </div>
             </div>
-            <span class="font-bold text-emerald-200 text-[10px]">-$1.000 COP</span>
+            <span class="font-bold text-emerald-200 text-[10px]">-$2.000 COP</span>
           </div>
 
-          <!-- Nivel 1: -$500 COP -->
+          <!-- Nivel 2: Adición Sirope / Salsa de Mora -->
+          <div class="promo-ladder-item flex items-center justify-between p-1.5 rounded-xl border border-fuchsia-500/30 bg-slate-950" data-hits="2">
+            <div class="flex items-center space-x-1.5">
+              <span class="text-xs">🍓</span>
+              <div class="flex flex-col">
+                <span class="font-bold text-fuchsia-300">2 Hielos: Sirope / Salsa Mora</span>
+                <span class="text-[9px] text-sky-400 font-medium">1 Vaso 16 oz (Aditivo gratis $0)</span>
+              </div>
+            </div>
+            <span class="font-bold text-fuchsia-200 text-[10px]">Sirope Gratis</span>
+          </div>
+
+          <!-- Nivel 1: Bordeado o Michelado Gratis -->
           <div class="promo-ladder-item flex items-center justify-between p-1.5 rounded-xl border border-cyan-500/30 bg-slate-950" data-hits="1">
             <div class="flex items-center space-x-1.5">
-              <span class="text-xs">❄️</span>
-              <span class="font-bold text-cyan-300">1 Acierto</span>
+              <span class="text-xs">🧂</span>
+              <div class="flex flex-col">
+                <span class="font-bold text-cyan-300">1 Hielo: Bordeado / Michelado</span>
+                <span class="text-[9px] text-sky-400 font-medium">1 Vaso 16 oz (Aditivo gratis $0)</span>
+              </div>
             </div>
-            <span class="font-bold text-cyan-200 text-[10px]">-$500 COP</span>
+            <span class="font-bold text-cyan-200 text-[10px]">Bordeado Gratis</span>
           </div>
         </div>
       </div>
@@ -495,6 +515,11 @@
         ¡SUPER PROMO 2x1!
       </h2>
 
+      <!-- Restricción de Tamaño Exclusiva 16 oz -->
+      <div id="voucher-restriction-box" class="w-full my-1.5 p-2 rounded-xl bg-amber-500/10 border border-amber-500/40 text-[10px] text-amber-300 flex items-center justify-center gap-1">
+        ⚠️ <span class="font-bold">Exclusivo para presentación de 16 oz. Bloqueado para 9 oz.</span>
+      </div>
+
       <!-- Caja del Código QR -->
       <div class="p-2 bg-white rounded-2xl shadow-[0_0_20px_rgba(0,240,255,0.4)] border-2 border-cyan-300 my-2 flex items-center justify-center">
         <div id="voucher-qrcode" class="w-[120px] h-[120px] flex items-center justify-center"></div>
@@ -505,10 +530,18 @@
       </p>
 
       <!-- Resumen de Auditoría -->
-      <div class="w-full my-2 p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 text-[10px] space-y-0.5 text-left">
+      <div class="w-full my-2 p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 text-[10px] space-y-1 text-left">
         <div class="flex justify-between">
           <span class="text-slate-400">Promoción:</span>
           <span id="voucher-promo-name" class="font-bold text-amber-300 truncate max-w-[180px]">-</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-400">Presentación:</span>
+          <span id="voucher-sku-info" class="font-bold text-cyan-300 truncate max-w-[180px]">1 Vaso de 16 oz</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-400">Condición / Costo:</span>
+          <span id="voucher-pricing-info" class="font-bold text-emerald-400 truncate max-w-[180px]">-</span>
         </div>
         <div class="flex justify-between">
           <span class="text-slate-400">Juego:</span>
@@ -534,6 +567,35 @@
         <span>🔄</span> <span>Jugar Otra Partida</span>
       </button>
 
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 3.1 MODAL: RESTRICCIÓN DE TAMAÑO (BLOQUEO 9 OZ)                          -->
+  <!-- ========================================================================= -->
+  <div id="modal-cup-restriction" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-4 hidden">
+    <div class="w-full max-w-sm bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 border-2 border-amber-500 rounded-3xl p-5 shadow-[0_0_50px_rgba(245,158,11,0.4)] flex flex-col items-center text-center relative overflow-hidden">
+      <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-600 to-yellow-400 p-0.5 shadow-[0_0_20px_rgba(245,158,11,0.6)] mb-2 animate-pulse">
+        <div class="w-full h-full bg-[#040814] rounded-[14px] flex items-center justify-center text-2xl">
+          ⚠️
+        </div>
+      </div>
+
+      <span class="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-amber-950 text-amber-300 border border-amber-500/50 mb-1">
+        RESTRICCIÓN DE TAMAÑO
+      </span>
+
+      <h3 class="text-lg font-black text-amber-400 uppercase tracking-tight">
+        Presentación No Válida
+      </h3>
+
+      <p class="text-xs text-slate-300 my-3 leading-relaxed">
+        Este premio es exclusivo para vasos de 16 oz. Añade uno a tu carrito para canjear.
+      </p>
+
+      <button id="close-cup-restriction-btn" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-black text-xs uppercase tracking-wider shadow-[0_0_15px_rgba(245,158,11,0.5)] active:scale-95 transition cursor-pointer">
+        ENTENDIDO
+      </button>
     </div>
   </div>
 
@@ -615,9 +677,9 @@
         <div class="p-3 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-start gap-3">
           <div class="w-7 h-7 rounded-xl bg-pink-950 text-pink-300 border border-pink-500/40 flex items-center justify-center font-black flex-shrink-0">1</div>
           <div>
-            <h4 class="font-bold text-white text-xs">Elige la Dificultad</h4>
+            <h4 class="font-bold text-white text-xs">Tablero Oficial de 7 Minas</h4>
             <p class="text-[11px] text-slate-400 mt-0.5">
-              Configura el número de minas en el tablero 5x5: <strong>3 Minas (Recomendado)</strong>, <strong>5 Minas (Avanzado)</strong> o <strong>7 Minas (Extremo)</strong>. A mayor cantidad de minas, mayor es el reto.
+              El tablero 5x5 contiene <strong>7 Minas activas</strong> y <strong>18 Hielos Seguros</strong>. Conforme destapas cubos seguros, el letrero animado superior actualizará tu premio en tiempo real.
             </p>
           </div>
         </div>
@@ -648,14 +710,15 @@
         <div class="p-3 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-start gap-3">
           <div class="w-7 h-7 rounded-xl bg-emerald-950 text-emerald-300 border border-emerald-500/40 flex items-center justify-center font-black flex-shrink-0">4</div>
           <div>
-            <h4 class="font-bold text-white text-xs">Escalera de Promociones</h4>
+            <h4 class="font-bold text-white text-xs">Escalera Oficial de Promociones (Exclusivo 16 oz)</h4>
             <p class="text-[11px] text-slate-400 mt-0.5">
-              ⭐ <strong>6+ Aciertos:</strong> <strong>¡SUPER PROMO 2x1!</strong> (Jackpot)<br>
-              👥 <strong>8+ Aciertos:</strong> Combo Amigos: 2 Dobles x $23.000<br>
-              🏆 <strong>5 Aciertos:</strong> 50% OFF en 2do Granizado<br>
-              🥃 <strong>4 Aciertos:</strong> Shot Extra de Licor Gratis con tu Vaso<br>
-              🍬 <strong>3 Aciertos:</strong> Topping de Gomitas Gratis<br>
-              💵 <strong>1-2 Aciertos:</strong> -$500 y -$1.000 COP de Descuento directo
+              ⭐ <strong>7 Hielos:</strong> Combo Rumba: 2 (16oz) + 2 Shots x $25k<br>
+              🔥 <strong>6 Hielos:</strong> El 2do a Mitad de Precio (50% OFF - 2 Vasos 16oz)<br>
+              🥃 <strong>5 Hielos:</strong> Combo: 16 oz + Shot x $13,000<br>
+              🍧 <strong>4 Hielos:</strong> Granizado 16 oz a $11,000<br>
+              💵 <strong>3 Hielos:</strong> -$2,000 COP de Descuento (1 Vaso 16oz)<br>
+              🍇 <strong>2 Hielos:</strong> Adición Sirope / Salsa de Mora ($0 COP)<br>
+              🧂 <strong>1 Hielo:</strong> Bordeado o Michelado Gratis ($0 COP)
             </p>
           </div>
         </div>
@@ -684,7 +747,6 @@
   <script src="js/core/StorageService.js"></script>
   <script src="js/core/SecurityService.js"></script>
   <script src="js/core/AudioManager.js"></script>
-  <script src="js/core/TimerService.js"></script>
 
   <!-- ARQUITECTURA MVC: MINAS PARADICE -->
   <script src="js/mvc/minas/MinasModel.js"></script>

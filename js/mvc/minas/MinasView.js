@@ -27,7 +27,10 @@
     cacheDOM() {
       this.dom = {
         board: document.getElementById('mines-board'),
-        minesSelect: document.getElementById('mines-count-select'),
+        prizeBanner: document.getElementById('prize-notification-banner'),
+        prizeBannerIcon: document.getElementById('prize-banner-icon'),
+        prizeBannerTag: document.getElementById('prize-banner-tag'),
+        prizeBannerBadge: document.getElementById('prize-banner-badge'),
         safeCountEl: document.getElementById('safe-tiles-uncovered'),
         totalSafeEl: document.getElementById('total-safe-tiles'),
         currentPromoTitle: document.getElementById('current-accumulated-promo'),
@@ -55,6 +58,12 @@
         voucherQrcode: document.getElementById('voucher-qrcode'),
         voucherWhatsappBtn: document.getElementById('voucher-whatsapp-btn'),
         btnVoucherPlayAgain: document.getElementById('btn-voucher-play-again'),
+        voucherRestrictionBox: document.getElementById('voucher-restriction-box'),
+        voucherSkuInfo: document.getElementById('voucher-sku-info'),
+        voucherPricingInfo: document.getElementById('voucher-pricing-info'),
+        // Modal de Bloqueo por Vaso de 9 oz
+        modalCupRestriction: document.getElementById('modal-cup-restriction'),
+        closeCupRestrictionBtn: document.getElementById('close-cup-restriction-btn'),
         // Modal Explosión
         modalBlast: document.getElementById('modal-mine-blast'),
         blastBadge: document.getElementById('blast-badge'),
@@ -68,9 +77,7 @@
         btnInstructions: document.getElementById('btn-instructions'),
         closeInstructionsBtn: document.getElementById('close-instructions-btn'),
         closeInstructionsBtnBottom: document.getElementById('btn-close-instructions-bottom'),
-        // Temporizador y Preview
-        shotTimerContainer: document.getElementById('shot-timer-container'),
-        shotTimerDisplay: document.getElementById('shot-timer-display'),
+        // Modo Preview
         previewModeBanner: document.getElementById('preview-mode-banner')
       };
     }
@@ -145,28 +152,50 @@
           }
         });
       }
+
+      // Animación de impacto en el letrero de notificación
+      if (this.dom.prizeBanner) {
+        this.dom.prizeBanner.classList.remove('prize-updated-animation');
+        this.dom.prizeBanner.className = 'w-full flex items-center justify-between p-2.5 sm:p-3 rounded-2xl bg-gradient-to-r from-slate-900 via-rose-950/60 to-slate-900 border-2 border-rose-500/80 shadow-[0_0_20px_rgba(244,63,94,0.4)] mb-2.5 backdrop-blur-sm text-xs transition-all duration-300 relative overflow-hidden animate-shake';
+      }
+      if (this.dom.prizeBannerIcon) this.dom.prizeBannerIcon.textContent = '💥';
+      if (this.dom.prizeBannerTag) {
+        this.dom.prizeBannerTag.textContent = '¡EXPLOSIÓN!';
+        this.dom.prizeBannerTag.className = 'text-[9px] font-black uppercase tracking-wider text-rose-400';
+      }
+      if (this.dom.currentPromoTitle) this.dom.currentPromoTitle.textContent = '¡Mina pisada!';
+      if (this.dom.currentPromoDesc) this.dom.currentPromoDesc.textContent = 'El hielo se rompió y perdiste 1 vida.';
     }
 
     renderLadder(tiers, currentHits) {
       if (!this.dom.ladderList) return;
       this.dom.ladderList.innerHTML = '';
 
-      tiers.forEach(tier => {
+      // Mostramos en orden descendente (de 7 a 1) para sensación de escala piramidal
+      const reversedTiers = [...tiers].reverse();
+
+      reversedTiers.forEach(tier => {
         const isReached = currentHits >= tier.hits;
+        const isCurrentActive = currentHits === tier.hits;
         const item = document.createElement('div');
         item.className = `flex items-center justify-between p-2 rounded-xl text-xs transition-all ${
-          isReached 
-            ? 'bg-gradient-to-r from-pink-950/90 to-purple-950/80 border border-pink-400 text-white shadow-[0_0_12px_rgba(255,0,127,0.3)]' 
-            : 'bg-slate-900/60 border border-slate-800 text-slate-400'
+          isCurrentActive
+            ? 'bg-gradient-to-r from-amber-500/25 to-yellow-500/20 border-2 border-amber-400 text-white shadow-[0_0_15px_rgba(250,204,21,0.4)] animate-pulse'
+            : isReached 
+              ? 'bg-gradient-to-r from-emerald-950/80 to-teal-950/70 border border-emerald-400 text-emerald-100 shadow-[0_0_10px_rgba(52,211,153,0.3)]' 
+              : 'bg-slate-900/60 border border-slate-800 text-slate-400'
         }`;
 
         item.innerHTML = `
           <div class="flex items-center space-x-2">
-            <span class="${isReached ? 'text-pink-300 font-bold' : 'text-slate-500 font-mono'}">${tier.hits} Hielos</span>
-            <span class="font-semibold">${tier.title}</span>
+            <span class="${isCurrentActive ? 'text-amber-300 font-black' : (isReached ? 'text-emerald-300 font-bold' : 'text-slate-500 font-mono')}">${tier.hits} Hielo${tier.hits > 1 ? 's' : ''}</span>
+            <div class="flex flex-col">
+              <span class="font-bold text-[11px] leading-tight ${isCurrentActive ? 'text-amber-200' : (isReached ? 'text-white' : 'text-slate-300')}">${tier.title}</span>
+              <span class="text-[9px] text-sky-400 font-medium">${tier.vasosRequeridos || 1} Vaso${(tier.vasosRequeridos || 1) > 1 ? 's' : ''} 16 oz</span>
+            </div>
           </div>
           <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase ${
-            isReached ? 'bg-pink-600 text-white' : 'bg-slate-800 text-slate-500'
+            isCurrentActive ? 'bg-amber-400 text-slate-950 shadow-[0_0_10px_rgba(250,204,21,0.6)]' : (isReached ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-500')
           }">${tier.badge}</span>
         `;
 
@@ -180,15 +209,51 @@
 
       if (currentPromo) {
         if (this.dom.currentPromoTitle) this.dom.currentPromoTitle.textContent = currentPromo.title;
-        if (this.dom.currentPromoDesc) this.dom.currentPromoDesc.textContent = currentPromo.desc;
+        if (this.dom.currentPromoDesc) {
+          const req = currentPromo.vasosRequeridos || 1;
+          this.dom.currentPromoDesc.textContent = `${req} Vaso${req > 1 ? 's' : ''} 16 oz • ${currentPromo.badge}`;
+        }
+        if (this.dom.prizeBannerTag) {
+          this.dom.prizeBannerTag.textContent = '¡PREMIO DESBLOQUEADO!';
+          this.dom.prizeBannerTag.className = 'text-[9px] font-black uppercase tracking-wider text-amber-400';
+        }
+        if (this.dom.prizeBannerIcon) {
+          this.dom.prizeBannerIcon.textContent = '🏆';
+        }
+        if (this.dom.prizeBannerBadge) {
+          this.dom.prizeBannerBadge.className = 'w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-400 p-0.5 shadow-[0_0_12px_rgba(250,204,21,0.6)] flex-shrink-0 flex items-center justify-center text-base animate-bounce';
+        }
+
+        // Animación de cambio de premio en el letrero contenedor superior
+        if (this.dom.prizeBanner) {
+          this.dom.prizeBanner.classList.remove('prize-updated-animation');
+          void this.dom.prizeBanner.offsetWidth; // Force reflow
+          this.dom.prizeBanner.className = 'w-full flex items-center justify-between p-2.5 sm:p-3 rounded-2xl bg-gradient-to-r from-slate-900 via-amber-950/60 to-slate-900 border-2 border-amber-400/80 shadow-[0_0_20px_rgba(250,204,21,0.35)] mb-2.5 backdrop-blur-sm text-xs transition-all duration-300 relative overflow-hidden prize-updated-animation';
+        }
+
         if (this.dom.cashOutBtn) {
           this.dom.cashOutBtn.disabled = false;
           this.dom.cashOutBtn.className = 'w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wider border-2 border-emerald-300 shadow-[0_0_25px_rgba(52,211,153,0.7)] animate-glow-pulse transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer';
           this.dom.cashOutBtn.innerHTML = `<span>🏆</span> <span>ASEGURAR Y CANJEAR: ${currentPromo.title}</span>`;
         }
       } else {
-        if (this.dom.currentPromoTitle) this.dom.currentPromoTitle.textContent = 'Destapa al menos 1 hielo seguro';
-        if (this.dom.currentPromoDesc) this.dom.currentPromoDesc.textContent = 'Esquiva las minas para acumular beneficios comerciales.';
+        if (this.dom.currentPromoTitle) this.dom.currentPromoTitle.textContent = '¡Destapa tu primer hielo seguro!';
+        if (this.dom.currentPromoDesc) this.dom.currentPromoDesc.textContent = 'Esquiva las 7 minas para acumular beneficios comerciales.';
+        if (this.dom.prizeBannerTag) {
+          this.dom.prizeBannerTag.textContent = 'OBJETIVO';
+          this.dom.prizeBannerTag.className = 'text-[9px] font-black uppercase tracking-wider text-sky-400';
+        }
+        if (this.dom.prizeBannerIcon) {
+          this.dom.prizeBannerIcon.textContent = '🧊';
+        }
+        if (this.dom.prizeBannerBadge) {
+          this.dom.prizeBannerBadge.className = 'w-8 h-8 rounded-xl bg-gradient-to-tr from-sky-500 to-cyan-400 p-0.5 shadow-sm flex-shrink-0 flex items-center justify-center text-base';
+        }
+        if (this.dom.prizeBanner) {
+          this.dom.prizeBanner.classList.remove('prize-updated-animation');
+          this.dom.prizeBanner.className = 'w-full flex items-center justify-between p-2.5 sm:p-3 rounded-2xl bg-slate-900/90 border border-sky-500/30 mb-2.5 backdrop-blur-sm text-xs transition-all duration-300 relative overflow-hidden';
+        }
+
         if (this.dom.cashOutBtn) {
           this.dom.cashOutBtn.disabled = true;
           this.dom.cashOutBtn.className = 'w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-slate-800 to-slate-900 text-slate-500 font-black text-xs sm:text-sm uppercase tracking-wider border border-slate-700 transition-all duration-300 flex items-center justify-center gap-2 cursor-not-allowed shadow-none';
@@ -229,11 +294,34 @@
 
     mostrarModalVoucher(data) {
       if (!this.dom.modalVoucher) return;
-      if (this.dom.voucherPromoTitle) this.dom.voucherPromoTitle.textContent = data.badge;
+      if (this.dom.voucherPromoTitle) this.dom.voucherPromoTitle.textContent = data.badge || 'PROMO GANADA';
       if (this.dom.voucherPromoName) this.dom.voucherPromoName.textContent = data.title;
       if (this.dom.voucherHitsCount) this.dom.voucherHitsCount.textContent = `${data.hits} hielos acertados (Minas: ${data.mines})`;
       if (this.dom.voucherTerminalId) this.dom.voucherTerminalId.textContent = `${data.terminal} • SIG: ${data.sig.slice(0, 8)}...`;
       if (this.dom.voucherWhatsappBtn) this.dom.voucherWhatsappBtn.href = data.waUrl;
+
+      // Restricción y condición comercial oficial (16 oz exclusiva)
+      if (this.dom.voucherRestrictionBox) {
+        this.dom.voucherRestrictionBox.innerHTML = `⚠️ <span class="font-bold">${data.restriccion || 'Exclusivo para presentación de 16 oz. Bloqueado para 9 oz.'}</span>`;
+      }
+      if (this.dom.voucherSkuInfo) {
+        this.dom.voucherSkuInfo.textContent = `${data.vasosRequeridos || 1} Vaso${(data.vasosRequeridos || 1) > 1 ? 's' : ''} de 16 oz (Exclusivo)`;
+      }
+      if (this.dom.voucherPricingInfo) {
+        let precioTexto = 'Descuento Aplicado';
+        if (data.tipo === 'aditivo') {
+          precioTexto = `${data.aditivo} ($0 COP)`;
+        } else if (data.tipo === 'precio_fijo') {
+          precioTexto = `$${Number(data.precioFijo).toLocaleString('es-CO')} COP cerrado`;
+        } else if (data.tipo === 'combo_precio_fijo') {
+          precioTexto = `$${Number(data.precioFijo).toLocaleString('es-CO')} COP (${data.aditivo || 'Shot'} a $0)`;
+        } else if (data.tipo === 'segundo_mitad') {
+          precioTexto = `$${Number(data.subtotalFijo || 22500).toLocaleString('es-CO')} COP ($15k + $7.5k)`;
+        } else if (data.tipo === 'descuento') {
+          precioTexto = `-$${Number(data.valorDescuento || 2000).toLocaleString('es-CO')} COP directo`;
+        }
+        this.dom.voucherPricingInfo.textContent = precioTexto;
+      }
 
       // Renderizar QR
       if (this.dom.voucherQrcode) {
@@ -257,6 +345,18 @@
 
     ocultarModalVoucher() {
       if (this.dom.modalVoucher) this.dom.modalVoucher.classList.add('hidden');
+    }
+
+    mostrarModalBloqueo9oz() {
+      if (this.dom.modalCupRestriction) {
+        this.dom.modalCupRestriction.classList.remove('hidden');
+      }
+    }
+
+    ocultarModalBloqueo9oz() {
+      if (this.dom.modalCupRestriction) {
+        this.dom.modalCupRestriction.classList.add('hidden');
+      }
     }
 
     lanzarConfeti() {

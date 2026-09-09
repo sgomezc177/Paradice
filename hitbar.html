@@ -356,45 +356,49 @@
     <!-- COLUMNA IZQUIERDA: PISTA HIT BAR CON ZONA DE IMPACTO -->
     <div id="app-container" class="w-full max-w-[380px] flex flex-col items-center relative">
       
-      <!-- HUD UNIFICADO: OBJETIVO DINÁMICO & VELOCIDAD RUSH (COMPACTO Y ERGONÓMICO) -->
-      <div id="target-objective-box" class="w-full p-2.5 sm:p-3 rounded-2xl bg-gradient-to-r from-amber-950/90 via-slate-900/95 to-amber-950/90 border-2 border-amber-400/80 shadow-[0_0_25px_rgba(250,204,21,0.35)] mb-2.5 flex items-center justify-between relative overflow-hidden backdrop-blur-md">
-        <!-- Resplandor neón -->
-        <div class="absolute -right-4 -top-4 w-20 h-20 bg-amber-500/20 rounded-full blur-xl pointer-events-none"></div>
+      <!-- HUD UNIFICADO: OBJETIVO DINÁMICO & VELOCIDAD RUSH (LIMPIO Y ORGANIZADO) -->
+      <div id="target-objective-box" class="w-full p-3 rounded-2xl bg-slate-900/95 border-2 border-amber-400/80 shadow-[0_0_25px_rgba(250,204,21,0.25)] mb-3 flex items-center justify-between gap-3 relative overflow-hidden backdrop-blur-md">
+        <!-- Resplandor neón sutil -->
+        <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-amber-500/15 rounded-full blur-2xl pointer-events-none"></div>
 
-        <div class="flex items-center gap-2.5 z-10 min-w-0">
-          <!-- Icono Dinámico del Objetivo con Resplandor Dorado -->
-          <div id="target-icon-card" class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500/30 via-slate-950 to-amber-400/20 border-2 border-amber-400 flex items-center justify-center shadow-[0_0_16px_rgba(250,204,21,0.6)] flex-shrink-0 transition-transform duration-300">
-            <span id="target-icon" class="text-2xl sm:text-3xl filter drop-shadow animate-bounce">🍋</span>
+        <!-- Lado Izquierdo + Centro: Icono y Datos del Objetivo -->
+        <div class="flex items-center gap-3 min-w-0 flex-1 z-10">
+          <!-- Icono Dinámico del Objetivo con Resplandor -->
+          <div id="target-icon-card" class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500/20 via-slate-950 to-slate-900 border border-amber-400/70 flex items-center justify-center shadow-[0_0_15px_rgba(250,204,21,0.35)] flex-shrink-0 transition-transform duration-300">
+            <span id="target-icon" class="text-2xl sm:text-3xl filter drop-shadow">🍬</span>
           </div>
 
-          <div class="flex flex-col min-w-0">
-            <div class="flex items-center gap-1.5 flex-wrap">
-              <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-amber-400 text-slate-950 shadow-sm flex items-center gap-1">
-                <span>🎯</span> <span>ATÍNALE A:</span>
+          <!-- Textos: Jerarquía limpia -->
+          <div class="flex flex-col min-w-0 flex-1">
+            <div class="flex items-center gap-1.5 mb-0.5">
+              <span id="target-level-badge" class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-amber-400 text-slate-950 shadow-sm">
+                NIVEL 1/7
               </span>
-              <span id="target-level-badge" class="text-[10px] font-bold text-amber-300">NIVEL 1/6</span>
-              <span id="bpm-display" class="hidden sm:inline font-mono text-cyan-300 text-[10px]">128 BPM</span>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-amber-300/80">
+                Objetivo
+              </span>
             </div>
-            <span id="target-name" class="font-black text-white text-sm sm:text-base leading-tight mt-0.5 tracking-tight truncate flex items-center gap-1">
-              Limón Glacial 🍋
+            <span id="target-name" class="font-black text-white text-sm sm:text-base leading-snug tracking-tight truncate">
+              Gomitas Ácidas 🍬
             </span>
-            <span id="target-benefit-tag" class="text-[9px] sm:text-[10px] text-amber-200/90 font-medium truncate">
-              Recompensa: -$500 COP de Descuento
+            <span id="target-benefit-tag" class="text-[10px] text-amber-200/90 font-medium truncate">
+              Recompensa: Topping de Gomitas Ácidas
             </span>
           </div>
         </div>
 
-        <!-- Indicador de Nivel y Velocidad Uno a Uno -->
-        <div class="flex flex-col items-end z-10 flex-shrink-0 ml-2">
-          <span id="rush-level-display" class="px-2 py-0.5 rounded-lg bg-amber-400 text-slate-950 font-black text-[10px] tracking-wide mb-1">
-            NIVEL 1
+        <!-- Lado Derecho: Velocidad y Tempo Organizados -->
+        <div class="flex flex-col items-end justify-center flex-shrink-0 pl-3 border-l border-slate-800 z-10">
+          <span id="speed-step-badge" class="px-2 py-0.5 rounded-md bg-cyan-950/90 border border-cyan-400/60 font-mono font-black text-cyan-300 text-[10px] shadow-[0_0_10px_rgba(0,240,255,0.25)]">
+            ⚡ 1.0x (Base)
           </span>
-          <div class="flex items-center gap-1">
-            <span id="speed-step-badge" class="px-2 py-0.5 rounded-lg bg-slate-950 border border-cyan-400/70 font-mono font-black text-cyan-300 text-[10px] shadow-[0_0_10px_rgba(0,240,255,0.3)]">
-              ⚡ 1x (+1)
-            </span>
+          <div class="flex items-center gap-1 mt-1 text-[9px] font-mono">
+            <span id="bpm-display" class="text-amber-300 font-bold">128 BPM</span>
+            <span class="text-slate-600">•</span>
+            <span id="speed-val-display" class="text-cyan-400 font-bold">8.0 px/f</span>
           </div>
-          <span id="speed-val-display" class="text-[9px] text-cyan-400 font-mono mt-0.5 font-bold">6.0 px/f</span>
+          <!-- Elemento oculto para compatibilidad DOM -->
+          <span id="rush-level-display" class="hidden">NIVEL 1</span>
         </div>
       </div>
 
@@ -404,9 +408,9 @@
         <!-- Zona de Impacto Objetivo -->
         <div class="hit-zone-target flex items-center justify-center">
           <div class="flex items-center gap-1.5 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-amber-300 bg-slate-950/85 px-3 sm:px-3.5 py-1 rounded-full border border-amber-400 shadow-[0_0_15px_rgba(250,204,21,0.5)] animate-laser-scan">
-            <span id="hit-zone-target-icon">🍋</span>
+            <span id="hit-zone-target-icon">🍬</span>
             <span>LÍNEA LÁSER DE IMPACTO</span>
-            <span id="hit-zone-target-icon-right">🍋</span>
+            <span id="hit-zone-target-icon-right">🍬</span>
           </div>
         </div>
 
@@ -429,23 +433,12 @@
       </div>
 
       <div class="mt-2 text-center text-[11px] text-slate-300">
-        Detén la cinta cuando <strong id="hint-target-name" class="text-amber-300 font-black">el Limón Glacial 🍋</strong> cruce la Zona de Impacto.
+        Detén la cinta cuando <strong id="hint-target-name" class="text-amber-300 font-black">las Gomitas Ácidas 🍬</strong> crucen la Zona de Impacto.
       </div>
     </div>
 
     <!-- COLUMNA DERECHA: ESCALERA DE PROMOCIONES Y RETIRO -->
     <div class="w-full max-w-[360px] flex flex-col space-y-3">
-      
-      <!-- Estado de la Promoción Actual -->
-      <div class="p-3.5 rounded-2xl bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 border-2 border-amber-400/60 shadow-[0_0_25px_rgba(250,204,21,0.25)] flex flex-col items-center text-center">
-        <span class="text-[10px] font-black uppercase tracking-widest text-amber-300">Promoción Actual en Mano</span>
-        <div id="current-promo-title" class="my-1.5 text-base sm:text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-400 drop-shadow-[0_0_10px_rgba(250,204,21,0.6)]">
-          ¡Alinea tu primer granizado!
-        </div>
-        <p id="current-promo-desc" class="text-[10px] text-slate-300">
-          Supera cada nivel de velocidad para acumular promociones y ganar el 2x1.
-        </p>
-      </div>
 
       <!-- Botón de Asegurar Promo (Cash Out) -->
       <button id="btn-cash-out" disabled class="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-slate-800 to-slate-900 text-slate-500 font-black text-xs sm:text-sm uppercase tracking-wider border border-slate-700 transition-all duration-300 flex items-center justify-center gap-2 cursor-not-allowed shadow-none">
@@ -456,62 +449,92 @@
       <div class="p-3 rounded-2xl bg-slate-900/80 border border-slate-800 backdrop-blur-md">
         <div class="flex items-center justify-between pb-2 border-b border-slate-800 text-[10px] font-black uppercase tracking-wider text-slate-400">
           <span>Escalera Rush de Promociones</span>
-          <span class="text-amber-400">Rush Champion ⭐</span>
+          <span class="text-amber-400 font-bold">Solo 16 oz ⭐</span>
         </div>
 
         <div id="promo-ladder-list" class="space-y-1.5 pt-2 text-[11px]">
-          <!-- Nivel 6: Super Promo 2x1 -->
-          <div class="rush-tier-item flex items-center justify-between p-1.5 rounded-xl border border-amber-400/50 bg-amber-950/30" data-level="6">
+          <!-- Nivel 7: ¡3x2 en Granizados de 16oz! -->
+          <div class="rush-tier-item flex items-center justify-between p-1.5 rounded-xl border border-amber-400/50 bg-amber-950/30" data-level="7">
             <div class="flex items-center space-x-1.5">
               <span class="text-xs">⭐</span>
-              <span class="font-extrabold text-amber-300">Nivel 6 • Estrella 2x1 (Vel 6x)</span>
+              <div class="flex flex-col">
+                <span class="font-extrabold text-amber-300">Nivel 7 • ¡3x2 en Granizados!</span>
+                <span class="text-[9px] text-sky-400 font-medium">3 Vasos 16 oz x $30k (Paga 2 lleva 3)</span>
+              </div>
             </div>
-            <span class="font-black text-slate-950 bg-amber-400 px-2 py-0.5 rounded text-[10px]">¡SUPER PROMO 2x1!</span>
+            <span class="font-black text-slate-950 bg-amber-400 px-2 py-0.5 rounded text-[10px]">¡3x2 16oz!</span>
           </div>
 
-          <!-- Nivel 5: 50% OFF en el 2do -->
-          <div class="rush-tier-item flex items-center justify-between p-1.5 rounded-xl border border-sky-500/30 bg-slate-950" data-level="5">
+          <!-- Nivel 6: Combo Extremo: 2 (16oz) + 2 Jeringas x $26k -->
+          <div class="rush-tier-item flex items-center justify-between p-1.5 rounded-xl border border-rose-500/30 bg-slate-950" data-level="6">
             <div class="flex items-center space-x-1.5">
-              <span class="text-xs">🍸</span>
-              <span class="font-bold text-sky-300">Nivel 5 • Cóctel (Vel 5x)</span>
+              <span class="text-xs">🔥</span>
+              <div class="flex flex-col">
+                <span class="font-bold text-rose-300">Nivel 6 • Combo Extremo 26k</span>
+                <span class="text-[9px] text-sky-400 font-medium">2 Vasos 16 oz + 2 Jeringas x $26.000</span>
+              </div>
             </div>
-            <span class="font-bold text-sky-200 text-[10px]">50% OFF en el 2do</span>
+            <span class="font-bold text-rose-200 text-[10px]">Combo $26k</span>
           </div>
 
-          <!-- Nivel 4: Shot Extra -->
+          <!-- Nivel 5: 2 Granizados de 16oz x $23,000 -->
+          <div class="rush-tier-item flex items-center justify-between p-1.5 rounded-xl border border-purple-500/30 bg-slate-950" data-level="5">
+            <div class="flex items-center space-x-1.5">
+              <span class="text-xs">🍹</span>
+              <div class="flex flex-col">
+                <span class="font-bold text-purple-300">Nivel 5 • 2 Granizados 16 oz</span>
+                <span class="text-[9px] text-sky-400 font-medium">2 Vasos 16 oz x $23.000 cerrado</span>
+              </div>
+            </div>
+            <span class="font-bold text-purple-200 text-[10px]">2 x $23k</span>
+          </div>
+
+          <!-- Nivel 4: Granizado 16oz + Jeringa x $14,000 -->
           <div class="rush-tier-item flex items-center justify-between p-1.5 rounded-xl border border-pink-500/30 bg-slate-950" data-level="4">
             <div class="flex items-center space-x-1.5">
+              <span class="text-xs">💉</span>
+              <div class="flex flex-col">
+                <span class="font-bold text-pink-300">Nivel 4 • 16oz + Jeringa</span>
+                <span class="text-[9px] text-sky-400 font-medium">1 Vaso 16 oz + Jeringa x $14.000</span>
+              </div>
+            </div>
+            <span class="font-bold text-pink-200 text-[10px]">16oz + Jeringa</span>
+          </div>
+
+          <!-- Nivel 3: -$3,000 COP en tu 2do Granizado -->
+          <div class="rush-tier-item flex items-center justify-between p-1.5 rounded-xl border border-sky-500/30 bg-slate-950" data-level="3">
+            <div class="flex items-center space-x-1.5">
+              <span class="text-xs">🍧</span>
+              <div class="flex flex-col">
+                <span class="font-bold text-sky-300">Nivel 3 • -$3.000 en 2do Vaso</span>
+                <span class="text-[9px] text-sky-400 font-medium">2 Vasos 16 oz x $27.000 ($15k + $12k)</span>
+              </div>
+            </div>
+            <span class="font-bold text-sky-200 text-[10px]">-$3.000 2do</span>
+          </div>
+
+          <!-- Nivel 2: Adición de Shot de Licor -->
+          <div class="rush-tier-item flex items-center justify-between p-1.5 rounded-xl border border-amber-500/30 bg-slate-950" data-level="2">
+            <div class="flex items-center space-x-1.5">
               <span class="text-xs">🥃</span>
-              <span class="font-bold text-pink-300">Nivel 4 • Shot Licor (Vel 4x)</span>
+              <div class="flex flex-col">
+                <span class="font-bold text-amber-300">Nivel 2 • Shot de Licor</span>
+                <span class="text-[9px] text-sky-400 font-medium">1 Vaso 16 oz (Shot a $0 COP)</span>
+              </div>
             </div>
-            <span class="font-bold text-pink-200 text-[10px]">Shot Extra Gratis</span>
+            <span class="font-bold text-amber-200 text-[10px]">Shot Licor</span>
           </div>
 
-          <!-- Nivel 3: Topping de Gomitas -->
-          <div class="rush-tier-item flex items-center justify-between p-1.5 rounded-xl border border-fuchsia-500/30 bg-slate-950" data-level="3">
-            <div class="flex items-center space-x-1.5">
-              <span class="text-xs">🍬</span>
-              <span class="font-bold text-fuchsia-300">Nivel 3 • Gomitas (Vel 3x)</span>
-            </div>
-            <span class="font-bold text-fuchsia-200 text-[10px]">Topping de Gomitas</span>
-          </div>
-
-          <!-- Nivel 2: -$1.000 COP -->
-          <div class="rush-tier-item flex items-center justify-between p-1.5 rounded-xl border border-emerald-500/30 bg-slate-950" data-level="2">
-            <div class="flex items-center space-x-1.5">
-              <span class="text-xs">🍊</span>
-              <span class="font-bold text-emerald-300">Nivel 2 • Naranja (Vel 2x)</span>
-            </div>
-            <span class="font-bold text-emerald-200 text-[10px]">-$1.000 COP</span>
-          </div>
-
-          <!-- Nivel 1: -$500 COP -->
+          <!-- Nivel 1: Topping de Gomitas Ácidas -->
           <div class="rush-tier-item flex items-center justify-between p-1.5 rounded-xl border border-cyan-500/30 bg-slate-950" data-level="1">
             <div class="flex items-center space-x-1.5">
-              <span class="text-xs">🍋</span>
-              <span class="font-bold text-cyan-300">Nivel 1 • Limón (Vel 1x)</span>
+              <span class="text-xs">🍬</span>
+              <div class="flex flex-col">
+                <span class="font-bold text-cyan-300">Nivel 1 • Gomitas Ácidas</span>
+                <span class="text-[9px] text-sky-400 font-medium">1 Vaso 16 oz (Gomitas a $0 COP)</span>
+              </div>
             </div>
-            <span class="font-bold text-cyan-200 text-[10px]">-$500 COP</span>
+            <span class="font-bold text-cyan-200 text-[10px]">Gomitas Ácidas</span>
           </div>
         </div>
       </div>
@@ -540,6 +563,11 @@
         ¡SUPER PROMO 2x1!
       </h2>
 
+      <!-- Restricción de Tamaño Exclusiva 16 oz -->
+      <div id="voucher-restriction-box" class="w-full my-1.5 p-2 rounded-xl bg-amber-500/10 border border-amber-500/40 text-[10px] text-amber-300 flex items-center justify-center gap-1">
+        ⚠️ <span class="font-bold">Exclusivo para presentación de 16 oz. Bloqueado para 9 oz.</span>
+      </div>
+
       <!-- QR -->
       <div class="p-2 bg-white rounded-2xl shadow-[0_0_20px_rgba(250,204,21,0.4)] border-2 border-amber-400 my-2 flex items-center justify-center">
         <div id="voucher-qrcode" class="w-[120px] h-[120px] flex items-center justify-center"></div>
@@ -550,10 +578,18 @@
       </p>
 
       <!-- Auditoría -->
-      <div class="w-full my-2 p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 text-[10px] space-y-0.5 text-left">
+      <div class="w-full my-2 p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 text-[10px] space-y-1 text-left">
         <div class="flex justify-between">
           <span class="text-slate-400">Promoción:</span>
           <span id="voucher-promo-name" class="font-bold text-amber-300 truncate max-w-[180px]">-</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-400">Presentación:</span>
+          <span id="voucher-sku-info" class="font-bold text-cyan-300 truncate max-w-[180px]">1 Vaso de 16 oz</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-400">Condición / Costo:</span>
+          <span id="voucher-pricing-info" class="font-bold text-emerald-400 truncate max-w-[180px]">-</span>
         </div>
         <div class="flex justify-between">
           <span class="text-slate-400">Juego:</span>
@@ -577,6 +613,35 @@
         <span>🔄</span> <span>Jugar Otra Partida</span>
       </button>
 
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 3.1 MODAL: RESTRICCIÓN DE TAMAÑO (BLOQUEO 9 OZ)                          -->
+  <!-- ========================================================================= -->
+  <div id="modal-cup-restriction" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-4 hidden">
+    <div class="w-full max-w-sm bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 border-2 border-amber-500 rounded-3xl p-5 shadow-[0_0_50px_rgba(245,158,11,0.4)] flex flex-col items-center text-center relative overflow-hidden">
+      <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-600 to-yellow-400 p-0.5 shadow-[0_0_20px_rgba(245,158,11,0.6)] mb-2 animate-pulse">
+        <div class="w-full h-full bg-[#040814] rounded-[14px] flex items-center justify-center text-2xl">
+          ⚠️
+        </div>
+      </div>
+
+      <span class="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-amber-950 text-amber-300 border border-amber-500/50 mb-1">
+        RESTRICCIÓN DE TAMAÑO
+      </span>
+
+      <h3 class="text-lg font-black text-amber-400 uppercase tracking-tight">
+        Presentación No Válida
+      </h3>
+
+      <p class="text-xs text-slate-300 my-3 leading-relaxed">
+        Este premio es exclusivo para vasos de 16 oz. Añade uno a tu carrito para canjear.
+      </p>
+
+      <button id="close-cup-restriction-btn" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-black text-xs uppercase tracking-wider shadow-[0_0_15px_rgba(245,158,11,0.5)] active:scale-95 transition cursor-pointer">
+        ENTENDIDO
+      </button>
     </div>
   </div>
 
@@ -659,7 +724,7 @@
           <div>
             <h4 class="font-bold text-white text-xs">Sigue la Cinta de Velocidad</h4>
             <p class="text-[11px] text-slate-400 mt-0.5">
-              La cinta de granizados corre a toda velocidad sincronizada con sintetizadores Eurodance que aumentan de 130 a 160 BPM en el nivel máximo.
+              La cinta de granizados corre a toda velocidad sincronizada con sintetizadores Eurodance que aumentan de 128 a 205 BPM en el nivel máximo.
             </p>
           </div>
         </div>
@@ -668,9 +733,9 @@
         <div class="p-3 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-start gap-3">
           <div class="w-7 h-7 rounded-xl bg-cyan-950 text-cyan-300 border border-cyan-500/40 flex items-center justify-center font-black flex-shrink-0">2</div>
           <div>
-            <h4 class="font-bold text-white text-xs">Objetivo Dinámico & Velocidad Uno a Uno</h4>
+            <h4 class="font-bold text-white text-xs">Objetivo Dinámico & Aceleración Rush</h4>
             <p class="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
-              En cada nivel, el panel superior te indica <strong>a qué objetivo debes atinarle</strong> (Limón 🍋, Naranja 🍊, Gomitas 🍬, Shot de Licor 🥃, Cóctel 🍸 o Granizado 2x1 ⭐). El icono cambia dinámicamente y la <strong>velocidad aumenta uno a uno (+1x)</strong> en cada acierto.
+              En cada nivel, el panel superior te indica <strong>a qué objetivo debes atinarle</strong> (Gomitas 🍬, Shot 🥃, Copa 🍧, Jeringa 💉, Combo 🍹, Extremo 🔥 o Estrella ⭐). La velocidad se acelera desde 1.0x (7.0 px/f) hasta 4.0x (28.0 px/f) en el nivel cúspide.
             </p>
           </div>
         </div>
@@ -679,14 +744,15 @@
         <div class="p-3 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-start gap-3">
           <div class="w-7 h-7 rounded-xl bg-rose-950 text-rose-300 border border-rose-500/40 flex items-center justify-center font-black flex-shrink-0">3</div>
           <div>
-            <h4 class="font-bold text-white text-xs">Escalera de 6 Niveles de Promociones</h4>
+            <h4 class="font-bold text-white text-xs">Escalera de 7 Niveles (Exclusivo 16 oz)</h4>
             <p class="text-[11px] text-slate-400 mt-0.5">
-              ⭐ <strong>Nivel 6 (Max Speed):</strong> <strong>¡SUPER PROMO 2x1!</strong> (Jackpot)<br>
-              🏆 <strong>Nivel 5:</strong> 50% OFF en el 2do Granizado<br>
-              🥃 <strong>Nivel 4:</strong> Shot Extra de Licor Gratis con tu Vaso<br>
-              🍬 <strong>Nivel 3:</strong> Topping de Gomitas Gratis<br>
-              💵 <strong>Nivel 2:</strong> -$1.000 COP de Descuento directo<br>
-              💵 <strong>Nivel 1:</strong> -$500 COP de Descuento directo
+              ⭐ <strong>Nivel 7 (Vel 4.0x - 205 BPM):</strong> ¡3x2 en Granizados de 16oz!<br>
+              🔥 <strong>Nivel 6 (Vel 3.5x - 188 BPM):</strong> Combo Extremo: 2 (16oz) + 2 Jeringas x $26k<br>
+              🍹 <strong>Nivel 5 (Vel 3.0x - 176 BPM):</strong> 2 Granizados de 16oz x $23,000<br>
+              💉 <strong>Nivel 4 (Vel 2.5x - 164 BPM):</strong> Granizado 16oz + Jeringa x $14,000<br>
+              🍧 <strong>Nivel 3 (Vel 2.0x - 152 BPM):</strong> -$3,000 COP en tu 2do Granizado (16oz)<br>
+              🥃 <strong>Nivel 2 (Vel 1.5x - 140 BPM):</strong> Adición de Shot Gratis (Vaso 16oz)<br>
+              🍬 <strong>Nivel 1 (Vel 1.0x - 128 BPM):</strong> Topping de Gomitas Ácidas Gratis (Vaso 16oz)
             </p>
           </div>
         </div>

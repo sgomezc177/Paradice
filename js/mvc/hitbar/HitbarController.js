@@ -149,6 +149,13 @@
         });
       }
 
+      // 7. Modal Restricción Vaso 9 oz
+      if (this.view.dom.closeCupRestrictionBtn) {
+        this.view.dom.closeCupRestrictionBtn.addEventListener('click', () => {
+          this.view.ocultarModalBloqueo9oz();
+        });
+      }
+
       // Atajo de Teclado: Barra Espaciadora para frenar
       window.addEventListener('keydown', (e) => {
         if (e.code === 'Space' || e.key === ' ') {
@@ -203,8 +210,9 @@
       this.isHitCooldown = true;
 
       const currentLevel = this.model.getCurrentLevel();
-      // Evaluar impacto físico contra la hitbox
-      const hitSuccess = this.view.checkHitAccuracy(currentLevel.targetId);
+      const tolerance = currentLevel.tolerance || 52;
+      // Evaluar impacto físico contra la hitbox con tolerancia milimétrica por nivel
+      const hitSuccess = this.view.checkHitAccuracy(currentLevel.targetId, tolerance);
       this.view.flashHitFeedback(hitSuccess);
 
       if (hitSuccess) {
@@ -267,16 +275,25 @@
         hora,
         dispositivo: 'Hit Bar Rush 2.0',
         terminal,
-        sig
+        sig,
+        restriccion: promo.restriccion,
+        sku: promo.sku
       }) : window.location.href;
 
-      const waUrl = this.security ? this.security.buildWhatsAppUrl('Hit Bar Rush 2.0', promo.title, terminal, sig) : '#';
+      const waUrl = this.security ? this.security.buildWhatsAppUrl('Hit Bar Rush 2.0', promo.title, terminal, sig, promo.restriccion) : '#';
 
       this.view.mostrarModalVoucher({
         badge: promo.badge,
         title: promo.title,
-        level: this.model.getCurrentLevel().level,
-        bpm: this.model.getCurrentLevel().bpm,
+        level: promo.level || this.model.getCurrentLevel().level,
+        bpm: promo.bpm || this.model.getCurrentLevel().bpm,
+        restriccion: promo.restriccion,
+        sku: promo.sku,
+        vasosRequeridos: promo.vasosRequeridos,
+        tipo: promo.tipo,
+        aditivo: promo.aditivo,
+        precioFijo: promo.precioFijo,
+        subtotalFijo: promo.subtotalFijo,
         terminal,
         sig,
         verificationUrl,

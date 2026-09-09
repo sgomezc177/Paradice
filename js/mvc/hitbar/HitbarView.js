@@ -23,8 +23,8 @@
       this.stripPosition = 0;
       this.stripSpeed = 2.2;
       this.itemHeight = 95; // .runner-item height in CSS
-      this.loopItemCount = 6;
-      this.loopHeight = 95 * 6; // 570px por vuelta completa
+      this.loopItemCount = 7;
+      this.loopHeight = 95 * 7; // 665px por vuelta completa (7 items)
     }
 
     init() {
@@ -75,6 +75,12 @@
         voucherTerminalId: document.getElementById('voucher-terminal-id'),
         voucherWhatsappBtn: document.getElementById('voucher-whatsapp-btn'),
         btnVoucherPlayAgain: document.getElementById('btn-voucher-play-again'),
+        voucherRestrictionBox: document.getElementById('voucher-restriction-box'),
+        voucherSkuInfo: document.getElementById('voucher-sku-info'),
+        voucherPricingInfo: document.getElementById('voucher-pricing-info'),
+        // Modal de Bloqueo por Vaso de 9 oz
+        modalCupRestriction: document.getElementById('modal-cup-restriction'),
+        closeCupRestrictionBtn: document.getElementById('close-cup-restriction-btn'),
         // Modal Fallo
         modalMiss: document.getElementById('modal-miss'),
         missBadge: document.getElementById('miss-badge'),
@@ -100,15 +106,16 @@
       this.dom.runnerStrip.innerHTML = '';
 
       const itemsDef = [
-        { id: 'LIMON', icon: '🍋' },
-        { id: 'NARANJA', icon: '🍊' },
         { id: 'GOMITAS', icon: '🍬' },
         { id: 'SHOT', icon: '🥃' },
         { id: 'COPA', icon: '🍧' },
+        { id: 'JERINGA', icon: '💉' },
+        { id: 'COMBO', icon: '🍹' },
+        { id: 'EXTREMO', icon: '🔥' },
         { id: 'ESTRELLA', icon: '⭐' }
       ];
 
-      // Creamos 6 repeticiones del patrón de 6 elementos para un scroll continuo sin fin
+      // Creamos 6 repeticiones del patrón de 7 elementos para un scroll continuo sin fin
       for (let rep = 0; rep < 6; rep++) {
         itemsDef.forEach(item => {
           const isTarget = item.id === targetId;
@@ -156,7 +163,7 @@
     /**
      * Detección milimétrica de colisión vertical entre el objetivo y la Zona Láser
      */
-    checkHitAccuracy(targetId) {
+    checkHitAccuracy(targetId, tolerance = 52) {
       if (!this.dom.hitZone || !this.dom.runnerStrip) return false;
       const hitRect = this.dom.hitZone.getBoundingClientRect();
       const hitCenterY = hitRect.top + hitRect.height / 2;
@@ -168,8 +175,8 @@
         const itemRect = item.getBoundingClientRect();
         const itemCenterY = itemRect.top + itemRect.height / 2;
 
-        // Zona láser tiene 100px de alto, tolerancia de 50px de radio vertical
-        if (Math.abs(itemCenterY - hitCenterY) <= 52) {
+        // Tolerancia milimétrica escalada por nivel de dificultad
+        if (Math.abs(itemCenterY - hitCenterY) <= tolerance) {
           if (item.dataset.itemId === targetId) {
             foundHit = true;
           }
@@ -179,8 +186,8 @@
       return foundHit;
     }
 
-    evaluateImpact(targetId) {
-      const success = this.checkHitAccuracy(targetId);
+    evaluateImpact(targetId, tolerance = 52) {
+      const success = this.checkHitAccuracy(targetId, tolerance);
       this.flashHitFeedback(success);
       return { success };
     }
@@ -212,7 +219,7 @@
       if (this.dom.targetIcon) this.dom.targetIcon.textContent = levelData.targetIcon;
       if (this.dom.targetName) this.dom.targetName.textContent = `${levelData.targetName} ${levelData.targetIcon}`;
       if (this.dom.targetBenefitTag) this.dom.targetBenefitTag.textContent = `Recompensa: ${levelData.title}`;
-      if (this.dom.targetLevelBadge) this.dom.targetLevelBadge.textContent = `NIVEL ${levelData.level}/6`;
+      if (this.dom.targetLevelBadge) this.dom.targetLevelBadge.textContent = `NIVEL ${levelData.level}/7`;
       if (this.dom.bpmDisplay) this.dom.bpmDisplay.textContent = `${levelData.bpm} BPM`;
       if (this.dom.rushLevelDisplay) this.dom.rushLevelDisplay.textContent = `NIVEL ${levelData.level}`;
       if (this.dom.speedStepBadge) this.dom.speedStepBadge.textContent = `⚡ ${levelData.speedStep}`;
@@ -268,7 +275,7 @@
           this.dom.currentPromoTitle.textContent = '¡Alinea tu primer granizado!';
         }
         if (this.dom.currentPromoDesc) {
-          this.dom.currentPromoDesc.textContent = 'Supera cada nivel de velocidad para acumular promociones y ganar el 2x1.';
+          this.dom.currentPromoDesc.textContent = 'Supera cada nivel de velocidad para acumular promociones y ganar el 3x2.';
         }
 
         // Botón deshabilitado en reposo
@@ -315,6 +322,29 @@
       if (this.dom.voucherTerminalId) this.dom.voucherTerminalId.textContent = `${data.terminal} • ${data.sig.slice(0, 10)}...`;
       if (this.dom.voucherWhatsappBtn) this.dom.voucherWhatsappBtn.href = data.waUrl;
 
+      // Restricción y condición comercial oficial (16 oz exclusiva)
+      if (this.dom.voucherRestrictionBox) {
+        this.dom.voucherRestrictionBox.innerHTML = `⚠️ <span class="font-bold">${data.restriccion || 'Exclusivo para presentación de 16 oz. Bloqueado para 9 oz.'}</span>`;
+      }
+      if (this.dom.voucherSkuInfo) {
+        this.dom.voucherSkuInfo.textContent = `${data.vasosRequeridos || 1} Vaso${(data.vasosRequeridos || 1) > 1 ? 's' : ''} de 16 oz (Exclusivo)`;
+      }
+      if (this.dom.voucherPricingInfo) {
+        let precioTexto = 'Descuento Aplicado';
+        if (data.tipo === 'aditivo') {
+          precioTexto = `${data.aditivo} ($0 COP)`;
+        } else if (data.tipo === 'precio_fijo') {
+          precioTexto = `$${Number(data.precioFijo).toLocaleString('es-CO')} COP cerrado`;
+        } else if (data.tipo === 'combo_precio_fijo') {
+          precioTexto = `$${Number(data.precioFijo).toLocaleString('es-CO')} COP (${data.aditivo || 'Jeringa'} a $0)`;
+        } else if (data.tipo === 'segundo_descuento') {
+          precioTexto = `$${Number(data.subtotalFijo || 27000).toLocaleString('es-CO')} COP ($15k + $12k)`;
+        } else if (data.tipo === 'tres_por_dos') {
+          precioTexto = `$${Number(data.precioFijo || 30000).toLocaleString('es-CO')} COP (3x2: Pagas 2)`;
+        }
+        this.dom.voucherPricingInfo.textContent = precioTexto;
+      }
+
       if (this.dom.voucherQrcode) {
         this.dom.voucherQrcode.innerHTML = '';
         if (typeof QRCode !== 'undefined') {
@@ -336,6 +366,18 @@
 
     ocultarModalVoucher() {
       if (this.dom.modalVoucher) this.dom.modalVoucher.classList.add('hidden');
+    }
+
+    mostrarModalBloqueo9oz() {
+      if (this.dom.modalCupRestriction) {
+        this.dom.modalCupRestriction.classList.remove('hidden');
+      }
+    }
+
+    ocultarModalBloqueo9oz() {
+      if (this.dom.modalCupRestriction) {
+        this.dom.modalCupRestriction.classList.add('hidden');
+      }
     }
 
     lanzarConfeti() {
