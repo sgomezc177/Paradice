@@ -109,19 +109,23 @@
         terminal: String(data.terminal || this.getOrCreateTerminalId()),
         sig: String(data.sig || '')
       });
+      if (data.restriccion) params.set('restriccion', String(data.restriccion));
+      if (data.sku) params.set('sku', String(data.sku));
       return `${baseUrl}?${params.toString()}`;
     },
 
     /**
      * Construye URL de WhatsApp oficial con mensaje preformateado
      */
-    buildWhatsAppUrl(juegoNombre, premioNombre, terminal, sig) {
-      const text = encodeURIComponent(
-        `¡Hola Paradice! 🍧 Acabo de jugar a *${juegoNombre.toUpperCase()}* y gané la promoción: *${premioNombre}*.\n\n` +
-        `🏷️ Terminal: ${terminal}\n` +
+    buildWhatsAppUrl(juegoNombre, premioNombre, terminal, sig, restriccion = '') {
+      let msg = `¡Hola Paradice! 🍧 Acabo de jugar a *${juegoNombre.toUpperCase()}* y gané la promoción: *${premioNombre}*.\n\n`;
+      if (restriccion) {
+        msg += `⚠️ Condición: ${restriccion}\n`;
+      }
+      msg += `🏷️ Terminal: ${terminal}\n` +
         `🔒 Código de Verificación: ${sig}\n\n` +
-        `Quiero hacer mi pedido para redimir mi premio en mi granizado.`
-      );
+        `Quiero hacer mi pedido para redimir mi premio en mi granizado.`;
+      const text = encodeURIComponent(msg);
       return WHATSAPP_PHONE ? `https://wa.me/${WHATSAPP_PHONE}?text=${text}` : `https://wa.me/?text=${text}`;
     }
   };

@@ -58,6 +58,7 @@
       // 1. Botón de Giro / Detener Hit Bar
       if (this.view.dom.spinBtn) {
         this.view.dom.spinBtn.addEventListener('click', () => {
+          if (this.view.isPopoutVisible()) return;
           if (this.isHitBarActive) {
             this.detenerPasoHitBar();
           } else {
@@ -141,7 +142,79 @@
       // 5. Botones de Prueba Supervisor
       if (this.view.dom.testJackpotBtn) {
         this.view.dom.testJackpotBtn.addEventListener('click', () => {
-          this.model.modoPruebaForzado = 'JACKPOT';
+          this.model.modoPruebaForzado = 'PROMO_2X1_16OZ';
+          if (this.view.dom.supervisorModal) this.view.dom.supervisorModal.classList.add('hidden');
+          this.realizarTirada();
+        });
+      }
+
+      if (this.view.dom.testEpico22Btn) {
+        this.view.dom.testEpico22Btn.addEventListener('click', () => {
+          this.model.modoPruebaForzado = 'PROMO_2X16_22K';
+          if (this.view.dom.supervisorModal) this.view.dom.supervisorModal.classList.add('hidden');
+          this.realizarTirada();
+        });
+      }
+
+      if (this.view.dom.testEpico11Btn) {
+        this.view.dom.testEpico11Btn.addEventListener('click', () => {
+          this.model.modoPruebaForzado = 'PROMO_1X16_11K';
+          if (this.view.dom.supervisorModal) this.view.dom.supervisorModal.classList.add('hidden');
+          this.realizarTirada();
+        });
+      }
+
+      if (this.view.dom.testComboBtn) {
+        this.view.dom.testComboBtn.addEventListener('click', () => {
+          this.model.modoPruebaForzado = 'PROMO_COMBO_16_9';
+          if (this.view.dom.supervisorModal) this.view.dom.supervisorModal.classList.add('hidden');
+          this.realizarTirada();
+        });
+      }
+
+      if (this.view.dom.testJeringaBtn) {
+        this.view.dom.testJeringaBtn.addEventListener('click', () => {
+          this.model.modoPruebaForzado = 'PROMO_JERINGA_FREE';
+          if (this.view.dom.supervisorModal) this.view.dom.supervisorModal.classList.add('hidden');
+          this.realizarTirada();
+        });
+      }
+
+      if (this.view.dom.testPoco13Btn) {
+        this.view.dom.testPoco13Btn.addEventListener('click', () => {
+          this.model.modoPruebaForzado = 'PROMO_1X16_13K';
+          if (this.view.dom.supervisorModal) this.view.dom.supervisorModal.classList.add('hidden');
+          this.realizarTirada();
+        });
+      }
+
+      if (this.view.dom.testPoco14Btn) {
+        this.view.dom.testPoco14Btn.addEventListener('click', () => {
+          this.model.modoPruebaForzado = 'PROMO_2X9_14K';
+          if (this.view.dom.supervisorModal) this.view.dom.supervisorModal.classList.add('hidden');
+          this.realizarTirada();
+        });
+      }
+
+      if (this.view.dom.testDesc1500Btn) {
+        this.view.dom.testDesc1500Btn.addEventListener('click', () => {
+          this.model.modoPruebaForzado = 'DESC_1500_16OZ';
+          if (this.view.dom.supervisorModal) this.view.dom.supervisorModal.classList.add('hidden');
+          this.realizarTirada();
+        });
+      }
+
+      if (this.view.dom.testDesc1000Btn) {
+        this.view.dom.testDesc1000Btn.addEventListener('click', () => {
+          this.model.modoPruebaForzado = 'DESC_1000_9OZ';
+          if (this.view.dom.supervisorModal) this.view.dom.supervisorModal.classList.add('hidden');
+          this.realizarTirada();
+        });
+      }
+
+      if (this.view.dom.testDesc500Btn) {
+        this.view.dom.testDesc500Btn.addEventListener('click', () => {
+          this.model.modoPruebaForzado = 'DESC_500_ANY';
           if (this.view.dom.supervisorModal) this.view.dom.supervisorModal.classList.add('hidden');
           this.realizarTirada();
         });
@@ -149,7 +222,7 @@
 
       if (this.view.dom.testBonusBtn) {
         this.view.dom.testBonusBtn.addEventListener('click', () => {
-          this.model.modoPruebaForzado = 'BONUS';
+          this.model.modoPruebaForzado = 'PROMO_JERINGA_FREE';
           if (this.view.dom.supervisorModal) this.view.dom.supervisorModal.classList.add('hidden');
           this.realizarTirada();
         });
@@ -214,27 +287,11 @@
           if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) return;
           e.preventDefault();
 
+          // Si hay algún popout o modal activo, bloquear cualquier acción de giro o reintento accidental
+          if (this.view.isPopoutVisible()) return;
+
           if (this.isHitBarActive) {
             this.detenerPasoHitBar();
-            return;
-          }
-
-          if (this.view.dom.winPopoutModal && !this.view.dom.winPopoutModal.classList.contains('hidden')) {
-            if (this.view.dom.retrySpinBtn && !this.view.dom.retrySpinBtn.classList.contains('hidden')) {
-              this.view.dom.retrySpinBtn.click();
-            } else if (this.view.dom.claimPrizeBtn) {
-              this.view.dom.claimPrizeBtn.click();
-            }
-            return;
-          }
-
-          if (this.view.dom.lifeLossModal && !this.view.dom.lifeLossModal.classList.contains('hidden')) {
-            this.view.dom.btnContinueLife?.click();
-            return;
-          }
-
-          if (this.view.dom.terminalBlockedModal && !this.view.dom.terminalBlockedModal.classList.contains('hidden')) {
-            this.view.dom.btnRestartFreePlay?.click();
             return;
           }
 
@@ -280,7 +337,7 @@
     }
 
     realizarTirada() {
-      if (this.isSpinning || this.isHitBarActive) return;
+      if (this.isSpinning || this.isHitBarActive || this.view.isPopoutVisible()) return;
 
       // Verificar vidas disponibles
       if (this.model.vidas <= 0) {
@@ -353,36 +410,28 @@
     }
 
     detenerPasoHitBar() {
-      if (!this.isHitBarActive || this.isStoppingHitBarCol) return;
+      if (!this.isHitBarActive || this.isStoppingHitBarCol || this.view.isPopoutVisible()) return;
       this.isStoppingHitBarCol = true;
 
       const col = this.hitBarColumnaActual;
-      // Probabilidad atractiva de alinear granizado en línea central (80%)
-      const esAcierto = Math.random() < 0.8;
-      if (esAcierto) {
-        this.hitBarAciertos++;
-        if (this.audio && typeof this.audio.playHitSuccess === 'function') {
-          this.audio.playHitSuccess(this.hitBarAciertos);
-        } else if (this.audio && typeof this.audio.playReelStop === 'function') {
-          this.audio.playReelStop(col);
-        }
-      } else {
-        if (this.audio && typeof this.audio.playReelStop === 'function') {
-          this.audio.playReelStop(col);
-        }
+      // En Hit Bar, la parada ordenada por el usuario alinea exitosamente la figura indicada (⭐ Sello Paradice)
+      const esAcierto = true;
+      this.hitBarAciertos++;
+      if (this.audio && typeof this.audio.playHitSuccess === 'function') {
+        this.audio.playHitSuccess(this.hitBarAciertos);
+      } else if (this.audio && typeof this.audio.playReelStop === 'function') {
+        this.audio.playReelStop(col);
       }
 
       this.view.detenerRodilloHitBar(col, esAcierto, () => {
         this.isStoppingHitBarCol = false;
         this.hitBarColumnaActual++;
         if (this.hitBarColumnaActual < 5) {
-          // Si hubo acierto, acelera los rodillos restantes hacia la combinación
-          if (esAcierto && this.hitBarAciertos > 0) {
-            this.view.acelerarRodillosHitBar(this.hitBarColumnaActual, this.hitBarAciertos);
-            const nuevoIntervalo = Math.max(20, 60 - this.hitBarAciertos * 10);
-            if (this.audio && typeof this.audio.startSpinTicks === 'function') {
-              this.audio.startSpinTicks(nuevoIntervalo);
-            }
+          // Acelerar los rodillos restantes hacia la combinación
+          this.view.acelerarRodillosHitBar(this.hitBarColumnaActual, this.hitBarAciertos);
+          const nuevoIntervalo = Math.max(20, 60 - this.hitBarAciertos * 10);
+          if (this.audio && typeof this.audio.startSpinTicks === 'function') {
+            this.audio.startSpinTicks(nuevoIntervalo);
           }
 
           this.view.mostrarHitBarBanner(this.hitBarColumnaActual, this.hitBarAciertos);
@@ -479,7 +528,10 @@
       if (!this.ultimoResultadoPremio || !this.ultimoResultadoPremio.esPremio) return;
       this.detenerTemporizadorTiro();
 
-      const premio = this.ultimoResultadoPremio.nivel.beneficio;
+      const nivel = this.ultimoResultadoPremio.nivel;
+      const premio = nivel.beneficio;
+      const restriccion = nivel.restriccion || '';
+      const sku = nivel.sku || '';
       const intento = this.model.intentoActual;
       const security = root.SecurityService;
 
@@ -491,16 +543,19 @@
       const verificationUrl = security ? security.buildVerificationUrl({
         intento,
         premio,
-        codigo: `🎰 ${this.ultimoResultadoPremio.nivel.id || ''}`,
+        codigo: `🎰 ${nivel.id || ''}`,
         fecha,
         hora,
         dispositivo: 'Tragamonedas Paradice',
         terminal,
-        sig
+        sig,
+        restriccion,
+        sku
       }) : (window.location.href.split('?')[0]);
 
       this.view.voltearQR({
         premio,
+        restriccion,
         intento,
         fecha,
         hora,
@@ -523,14 +578,14 @@
       }
 
       if (this.autoSpinActivo) {
-        // Giro inmediato al activar
-        if (!this.isSpinning && !this.isHitBarActive && this.model.vidas > 0) {
+        // Giro inmediato al activar si no hay popouts
+        if (!this.isSpinning && !this.isHitBarActive && !this.view.isPopoutVisible() && this.model.vidas > 0) {
           this.realizarTirada();
         }
 
         if (this.autoSpinTimer) clearInterval(this.autoSpinTimer);
         this.autoSpinTimer = setInterval(() => {
-          if (!this.isSpinning && !this.isHitBarActive && this.model.vidas > 0) {
+          if (!this.isSpinning && !this.isHitBarActive && !this.view.isPopoutVisible() && this.model.vidas > 0) {
             this.realizarTirada();
           } else if (this.model.vidas <= 0) {
             this.toggleAutoSpin();

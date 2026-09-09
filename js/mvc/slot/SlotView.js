@@ -62,6 +62,15 @@
         supervisorValidateBtn: document.getElementById('supervisor-validate-btn'),
         supervisorHistorialList: document.getElementById('supervisor-historial-list'),
         testJackpotBtn: document.getElementById('test-jackpot-btn'),
+        testEpico22Btn: document.getElementById('test-epico22-btn'),
+        testEpico11Btn: document.getElementById('test-epico11-btn'),
+        testComboBtn: document.getElementById('test-combo-btn'),
+        testJeringaBtn: document.getElementById('test-jeringa-btn'),
+        testPoco13Btn: document.getElementById('test-poco13-btn'),
+        testPoco14Btn: document.getElementById('test-poco14-btn'),
+        testDesc1500Btn: document.getElementById('test-desc1500-btn'),
+        testDesc1000Btn: document.getElementById('test-desc1000-btn'),
+        testDesc500Btn: document.getElementById('test-desc500-btn'),
         testBonusBtn: document.getElementById('test-bonus-btn'),
         testVidaBtn: document.getElementById('test-vida-btn'),
         testHitbarBtn: document.getElementById('test-hitbar-btn'),
@@ -79,6 +88,7 @@
         winPopoutTitle: document.getElementById('win-popout-title'),
         winPopoutTier: document.getElementById('win-popout-tier'),
         winPopoutPrize: document.getElementById('win-popout-prize'),
+        winPopoutRestriction: document.getElementById('win-popout-restriction'),
         winPopoutAttemptInfo: document.getElementById('win-popout-attempt-info'),
         claimPrizeBtn: document.getElementById('claim-prize-btn'),
         retrySpinBtn: document.getElementById('retry-spin-btn'),
@@ -86,6 +96,7 @@
         // QR de Verificación
         qrcodeBox: document.getElementById('qrcode-box'),
         qrSummaryPrize: document.getElementById('qr-summary-prize'),
+        qrSummaryRestriction: document.getElementById('qr-summary-restriction'),
         qrSummaryAttempt: document.getElementById('qr-summary-attempt'),
         qrSummaryTime: document.getElementById('qr-summary-time'),
         qrSummaryTerminal: document.getElementById('qr-summary-terminal'),
@@ -277,7 +288,7 @@
       if (!this.dom.paytableTower) return;
 
       const rows = Array.from(this.dom.paytableTower.querySelectorAll('.pill-row'));
-      // Ordenar de abajo hacia arriba según data-ladder-index (0 es la base, 8 es Jackpot)
+      // Ordenar de abajo hacia arriba según data-ladder-index (0 es la base, 9 es Jackpot)
       rows.sort((a, b) => parseInt(a.dataset.ladderIndex || 0, 10) - parseInt(b.dataset.ladderIndex || 0, 10));
 
       if (!nivelId || nivelId === 'MOJARRO') {
@@ -291,7 +302,8 @@
         return;
       }
 
-      const targetRow = this.dom.paytableTower.querySelector(`.pill-row[data-nivel-id="${nivelId}"]`);
+      const targetRow = this.dom.paytableTower.querySelector(`.pill-row[data-nivel-id="${nivelId}"]`) ||
+        (nivelId === 'JACKPOT' ? this.dom.paytableTower.querySelector('.pill-row[data-nivel-id="PROMO_2X1_16OZ"]') : null);
       let targetIndex = 0;
       if (targetRow && targetRow.dataset.ladderIndex !== undefined) {
         targetIndex = parseInt(targetRow.dataset.ladderIndex, 10);
@@ -320,7 +332,8 @@
     iluminarTorrePagosDirecto(nivelId) {
       this.limpiarTorrePagos();
       if (!this.dom.paytableTower || !nivelId || nivelId === 'MOJARRO') return;
-      const targetRow = this.dom.paytableTower.querySelector(`.pill-row[data-nivel-id="${nivelId}"]`);
+      const targetRow = this.dom.paytableTower.querySelector(`.pill-row[data-nivel-id="${nivelId}"]`) ||
+        (nivelId === 'JACKPOT' ? this.dom.paytableTower.querySelector('.pill-row[data-nivel-id="PROMO_2X1_16OZ"]') : null);
       if (targetRow) {
         targetRow.classList.add('pill-row-active');
       }
@@ -357,16 +370,44 @@
       const nivel = resultado.nivel;
 
       let icon = '🎁';
-      if (nivel.id === 'JACKPOT') icon = '⭐';
-      else if (nivel.id === 'BONUS_ALCOHOL') icon = '🫗';
-      else if (nivel.id.startsWith('NIVEL_12') || nivel.id.startsWith('NIVEL_11')) icon = '🍸';
-      else if (nivel.id.startsWith('NIVEL_10') || nivel.id.startsWith('NIVEL_8') || nivel.id.startsWith('NIVEL_5')) icon = '🍧';
-      else icon = '🍹';
+      let title = '¡GANASTE!';
+      if (nivel.id === 'PROMO_2X1_16OZ' || nivel.id === 'JACKPOT') {
+        icon = '⭐';
+        title = '⭐ ¡JACKPOT! ⭐';
+      } else if (nivel.id === 'PROMO_2X16_22K' || nivel.id === 'PROMO_1X16_11K') {
+        icon = '🍸';
+        title = '¡PREMIO ÉPICO!';
+      } else if (nivel.id === 'PROMO_COMBO_16_9') {
+        icon = '🍧';
+        title = '¡PREMIO RARO!';
+      } else if (nivel.id === 'PROMO_JERINGA_FREE') {
+        icon = '💉';
+        title = '¡PREMIO RARO!';
+      } else if (nivel.id === 'PROMO_1X16_13K' || nivel.id === 'PROMO_2X9_14K') {
+        icon = '🍹';
+        title = '¡POCO COMÚN!';
+      } else if (nivel.id === 'DESC_1500_16OZ' || nivel.id === 'DESC_1000_9OZ') {
+        icon = '🍋';
+        title = '¡PREMIO COMÚN!';
+      } else {
+        icon = '🎁';
+        title = '¡GANASTE!';
+      }
 
       if (this.dom.winPopoutIcon) this.dom.winPopoutIcon.textContent = icon;
-      if (this.dom.winPopoutTitle) this.dom.winPopoutTitle.textContent = nivel.id === 'JACKPOT' ? '⭐ ¡JACKPOT! ⭐' : '¡GANASTE!';
+      if (this.dom.winPopoutTitle) this.dom.winPopoutTitle.textContent = title;
       if (this.dom.winPopoutTier) this.dom.winPopoutTier.textContent = nivel.nombre;
       if (this.dom.winPopoutPrize) this.dom.winPopoutPrize.textContent = nivel.beneficio;
+
+      // Restricción / Condición de canje en caja
+      if (this.dom.winPopoutRestriction) {
+        if (nivel.restriccion) {
+          this.dom.winPopoutRestriction.innerHTML = `⚠️ <span class="font-bold">${nivel.restriccion}</span>`;
+          this.dom.winPopoutRestriction.classList.remove('hidden');
+        } else {
+          this.dom.winPopoutRestriction.classList.add('hidden');
+        }
+      }
 
       // Actualizar información del intento y vidas restantes
       if (this.dom.winPopoutAttemptInfo) {
@@ -397,6 +438,7 @@
 
     voltearQR(voucherData) {
       if (this.dom.qrSummaryPrize) this.dom.qrSummaryPrize.textContent = voucherData.premio;
+      if (this.dom.qrSummaryRestriction) this.dom.qrSummaryRestriction.textContent = voucherData.restriccion || 'Sin restricción';
       if (this.dom.qrSummaryAttempt) this.dom.qrSummaryAttempt.textContent = `Intento ${voucherData.intento} de 3`;
       if (this.dom.qrSummaryTime) this.dom.qrSummaryTime.textContent = `${voucherData.fecha} ${voucherData.hora}`;
       if (this.dom.qrSummaryTerminal) this.dom.qrSummaryTerminal.textContent = voucherData.terminal;
@@ -438,6 +480,21 @@
       if (this.dom.terminalBlockedModal) this.dom.terminalBlockedModal.classList.add('hidden');
     }
 
+    /**
+     * Verifica si algún modal o popout está visible en pantalla para evitar tiros dobles
+     */
+    isPopoutVisible() {
+      const isVisible = el => el && !el.classList.contains('hidden');
+      return Boolean(
+        isVisible(this.dom.winPopoutModal) ||
+        isVisible(this.dom.lifeLossModal) ||
+        isVisible(this.dom.terminalBlockedModal) ||
+        isVisible(this.dom.combinationsModal) ||
+        isVisible(this.dom.supervisorModal) ||
+        isVisible(document.getElementById('instructions-modal'))
+      );
+    }
+
     actualizarEstadoBotonGirar(girando) {
       if (!this.dom.spinBtn) return;
       this.dom.spinBtn.disabled = girando;
@@ -454,7 +511,9 @@
 
     mostrarHitBarBanner(colIndex, aciertos) {
       if (this.dom.hitbarLiveBanner) this.dom.hitbarLiveBanner.classList.remove('hidden');
-      if (this.dom.hitbarLiveTitle) this.dom.hitbarLiveTitle.innerHTML = `⚡ <span>HIT BAR: ¡DETÉN EL RODILLO ${colIndex + 1} DE 5!</span>`;
+      if (this.dom.hitbarLiveTitle) {
+        this.dom.hitbarLiveTitle.innerHTML = `⚡ <span>HIT BAR: ¡DETÉN EN ⭐ (SELLO PARADICE) - RODILLO ${colIndex + 1} DE 5!</span>`;
+      }
       if (this.dom.hitbarLiveScore) this.dom.hitbarLiveScore.textContent = `${aciertos} / 5 Acertados`;
     }
 
@@ -470,9 +529,11 @@
         this.hitbarStabilizeTimer = null;
       }
 
-      // Banner en vivo: aviso inicial
+      // Banner en vivo: aviso inicial indicando claramente la figura objetivo (⭐)
       if (this.dom.hitbarLiveBanner) this.dom.hitbarLiveBanner.classList.remove('hidden');
-      if (this.dom.hitbarLiveTitle) this.dom.hitbarLiveTitle.innerHTML = `⚡ <span>¡MODO HIT BAR ACTIVADO! PREPÁRATE...</span>`;
+      if (this.dom.hitbarLiveTitle) {
+        this.dom.hitbarLiveTitle.innerHTML = `⚡ <span>¡HIT BAR! DETÉN EN ⭐ (SELLO PARADICE) - RODILLO 1 DE 5</span>`;
+      }
       if (this.dom.hitbarLiveScore) this.dom.hitbarLiveScore.textContent = `0 / 5 Acertados`;
 
       // Botón en fase de arranque inicial veloz
@@ -481,12 +542,12 @@
         this.dom.spinBtn.classList.remove('opacity-50', 'opacity-75', 'cursor-not-allowed');
         this.dom.spinBtn.classList.add('spin-btn-hitbar-mode');
         if (this.dom.spinBtnIcon) {
-          this.dom.spinBtnIcon.textContent = '⚡';
+          this.dom.spinBtnIcon.textContent = '⭐';
           this.dom.spinBtnIcon.classList.add('animate-spin');
         }
         if (this.dom.spinBtnText) {
-          this.dom.spinBtnText.textContent = 'HIT BAR...';
-          this.dom.spinBtnText.className = 'text-[8px] font-black uppercase tracking-wider text-amber-300 mt-0.5 animate-pulse';
+          this.dom.spinBtnText.textContent = 'DETENER 1';
+          this.dom.spinBtnText.className = 'text-[9px] font-black uppercase tracking-wider text-amber-300 mt-0.5 animate-pulse';
         }
       }
 
@@ -505,8 +566,11 @@
             strip.classList.add('reel-hitbar-stable');
           }
         });
-        this.mostrarHitBarBanner(0, 0);
-        this.actualizarBotonHitBar(0);
+        // Proteger: solo actualizar UI si la columna 0 no fue detenida previamente por el usuario
+        if (!this.hitBarColumnsStopped[0]) {
+          this.mostrarHitBarBanner(0, 0);
+          this.actualizarBotonHitBar(0);
+        }
         if (onEstabilizado) onEstabilizado();
       }, 750);
     }
@@ -551,7 +615,7 @@
       this.dom.spinBtn.classList.remove('opacity-50', 'opacity-75', 'cursor-not-allowed');
       this.dom.spinBtn.classList.add('spin-btn-hitbar-mode');
       if (this.dom.spinBtnIcon) {
-        this.dom.spinBtnIcon.textContent = '🛑';
+        this.dom.spinBtnIcon.textContent = '⭐';
         this.dom.spinBtnIcon.classList.remove('animate-spin');
       }
       if (this.dom.spinBtnText) {
@@ -672,7 +736,7 @@
     mostrarModoPreview() {
       if (this.dom.previewModeBanner) this.dom.previewModeBanner.classList.remove('hidden');
       this.animarGiro(); // Simulación visual de gameplay en vivo
-      this.animarEscaladaTorre('JACKPOT', null);
+      this.animarEscaladaTorre('PROMO_2X1_16OZ', null);
     }
 
     ocultarModoPreview() {

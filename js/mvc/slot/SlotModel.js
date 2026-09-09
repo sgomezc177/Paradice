@@ -77,15 +77,15 @@
 
     /**
      * Determina si la tirada actual debe activar el modo interactivo Hit Bar.
-     * Puede aparecer aleatoriamente en CUALQUIERA de las 3 vidas, e incluso más de una vez.
+     * Es la vía exclusiva para obtener el Jackpot (PROMO_2X1_16OZ) con probabilidad del 1.0%.
      */
     shouldTriggerHitBar() {
       if (this.modoPruebaForzado === 'HITBAR') {
         this.modoPruebaForzado = null;
         return true;
       }
-      // Probabilidad atractiva y balanceada de ~28% en cada tirada
-      return Math.random() < 0.28;
+      // Drop rate oficial del Jackpot: exactamente 1.0% (0.01)
+      return Math.random() < 0.01;
     }
 
     /**
@@ -106,6 +106,125 @@
     }
 
     /**
+     * Selección de nivel para tiradas estándar (excluye Jackpot PROMO_2X1_16OZ,
+     * ya que este es 100% exclusivo del modo Hit Bar con 1.0% global).
+     * Sumatoria de drop rates restantes = 99.0%.
+     */
+    seleccionarNivelPorDropRate() {
+      const nivelesSinJackpot = this.config.NIVELES_PREMIO.filter(n => n.id !== 'PROMO_2X1_16OZ');
+      const pesoTotal = nivelesSinJackpot.reduce((acc, n) => acc + (n.dropRate || 0), 0); // 99.0
+      const rand = Math.random() * pesoTotal;
+      let acumulado = 0;
+      for (let i = 0; i < nivelesSinJackpot.length; i++) {
+        acumulado += (nivelesSinJackpot[i].dropRate || 0);
+        if (rand <= acumulado) {
+          return nivelesSinJackpot[i];
+        }
+      }
+      return nivelesSinJackpot[nivelesSinJackpot.length - 1]; // Fallback a Consolación
+    }
+
+    /**
+     * Genera una matriz visual orgánica (5x3) coherente con el nivel premiado
+     */
+    generarMatrizParaNivel(nivelId) {
+      // 1. Matriz base con símbolos aleatorios no premiados
+      const baseFill = [
+        ['SYM_LIMON', 'SYM_NARANJA', 'SYM_COPA_VERDE'],
+        ['SYM_NARANJA', 'SYM_SHOT', 'SYM_LIMON'],
+        ['SYM_COPA_VERDE', 'SYM_LIMON', 'SYM_NARANJA'],
+        ['SYM_SHOT', 'SYM_NARANJA', 'SYM_COPA_VERDE'],
+        ['SYM_LIMON', 'SYM_COPA_VERDE', 'SYM_SHOT']
+      ];
+
+      const m = baseFill.map(col => [...col]);
+
+      // 2. Colocar la combinación representativa en la línea central (row: 1) o scatter
+      switch (nivelId) {
+        case 'PROMO_2X1_16OZ': // 5 Sellos Paradice
+          m[0][1] = 'SYM_GRATIS';
+          m[1][1] = 'SYM_GRATIS';
+          m[2][1] = 'SYM_GRATIS';
+          m[3][1] = 'SYM_GRATIS';
+          m[4][1] = 'SYM_GRATIS';
+          break;
+
+        case 'PROMO_2X16_22K': // 5 Cócteles Especiales
+          m[0][1] = 'SYM_COCTEL_ROJO';
+          m[1][1] = 'SYM_COCTEL_ROJO';
+          m[2][1] = 'SYM_COCTEL_ROJO';
+          m[3][1] = 'SYM_COCTEL_ROJO';
+          m[4][1] = 'SYM_COCTEL_ROJO';
+          break;
+
+        case 'PROMO_1X16_11K': // 4 Cócteles Especiales
+          m[0][1] = 'SYM_COCTEL_ROJO';
+          m[1][1] = 'SYM_COCTEL_ROJO';
+          m[2][1] = 'SYM_COCTEL_ROJO';
+          m[3][1] = 'SYM_COCTEL_ROJO';
+          m[4][1] = 'SYM_LIMON';
+          break;
+
+        case 'PROMO_COMBO_16_9': // 5 Granizados
+          m[0][1] = 'SYM_COPA_AZUL';
+          m[1][1] = 'SYM_COPA_AZUL';
+          m[2][1] = 'SYM_COPA_AZUL';
+          m[3][1] = 'SYM_COPA_AZUL';
+          m[4][1] = 'SYM_COPA_AZUL';
+          break;
+
+        case 'PROMO_JERINGA_FREE': // 3+ Bonus Shakers / Jeringas
+          m[0][1] = 'SYM_BONUS';
+          m[2][1] = 'SYM_BONUS';
+          m[4][1] = 'SYM_BONUS';
+          break;
+
+        case 'PROMO_1X16_13K': // 4 Granizados
+          m[0][1] = 'SYM_COPA_AZUL';
+          m[1][1] = 'SYM_COPA_AZUL';
+          m[2][1] = 'SYM_COPA_AZUL';
+          m[3][1] = 'SYM_COPA_AZUL';
+          m[4][1] = 'SYM_NARANJA';
+          break;
+
+        case 'PROMO_2X9_14K': // 5 Frutas Cítricas
+          m[0][1] = 'SYM_NARANJA';
+          m[1][1] = 'SYM_NARANJA';
+          m[2][1] = 'SYM_NARANJA';
+          m[3][1] = 'SYM_NARANJA';
+          m[4][1] = 'SYM_NARANJA';
+          break;
+
+        case 'DESC_1500_16OZ': // 4 Frutas Cítricas
+          m[0][1] = 'SYM_LIMON';
+          m[1][1] = 'SYM_LIMON';
+          m[2][1] = 'SYM_LIMON';
+          m[3][1] = 'SYM_LIMON';
+          m[4][1] = 'SYM_SHOT';
+          break;
+
+        case 'DESC_1000_9OZ': // 3 Granizados
+          m[0][1] = 'SYM_COPA_VERDE';
+          m[1][1] = 'SYM_COPA_VERDE';
+          m[2][1] = 'SYM_COPA_VERDE';
+          m[3][1] = 'SYM_LIMON';
+          m[4][1] = 'SYM_NARANJA';
+          break;
+
+        case 'DESC_500_ANY': // 3 Frutas o pareja
+        default:
+          m[0][1] = 'SYM_LIMON';
+          m[1][1] = 'SYM_LIMON';
+          m[2][1] = 'SYM_LIMON';
+          m[3][1] = 'SYM_SHOT';
+          m[4][1] = 'SYM_COPA_VERDE';
+          break;
+      }
+
+      return m;
+    }
+
+    /**
      * Genera la matriz de 5 columnas x 3 filas
      */
     generarMatrizTirada() {
@@ -116,57 +235,43 @@
         return forzada;
       }
 
-      const matriz = [];
-      for (let col = 0; col < this.reelsCount; col++) {
-        const columna = [];
-        for (let row = 0; row < this.rowsCount; row++) {
-          columna.push(this.obtenerSimboloAleatorio().id);
-        }
-        matriz.push(columna);
-      }
+      // Selección por Drop Rate oficial (100.0% calibrado)
+      const targetNivel = this.seleccionarNivelPorDropRate();
+      const matriz = this.generarMatrizParaNivel(targetNivel.id);
       this.matriz = matriz;
       return matriz;
     }
 
     /**
-     * Genera matrices fijas para validación de supervisor
+     * Genera matrices fijas para validación del supervisor
      */
     generarMatrizPrueba(tipo) {
-      const matriz = [
-        ['SYM_LIMON', 'SYM_NARANJA', 'SYM_COPA_AZUL'],
-        ['SYM_COPA_VERDE', 'SYM_SHOT', 'SYM_COCTEL_ROJO'],
-        ['SYM_VODKA', 'SYM_LIMON', 'SYM_NARANJA'],
-        ['SYM_COPA_AZUL', 'SYM_COPA_VERDE', 'SYM_SHOT'],
-        ['SYM_COCTEL_ROJO', 'SYM_VODKA', 'SYM_LIMON']
-      ];
-
-      if (tipo === 'JACKPOT') {
-        matriz[0][1] = 'SYM_GRATIS';
-        matriz[1][1] = 'SYM_GRATIS';
-        matriz[2][1] = 'SYM_GRATIS';
-        matriz[3][1] = 'SYM_GRATIS';
-        matriz[4][1] = 'SYM_GRATIS';
-      } else if (tipo === 'BONUS') {
-        matriz[0][1] = 'SYM_BONUS';
-        matriz[2][1] = 'SYM_BONUS';
-        matriz[4][1] = 'SYM_BONUS';
-      } else if (tipo === 'VIDA') {
-        matriz[0][1] = 'SYM_CORAZON';
-        matriz[2][1] = 'SYM_CORAZON';
-        matriz[4][1] = 'SYM_CORAZON';
-      } else if (tipo === 'MOJARRO') {
-        matriz[0] = ['SYM_LIMON', 'SYM_COPA_AZUL', 'SYM_SHOT'];
-        matriz[1] = ['SYM_NARANJA', 'SYM_COPA_VERDE', 'SYM_COCTEL_ROJO'];
-        matriz[2] = ['SYM_VODKA', 'SYM_BONUS', 'SYM_GRATIS'];
-        matriz[3] = ['SYM_LIMON', 'SYM_COPA_AZUL', 'SYM_NARANJA'];
-        matriz[4] = ['SYM_COPA_VERDE', 'SYM_SHOT', 'SYM_VODKA'];
+      if (tipo === 'JACKPOT' || tipo === 'PROMO_2X1_16OZ') {
+        return this.generarMatrizParaNivel('PROMO_2X1_16OZ');
+      } else if (tipo === 'EPICO_22K' || tipo === 'PROMO_2X16_22K') {
+        return this.generarMatrizParaNivel('PROMO_2X16_22K');
+      } else if (tipo === 'EPICO_11K' || tipo === 'PROMO_1X16_11K') {
+        return this.generarMatrizParaNivel('PROMO_1X16_11K');
+      } else if (tipo === 'COMBO_16_9' || tipo === 'PROMO_COMBO_16_9') {
+        return this.generarMatrizParaNivel('PROMO_COMBO_16_9');
+      } else if (tipo === 'JERINGA' || tipo === 'PROMO_JERINGA_FREE') {
+        return this.generarMatrizParaNivel('PROMO_JERINGA_FREE');
+      } else if (tipo === 'POCO_COMUN_13K' || tipo === 'PROMO_1X16_13K') {
+        return this.generarMatrizParaNivel('PROMO_1X16_13K');
+      } else if (tipo === 'POCO_COMUN_14K' || tipo === 'PROMO_2X9_14K') {
+        return this.generarMatrizParaNivel('PROMO_2X9_14K');
+      } else if (tipo === 'DESC_1500' || tipo === 'DESC_1500_16OZ') {
+        return this.generarMatrizParaNivel('DESC_1500_16OZ');
+      } else if (tipo === 'DESC_1000' || tipo === 'DESC_1000_9OZ') {
+        return this.generarMatrizParaNivel('DESC_1000_9OZ');
+      } else if (tipo === 'DESC_500' || tipo === 'DESC_500_ANY') {
+        return this.generarMatrizParaNivel('DESC_500_ANY');
       }
-      this.matriz = matriz;
-      return matriz;
+      return this.generarMatrizParaNivel('DESC_500_ANY');
     }
 
     /**
-     * Conteo y evaluación de los 15 símbolos
+     * Conteo y evaluación de los símbolos en la matriz
      */
     evaluarTirada(matriz) {
       const m = matriz || this.matriz;
@@ -197,62 +302,62 @@
       const nFrutas = nLimon + nNaranja;
       const nEspeciales = nCoctelRojo + nVodka;
 
-      let nivelGanador = niveles.find(n => n.id === 'MOJARRO');
+      let nivelGanador = niveles.find(n => n.id === 'DESC_500_ANY');
       let simbolosGanadores = [];
 
-      // 1. Nivel 13: 5+ Sellos Gratis
+      // 1. Jackpot (1.0%): 5 Sellos Paradice
       if (nGratis >= 5) {
-        nivelGanador = niveles.find(n => n.id === 'JACKPOT');
+        nivelGanador = niveles.find(n => n.id === 'PROMO_2X1_16OZ');
         simbolosGanadores = posiciones['SYM_GRATIS'] || [];
       }
-      // 2. Nivel 12: 5 Cócteles Especiales
+      // 2. Épico 2x16 (4.0%): 5 Cócteles Especiales
       else if (nEspeciales >= 5) {
-        nivelGanador = niveles.find(n => n.id === 'NIVEL_12');
+        nivelGanador = niveles.find(n => n.id === 'PROMO_2X16_22K');
         simbolosGanadores = [...(posiciones['SYM_COCTEL_ROJO'] || []), ...(posiciones['SYM_VODKA'] || [])];
       }
-      // 3. Nivel 11: 4 Cócteles Especiales
+      // 3. Épico 1x16 (5.0%): 4 Cócteles Especiales
       else if (nEspeciales >= 4) {
-        nivelGanador = niveles.find(n => n.id === 'NIVEL_11');
+        nivelGanador = niveles.find(n => n.id === 'PROMO_1X16_11K');
         simbolosGanadores = [...(posiciones['SYM_COCTEL_ROJO'] || []), ...(posiciones['SYM_VODKA'] || [])];
       }
-      // 4. Nivel 10: 5 Granizados
+      // 4. Raro Combo Amigos (10.0%): 5 Granizados
       else if (nGranizados >= 5) {
-        nivelGanador = niveles.find(n => n.id === 'NIVEL_10');
+        nivelGanador = niveles.find(n => n.id === 'PROMO_COMBO_16_9');
         simbolosGanadores = [...(posiciones['SYM_COPA_AZUL'] || []), ...(posiciones['SYM_COPA_VERDE'] || [])];
       }
-      // 5. Nivel 9: 5 Frutas
-      else if (nFrutas >= 5) {
-        nivelGanador = niveles.find(n => n.id === 'NIVEL_9');
-        simbolosGanadores = [...(posiciones['SYM_LIMON'] || []), ...(posiciones['SYM_NARANJA'] || [])];
-      }
-      // 6. Nivel 8: 4 Granizados
-      else if (nGranizados >= 4) {
-        nivelGanador = niveles.find(n => n.id === 'NIVEL_8');
-        simbolosGanadores = [...(posiciones['SYM_COPA_AZUL'] || []), ...(posiciones['SYM_COPA_VERDE'] || [])];
-      }
-      // 7. Bonus Alcohol: 3+ Bonus
+      // 5. Raro Jeringa Shot (10.0%): 3+ Bonus Coctelera
       else if (nBonus >= 3) {
-        nivelGanador = niveles.find(n => n.id === 'BONUS_ALCOHOL');
+        nivelGanador = niveles.find(n => n.id === 'PROMO_JERINGA_FREE');
         simbolosGanadores = posiciones['SYM_BONUS'] || [];
       }
-      // 8. Nivel 7: 4 Frutas
-      else if (nFrutas >= 4) {
-        nivelGanador = niveles.find(n => n.id === 'NIVEL_7');
+      // 6. Poco Común Doble 16 (15.0%): 4 Granizados
+      else if (nGranizados >= 4) {
+        nivelGanador = niveles.find(n => n.id === 'PROMO_1X16_13K');
+        simbolosGanadores = [...(posiciones['SYM_COPA_AZUL'] || []), ...(posiciones['SYM_COPA_VERDE'] || [])];
+      }
+      // 7. Poco Común 2x9 (15.0%): 5 Frutas
+      else if (nFrutas >= 5) {
+        nivelGanador = niveles.find(n => n.id === 'PROMO_2X9_14K');
         simbolosGanadores = [...(posiciones['SYM_LIMON'] || []), ...(posiciones['SYM_NARANJA'] || [])];
       }
-      // 9. Bonus Vida Extra: 3+ Corazones 💖
-      else if (nCorazon >= 3) {
-        nivelGanador = niveles.find(n => n.id === 'BONUS_VIDA');
-        simbolosGanadores = posiciones['SYM_CORAZON'] || [];
+      // 8. Común -$1.500 16 oz (15.0%): 4 Frutas
+      else if (nFrutas >= 4) {
+        nivelGanador = niveles.find(n => n.id === 'DESC_1500_16OZ');
+        simbolosGanadores = [...(posiciones['SYM_LIMON'] || []), ...(posiciones['SYM_NARANJA'] || [])];
       }
-      // 10. Nivel 5: 3 Granizados
+      // 9. Común -$1.000 9 oz (15.0%): 3 Granizados
       else if (nGranizados >= 3) {
-        nivelGanador = niveles.find(n => n.id === 'NIVEL_5');
+        nivelGanador = niveles.find(n => n.id === 'DESC_1000_9OZ');
         simbolosGanadores = [...(posiciones['SYM_COPA_AZUL'] || []), ...(posiciones['SYM_COPA_VERDE'] || [])];
+      }
+      // 10. Consolación -$500 (10.0%): Base o resto
+      else {
+        nivelGanador = niveles.find(n => n.id === 'DESC_500_ANY');
+        simbolosGanadores = [...(posiciones['SYM_LIMON'] || []), ...(posiciones['SYM_NARANJA'] || [])].slice(0, 3);
       }
 
       const resultado = {
-        esPremio: nivelGanador.id !== 'MOJARRO',
+        esPremio: true,
         nivel: nivelGanador,
         simbolosGanadores: simbolosGanadores,
         matriz: m
@@ -263,22 +368,24 @@
     }
 
     /**
-     * Evalúa el resultado final del evento Hit Bar según los aciertos logrados
+     * Evalúa el resultado del evento Hit Bar según los aciertos logrados
      */
     evaluarHitBarResultado(aciertos) {
       const niveles = this.config.NIVELES_PREMIO;
-      let nivelGanador = niveles.find(n => n.id === 'MOJARRO');
+      let nivelGanador = niveles.find(n => n.id === 'DESC_500_ANY');
 
       if (aciertos >= 5) {
-        nivelGanador = niveles.find(n => n.id === 'JACKPOT');
+        nivelGanador = niveles.find(n => n.id === 'PROMO_2X1_16OZ'); // Jackpot
       } else if (aciertos === 4) {
-        nivelGanador = niveles.find(n => n.id === 'NIVEL_11');
+        nivelGanador = niveles.find(n => n.id === 'PROMO_2X16_22K') || niveles.find(n => n.id === 'PROMO_1X16_11K'); // Épico
       } else if (aciertos === 3) {
-        nivelGanador = niveles.find(n => n.id === 'NIVEL_10');
+        nivelGanador = niveles.find(n => n.id === 'PROMO_COMBO_16_9') || niveles.find(n => n.id === 'PROMO_JERINGA_FREE'); // Raro
       } else if (aciertos === 2) {
-        nivelGanador = niveles.find(n => n.id === 'NIVEL_8');
+        nivelGanador = niveles.find(n => n.id === 'PROMO_1X16_13K') || niveles.find(n => n.id === 'PROMO_2X9_14K'); // Poco Común
       } else if (aciertos === 1) {
-        nivelGanador = niveles.find(n => n.id === 'NIVEL_5');
+        nivelGanador = niveles.find(n => n.id === 'DESC_1500_16OZ') || niveles.find(n => n.id === 'DESC_1000_9OZ'); // Común
+      } else {
+        nivelGanador = niveles.find(n => n.id === 'DESC_500_ANY'); // Consolación
       }
 
       const celdas = [];
@@ -287,7 +394,7 @@
       }
 
       const res = {
-        esPremio: nivelGanador.id !== 'MOJARRO',
+        esPremio: true,
         nivel: nivelGanador,
         simbolosGanadores: celdas,
         aciertos: aciertos,
