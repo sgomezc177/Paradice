@@ -156,6 +156,11 @@
       this.audioEl.volume = 0.5;
       this.currentTrackIndex = -1;
       this.currentTrackName = '';
+      this.currentTrack = null;
+      this.currentGenre = 'todos';
+      this.allTracks = [];
+      this.genres = [];
+      this.catalog = null;
       this.musicMuted = false;
       this.sfxMuted = false;
       this.isWinPlaying = false;
@@ -164,8 +169,14 @@
       this.spinInterval = null;
       this.onTrackEnded = null;
 
-      // Cargar preferencias guardadas
+      // Inicializar catálogo y preferencias
+      this.initCatalog();
       this.loadPreferences();
+
+      // Si el catálogo se carga después de este script, sincronizarlo
+      if (typeof window !== 'undefined') {
+        window.addEventListener('DOMContentLoaded', () => this.initCatalog());
+      }
 
       // Transición automática al finalizar la pista
       this.audioEl.addEventListener('ended', () => {
@@ -181,15 +192,137 @@
 
       // Desbloqueo de autoplay en la primera interacción
       this.setupInteractionUnlock();
+
+      // Vinculación automática con controles en el DOM (selectores de género, botones prev, etc.)
+      this.bindGlobalUI();
+    }
+
+    /**
+     * Inicializa o sincroniza el catálogo desde window.PARADICE_MUSIC_CATALOG
+     * o genera el fallback interno de 116 canciones
+     */
+    initCatalog() {
+      const cat = (typeof window !== 'undefined' && (window.PARADICE_MUSIC_CATALOG || window.MusicCatalog)) || null;
+      if (cat && Array.isArray(cat.tracks) && cat.tracks.length > 0) {
+        this.catalog = cat;
+        this.genres = cat.genres || [];
+        this.allTracks = cat.tracks;
+      } else if (!this.allTracks || this.allTracks.length === 0) {
+        // Fallback predeterminado con las 116 canciones originales
+        this.allTracks = PLAYLIST_MUSIC.map((fn, idx) => {
+          const isEuro = idx < 100;
+          const clean = this.cleanTitle(fn);
+          let artist = 'Paradice Music';
+          let title = clean;
+          const parts = clean.split(' - ');
+          if (parts.length > 1) {
+            artist = parts[0].trim();
+            title = parts.slice(1).join(' - ').trim();
+          }
+          return {
+            id: `track-${String(idx + 1).padStart(3, '0')}`,
+            filename: fn,
+            path: 'music/' + fn,
+            title: title,
+            artist: artist,
+            genre: isEuro ? 'eurodance' : 'reggaeton',
+            album: isEuro ? 'Eurodance 90s Hits' : 'Urbano Clásico'
+          };
+        });
+
+        this.genres = [
+          { id: 'todos', name: 'Todos los Géneros', icon: '✨', count: this.allTracks.length },
+          { id: 'eurodance', name: 'Eurodance 90s', icon: '🪩', count: 100 },
+          { id: 'reggaeton', name: 'Reggaetón Clásico', icon: '🔥', count: 16 }
+        ];
+      }
+    }
+
+    /**
+     * Vincula automáticamente los controles de audio en el DOM actual
+     */
+    bindGlobalUI() {
+      if (typeof document === 'undefined') return;
+
+      const initUI = () => {
+        // 1. Selector de género
+        document.querySelectorAll('#music-genre-select, .music-genre-select').forEach(sel => {
+          if (sel._paradiceBound) return;
+          sel._paradiceBound = true;
+
+          const renderOptions = () => {
+            const genres = this.getGenres();
+            const cur = this.getCurrentGenre();
+            if (genres && genres.length) {
+              sel.innerHTML = '';
+              genres.forEach(g => {
+                const opt = document.createElement('option');
+                opt.value = g.id;
+                opt.textContent = `${g.icon || '🎵'} ${g.name} (${g.count || 0})`;
+                if (g.id === cur) opt.selected = true;
+                sel.appendChild(opt);
+              });
+            }
+          };
+
+          renderOptions();
+          sel.addEventListener('change', (e) => {
+            this.setGenre(e.target.value);
+          });
+
+          window.addEventListener('audiogenrechange', renderOptions);
+        });
+
+        // 2. Botón de pista anterior
+        document.querySelectorAll('#btn-music-prev, .btn-music-prev').forEach(btn => {
+          if (btn._paradiceBound) return;
+          btn._paradiceBound = true;
+          btn.addEventListener('click', () => {
+            this.prevTrack();
+          });
+        });
+
+        // 3. Sincronización continua con displays e iconos
+        const syncElements = () => {
+          const isMuted = this.isMusicMuted();
+          document.querySelectorAll('#music-icon, .music-icon').forEach(el => {
+            el.textContent = isMuted ? '🔇' : '🎵';
+          });
+          document.querySelectorAll('#music-track-display, .music-track-display').forEach(el => {
+            const info = this.getCurrentTrackInfo();
+            const genreObj = this.getCurrentGenreObject();
+            const icon = genreObj?.icon || '🎵';
+            const artist = info.artist && info.artist !== 'Paradice Music' ? `${info.artist} - ` : '';
+            el.textContent = `${icon} ${artist}${info.title || this.getTrackTitle()}`;
+            el.title = `${info.title} (${genreObj?.name || 'Paradice'})`;
+          });
+          document.querySelectorAll('#music-genre-select, .music-genre-select').forEach(sel => {
+            if (sel.value !== this.currentGenre) sel.value = this.currentGenre;
+          });
+        };
+
+        window.addEventListener('audiotrackchange', syncElements);
+        syncElements();
+      };
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initUI);
+      } else {
+        initUI();
+      }
     }
 
     loadPreferences() {
       try {
+        const savedGenre = localStorage.getItem('paradice_audio_genre');
+        if (savedGenre) this.currentGenre = savedGenre;
+
         if (window.StorageService) {
           const cfg = window.StorageService.getAudioConfig();
           this.musicMuted = !!cfg.musicMuted;
           this.sfxMuted = !!cfg.sfxMuted;
           if (cfg.volume !== undefined) this.audioEl.volume = cfg.volume;
+          if (cfg.genre) this.currentGenre = cfg.genre;
         }
       } catch (e) {
         // Fallback predeterminado
@@ -198,11 +331,13 @@
 
     savePreferences() {
       try {
+        localStorage.setItem('paradice_audio_genre', this.currentGenre);
         if (window.StorageService) {
           window.StorageService.saveAudioConfig({
             musicMuted: this.musicMuted,
             sfxMuted: this.sfxMuted,
-            volume: this.audioEl.volume
+            volume: this.audioEl.volume,
+            genre: this.currentGenre
           });
         }
       } catch (e) {}
@@ -215,7 +350,7 @@
         this.initWebAudio();
 
         if (!this.musicMuted) {
-          if (this.audioEl.src && this.currentTrackIndex >= 0) {
+          if (this.audioEl.src && this.currentTrack) {
             this.audioEl.play().catch(() => {});
           } else if (!this.audioEl.src || this.audioEl.paused) {
             this.playRandomTrack();
@@ -250,14 +385,92 @@
     cleanTitle(filename) {
       if (!filename) return 'Paradice Music';
       return filename
-        .replace(/^\d+\s*/, '') // Remueve números al inicio (001, 042, etc.)
-        .replace(/\.mp3$/i, '')  // Remueve extensión .mp3
-        .replace(/^-\s*/, '')    // Remueve guiones huérfanos
+        .replace(/^\d{1,4}\s*[-_.]*\s*/, '') // Remueve números al inicio (001, 042, etc.)
+        .replace(/\.mp3$/i, '')               // Remueve extensión .mp3
+        .replace(/^[-_]\s*/, '')              // Remueve guiones huérfanos
         .trim();
     }
 
     getTrackTitle() {
+      if (this.currentTrack && this.currentTrack.title) {
+        return this.currentTrack.title;
+      }
       return this.cleanTitle(this.currentTrackName);
+    }
+
+    getTrackArtist() {
+      if (this.currentTrack && this.currentTrack.artist) {
+        return this.currentTrack.artist;
+      }
+      return 'Paradice Music';
+    }
+
+    getCurrentTrackInfo() {
+      if (this.currentTrack) {
+        return this.currentTrack;
+      }
+      const pl = this.getPlaylist();
+      return pl[0] || {
+        id: 'track-default',
+        filename: this.currentTrackName,
+        path: 'music/' + this.currentTrackName,
+        title: this.getTrackTitle(),
+        artist: this.getTrackArtist(),
+        genre: this.currentGenre,
+        album: ''
+      };
+    }
+
+    getGenres() {
+      if (!this.genres || !this.genres.length) this.initCatalog();
+      return this.genres;
+    }
+
+    getCurrentGenre() {
+      return this.currentGenre;
+    }
+
+    getCurrentGenreObject() {
+      const gList = this.getGenres();
+      return gList.find(g => g.id === this.currentGenre) || gList[0] || { id: 'todos', name: 'Todos los Géneros', icon: '✨' };
+    }
+
+    setGenre(genreId) {
+      const available = this.getGenres();
+      const found = available.some(g => g.id === genreId);
+      const target = found ? genreId : 'todos';
+
+      if (this.currentGenre !== target) {
+        this.currentGenre = target;
+        this.savePreferences();
+
+        // Notificar cambio de género
+        const genreEvent = new CustomEvent('audiogenrechange', {
+          detail: {
+            genre: this.currentGenre,
+            genreObj: this.getCurrentGenreObject()
+          }
+        });
+        window.dispatchEvent(genreEvent);
+
+        // Si la música está activa, reproducir una pista del nuevo género
+        if (!this.musicMuted) {
+          this.playRandomTrack();
+        } else {
+          this.notifyTrackChange();
+        }
+      }
+      return this.currentGenre;
+    }
+
+    getPlaylist(genreId) {
+      if (!this.allTracks || !this.allTracks.length) this.initCatalog();
+      const targetGenre = genreId || this.currentGenre;
+      if (!targetGenre || targetGenre === 'todos') {
+        return this.allTracks;
+      }
+      const filtered = this.allTracks.filter(t => t.genre === targetGenre);
+      return filtered.length > 0 ? filtered : this.allTracks;
     }
 
     init() {
@@ -273,26 +486,45 @@
     }
 
     notifyTrackChange() {
+      const info = this.getCurrentTrackInfo();
+      const genreObj = this.getCurrentGenreObject();
+
       const event = new CustomEvent('audiotrackchange', {
         detail: {
           track: this.currentTrackName,
-          title: this.getTrackTitle(),
+          title: info.title || this.getTrackTitle(),
+          artist: info.artist || this.getTrackArtist(),
+          genre: this.currentGenre,
+          genreName: genreObj ? genreObj.name : 'Todos los Géneros',
+          genreIcon: genreObj ? genreObj.icon : '✨',
+          album: info.album || '',
+          path: info.path || ('music/' + this.currentTrackName),
           muted: this.musicMuted,
-          isWin: this.isWinPlaying
+          isWin: this.isWinPlaying,
+          volume: this.audioEl.volume
         }
       });
       window.dispatchEvent(event);
     }
 
-    playTrackByIndex(idx, startTime = 0) {
-      if (idx < 0 || idx >= PLAYLIST_MUSIC.length) idx = 0;
-      this.currentTrackIndex = idx;
-      this.currentTrackName = PLAYLIST_MUSIC[idx];
+    /**
+     * Reproduce un objeto track { id, path, filename, title, artist, genre, album }
+     */
+    playTrack(trackObj, startTime = 0) {
+      if (!trackObj) return;
+      this.currentTrack = trackObj;
+      this.currentTrackName = trackObj.filename;
       this.isWinPlaying = false;
 
-      const targetPath = 'music/' + encodeURIComponent(this.currentTrackName);
-      const currentSrc = this.audioEl.src ? decodeURIComponent(this.audioEl.src).split('/').pop() : '';
-      const isSameFile = currentSrc === this.currentTrackName;
+      // Buscar índice en PLAYLIST_MUSIC o en allTracks
+      this.currentTrackIndex = this.allTracks.findIndex(t => t.id === trackObj.id || t.filename === trackObj.filename);
+
+      // Codificar ruta para URLs respetando carpetas
+      const pathSegments = (trackObj.path || ('music/' + trackObj.filename)).split('/');
+      const targetPath = pathSegments.map(seg => encodeURIComponent(seg)).join('/');
+
+      const currentSrc = this.audioEl.src ? decodeURIComponent(this.audioEl.src) : '';
+      const isSameFile = currentSrc.endsWith(trackObj.filename) || currentSrc.endsWith(trackObj.path);
 
       if (!isSameFile) {
         this.audioEl.src = targetPath;
@@ -307,9 +539,7 @@
             } else {
               this.audioEl.currentTime = startTime;
             }
-          } catch (e) {
-            // Ignorar si el navegador aún no permite seek
-          }
+          } catch (e) {}
         }
       };
 
@@ -325,22 +555,32 @@
           playPromise.then(() => {
             applySeek();
           }).catch(e => {
-            console.log('Interacción previa requerida para reproducir audio:', e);
+            // Requiere interacción previa del usuario
           });
         }
       } else {
         applySeek();
       }
+
       this.notifyTrackChange();
     }
 
+    playTrackByIndex(idx, startTime = 0) {
+      const playlist = this.getPlaylist();
+      if (idx < 0 || idx >= playlist.length) idx = 0;
+      const track = playlist[idx] || this.allTracks[0];
+      this.playTrack(track, startTime);
+    }
+
     syncTrack(idx, currentTime = 0) {
-      if (idx < 0 || idx >= PLAYLIST_MUSIC.length) return;
-      const sameTrack = this.currentTrackIndex === idx;
+      const playlist = this.getPlaylist();
+      if (idx < 0 || idx >= playlist.length) return;
+      const targetTrack = playlist[idx];
+      const sameTrack = this.currentTrack && (this.currentTrack.id === targetTrack.id || this.currentTrack.filename === targetTrack.filename);
       const isPaused = !this.audioEl.src || this.audioEl.paused;
 
       if (!sameTrack || isPaused) {
-        this.playTrackByIndex(idx, currentTime);
+        this.playTrack(targetTrack, currentTime);
       } else if (currentTime > 0 && Number.isFinite(currentTime)) {
         const drift = Math.abs(this.audioEl.currentTime - currentTime);
         if (drift > 2.0) {
@@ -352,25 +592,48 @@
     }
 
     playRandomTrack() {
-      let nextIndex;
-      do {
-        nextIndex = Math.floor(Math.random() * PLAYLIST_MUSIC.length);
-      } while (nextIndex === this.currentTrackIndex && PLAYLIST_MUSIC.length > 1);
+      const playlist = this.getPlaylist();
+      if (!playlist || !playlist.length) return;
 
-      this.playTrackByIndex(nextIndex);
+      let nextTrack;
+      if (playlist.length === 1) {
+        nextTrack = playlist[0];
+      } else {
+        do {
+          const r = Math.floor(Math.random() * playlist.length);
+          nextTrack = playlist[r];
+        } while (this.currentTrack && nextTrack.id === this.currentTrack.id && playlist.length > 1);
+      }
+
+      this.playTrack(nextTrack);
     }
 
     nextTrack() {
-      let nextIndex = (this.currentTrackIndex + 1) % PLAYLIST_MUSIC.length;
-      this.playTrackByIndex(nextIndex);
+      const playlist = this.getPlaylist();
+      if (!playlist || !playlist.length) return;
+
+      const currentId = this.currentTrack ? this.currentTrack.id : null;
+      let currentIndex = playlist.findIndex(t => t.id === currentId || t.filename === this.currentTrackName);
+      if (currentIndex === -1) currentIndex = 0;
+
+      let nextIndex = (currentIndex + 1) % playlist.length;
+      this.playTrack(playlist[nextIndex]);
+
       if (this.musicMuted) {
-        this.toggleMusic(); // Si estaba silenciada y presiona next, activar
+        this.toggleMusic();
       }
     }
 
     prevTrack() {
-      let prevIndex = (this.currentTrackIndex - 1 + PLAYLIST_MUSIC.length) % PLAYLIST_MUSIC.length;
-      this.playTrackByIndex(prevIndex);
+      const playlist = this.getPlaylist();
+      if (!playlist || !playlist.length) return;
+
+      const currentId = this.currentTrack ? this.currentTrack.id : null;
+      let currentIndex = playlist.findIndex(t => t.id === currentId || t.filename === this.currentTrackName);
+      if (currentIndex === -1) currentIndex = 0;
+
+      let prevIndex = (currentIndex - 1 + playlist.length) % playlist.length;
+      this.playTrack(playlist[prevIndex]);
     }
 
     playWinSong() {
@@ -411,6 +674,23 @@
 
     isMusicMuted() { return this.musicMuted; }
     isSfxMuted() { return this.sfxMuted; }
+
+    setVolume(val) {
+      const v = Math.max(0, Math.min(1, parseFloat(val)));
+      if (!Number.isNaN(v)) {
+        this.audioEl.volume = v;
+        if (v > 0 && this.musicMuted) {
+          this.musicMuted = false;
+        }
+        this.savePreferences();
+        this.notifyTrackChange();
+      }
+      return this.audioEl.volume;
+    }
+
+    getVolume() {
+      return this.audioEl.volume;
+    }
 
     /* =========================================================================
      * SÍNTESIS DE EFECTOS DE SONIDO ARCADE (WEB AUDIO API)

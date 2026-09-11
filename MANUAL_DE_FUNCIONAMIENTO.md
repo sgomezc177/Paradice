@@ -55,7 +55,7 @@
 
 ## 1. Visión General del Ecosistema Paradice
 
-**Paradice — El Paraíso del Hielo & el Buen Ritmo** es una plataforma web integral orientada al entretenimiento, fidelización comercial y ventas presenciales y virtuales de granizados artesanales con licor prémium (Whisky, Vodka, Tequila, Ginebra y Coñac) y bolsas de 6 litros para parches universitarios (Universidad Nacional, UD Tecnológica, UD Macarena) y eventos.
+**Paradice — El Paraíso del Hielo & el Buen Ritmo** es una plataforma web integral orientada al entretenimiento, fidelización comercial y ventas presenciales y virtuales de granizados frozen exclusivos con licor prémium (Whisky, Vodka, Tequila, Ginebra y Coñac) y bolsas de 6 litros para parches universitarios (Universidad Nacional, UD Tecnológica, UD Macarena) y eventos.
 
 ### Objetivos Principales de la Plataforma:
 1. **Atracción y Gamificación:** Atraer a los clientes en puntos de venta mediante **6 minijuegos interactivos** inspirados en arcades y casinos retro de los años 90 y 2000.
@@ -202,7 +202,7 @@ La página de inicio (`index.html`) actúa como vitrina de marca, carta interact
 +-------------------------------------------------------------------------+
 |                               HERO                                      |
 |            EL PARAÍSO DEL HIELO & EL BUEN RITMO                         |
-|      Granizados Artesanales con Licor & Bolsa de 6 Litros               |
+|      Granizados Frozen con Licor & Bolsa de 6 Litros                     |
 |      [🍹 Ver Carta de Sabores]      [🎰 Entrar al Arcade]               |
 +-------------------------------------------------------------------------+
 |                   SEDES UNIVERSITARIAS DESTACADAS                       |
@@ -231,7 +231,7 @@ La página de inicio (`index.html`) actúa como vitrina de marca, carta interact
 ### 4.2. Hero Section & Propuesta de Valor
 - Titular de alto impacto visual con degradado cian-rosa-dorado y resplandor neón.
 - Destaca los dos productos estrella de la marca:
-  1. **Granizados artesanales individuales cargados con licor prémium** (Whisky, Vodka, Tequila, Ginebra y Coñac).
+  1. **Granizados frozen individuales cargados con licor prémium** (Whisky, Vodka, Tequila, Ginebra y Coñac).
   2. **Bolsas de 6 Litros**, pensadas para previas universitarias, remates y fiestas.
 - Métricas rápidas: 40+ Cócteles, Bolsa 6 Litros, Cobertura en Sedes y Arcade Interactivo en vivo.
 
@@ -278,7 +278,7 @@ El algoritmo de selección calcula la tirada mediante pesos ponderados independi
 | `SYM_NARANJA` | Naranja | 🍊✨ | Fruta Base | 26 | 19.0% |
 | `SYM_COPA_AZUL` | Granizado Azul | 🍧🍒 | Bebida Estándar | 20 | 14.6% |
 | `SYM_COPA_VERDE` | Granizado Menta | 🍹🍈 | Bebida Estándar | 18 | 13.1% |
-| `SYM_SHOT` | Shot de Licor | 🥃🧊 | Alcohol | 14 | 10.2% |
+| `SYM_SHOT` | Shot de Licor | 🥃🧊 | Licor Prémium | 14 | 10.2% |
 | `SYM_COCTEL_ROJO` | Frozen Berries | 🍸🍓 | Especial | 10 | 7.3% |
 | `SYM_VODKA` | Vodka Frozen | 🍷🍇 | Prémium | 8 | 5.8% |
 | `SYM_CORAZON` | Vida Extra | 💖❤️ | Bonus Especial | 7 | 5.1% |
@@ -296,7 +296,7 @@ Al detenerse el último rodillo, el evaluador cuenta las coincidencias en toda l
 | **10** | `NIVEL_10` | 5 Granizados (Azul / Verde) | **-$1.000 COP de Descuento** | Resaltado dorado + Campanas |
 | **9** | `NIVEL_9` | 5 Frutas (Limón / Naranja) | **-$900 COP de Descuento** | Resaltado naranja + Campanas |
 | **8** | `NIVEL_8` | 4 Granizados Estándar | **-$600 COP de Descuento** | Escalón iluminado + Tintineo |
-| **Bonus** | `BONUS_ALCOHOL` | 3+ Cocteleras 🫗 | **Jeringa de Alcohol Gratis** | Pulso neón fucsia + Alerta especial |
+| **Bonus** | `BONUS_JERINGA` | 3+ Cocteleras 🫗 | **Jeringa Shot Gratis** | Pulso neón fucsia + Alerta especial |
 | **7** | `NIVEL_7` | 4 Frutas (Limón / Naranja) | **-$800 COP de Descuento** | Escalón rojo + Sonido descuento |
 | **+1 Vida** | `BONUS_VIDA` | 3+ Corazones 💖 | **+1 Vida Extra (Recuperación)** | Destello rosado + Sonido de vida |
 | **5** | `NIVEL_5` | 3 Granizados Estándar | **-$600 COP de Descuento** | Resaltado amarillo |

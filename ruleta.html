@@ -104,13 +104,16 @@
               <span id="sound-icon">🔊</span> <span class="text-[11px] font-bold">SFX</span>
             </button>
           </div>
-          <!-- Música -->
+          <!-- Música con Selector de Géneros y Navegación -->
           <div class="pt-2 border-t border-slate-800/60 space-y-2">
             <div class="flex items-center justify-between">
-              <span class="text-xs text-purple-300 font-semibold flex items-center gap-1.5">
-                Música Eurodance
-              </span>
+              <label for="music-genre-select" class="text-xs text-purple-300 font-semibold flex items-center gap-1.5">
+                <span>🎵</span> Música Paradice
+              </label>
               <div class="flex items-center space-x-1.5">
+                <button id="btn-music-prev" class="w-7 h-7 rounded-full bg-slate-900 border border-slate-700 hover:border-purple-400 text-xs text-slate-300 flex items-center justify-center transition shadow-sm cursor-pointer" title="Canción Anterior">
+                  <span>⏮️</span>
+                </button>
                 <button id="btn-music-toggle" class="w-7 h-7 rounded-full bg-purple-950/80 border border-purple-500/50 hover:border-purple-300 text-xs text-purple-200 flex items-center justify-center transition shadow-sm cursor-pointer" title="Reproducir / Pausar">
                   <span id="music-icon">🎵</span>
                 </button>
@@ -118,6 +121,15 @@
                   <span>⏭️</span>
                 </button>
               </div>
+            </div>
+            <!-- Selector de Género -->
+            <div class="relative w-full">
+              <select id="music-genre-select" class="w-full appearance-none bg-slate-900/90 hover:bg-slate-800 border border-purple-500/40 hover:border-purple-300 text-purple-200 text-[10px] font-bold py-1 px-2.5 pr-6 rounded-lg cursor-pointer focus:outline-none transition">
+                <option value="todos">✨ Todos los Géneros</option>
+                <option value="eurodance">🪩 Eurodance 90s</option>
+                <option value="reggaeton">🔥 Reggaetón Clásico</option>
+              </select>
+              <span class="absolute right-2 top-1.5 text-[8px] text-purple-400 pointer-events-none">▼</span>
             </div>
             <div class="w-full">
               <span id="music-track-display" class="block w-full text-center truncate text-[9px] text-pink-300 font-mono px-2 py-1 rounded bg-purple-950/60 border border-purple-500/30">🎵 Paradice Music</span>
@@ -518,6 +530,7 @@
   <script src="js/libs/qrcode.min.js"></script>
   <script src="js/core/StorageService.js"></script>
   <script src="js/core/SecurityService.js"></script>
+  <script src="js/config/music-catalog.js"></script>
   <script src="js/core/AudioManager.js"></script>
   <script src="js/core/TimerService.js"></script>
 

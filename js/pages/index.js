@@ -277,37 +277,213 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 2. Control del Reproductor Universal de Música Paradice
+  // 2. Control del Reproductor Universal de Música Paradice (Menú Desplegable)
   if (window.ParadiceAudio) {
     window.ParadiceAudio.init();
+
+    const menuToggle = document.getElementById('btn-music-menu-toggle');
+    const menuDropdown = document.getElementById('music-player-dropdown');
+    const menuClose = document.getElementById('btn-close-music-menu');
+    const menuChevron = document.getElementById('music-menu-chevron');
+    const playerContainer = document.getElementById('music-player-container');
+
+    const genreSelect = document.getElementById('music-genre-select');
+    const headerGenre = document.getElementById('header-music-genre');
+    const genreBadgeIndicator = document.getElementById('genre-badge-indicator');
+    const headerTrackCountBadge = document.getElementById('header-track-count-badge');
+
+    const musicPrev = document.getElementById('btn-music-prev');
     const musicToggle = document.getElementById('btn-music-toggle');
     const musicNext = document.getElementById('btn-music-next');
+    const musicRandom = document.getElementById('btn-music-random');
+
     const musicIcon = document.getElementById('music-icon');
+    const musicPopupIcon = document.getElementById('music-popup-icon');
     const trackDisplay = document.getElementById('music-track-display');
 
-    const updateAudioUI = () => {
-      if (musicIcon) {
-        musicIcon.textContent = window.ParadiceAudio.isMusicMuted ? '🔇' : '🎵';
-      }
-      if (trackDisplay) {
-        trackDisplay.textContent = window.ParadiceAudio.getCurrentTrackName() || 'Paradice Beats';
+    const cardIcon = document.getElementById('music-card-icon');
+    const cardTitle = document.getElementById('music-card-title');
+    const cardArtist = document.getElementById('music-card-artist');
+    const cardGenre = document.getElementById('music-card-genre');
+
+    const volumeSlider = document.getElementById('music-volume-slider');
+    const volumePercent = document.getElementById('music-volume-percent');
+
+    // Apertura y cierre del menú
+    const toggleMenu = () => {
+      if (!menuDropdown) return;
+      const isHidden = menuDropdown.classList.contains('hidden');
+      if (isHidden) {
+        menuDropdown.classList.remove('hidden');
+        if (menuChevron) menuChevron.textContent = '▲';
+      } else {
+        menuDropdown.classList.add('hidden');
+        if (menuChevron) menuChevron.textContent = '▼';
       }
     };
 
+    const closeMenu = () => {
+      if (menuDropdown && !menuDropdown.classList.contains('hidden')) {
+        menuDropdown.classList.add('hidden');
+        if (menuChevron) menuChevron.textContent = '▼';
+      }
+    };
+
+    if (menuToggle) {
+      menuToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleMenu();
+      });
+    }
+
+    if (menuClose) {
+      menuClose.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeMenu();
+      });
+    }
+
+    // Cerrar al hacer clic fuera
+    document.addEventListener('click', (e) => {
+      if (playerContainer && !playerContainer.contains(e.target)) {
+        closeMenu();
+      }
+    });
+
+    // Cerrar con Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeMenu();
+    });
+
+    // Poblar selector de géneros
+    const populateGenres = () => {
+      if (!genreSelect) return;
+      const genres = window.ParadiceAudio.getGenres();
+      const current = window.ParadiceAudio.getCurrentGenre();
+      if (genres && genres.length) {
+        genreSelect.innerHTML = '';
+        genres.forEach(g => {
+          const opt = document.createElement('option');
+          opt.value = g.id;
+          opt.textContent = `${g.icon || '🎵'} ${g.name} (${g.count || 0})`;
+          if (g.id === current) opt.selected = true;
+          genreSelect.appendChild(opt);
+        });
+      }
+    };
+
+    const updateAudioUI = () => {
+      const isMuted = window.ParadiceAudio.isMusicMuted();
+      const info = window.ParadiceAudio.getCurrentTrackInfo();
+      const genreObj = window.ParadiceAudio.getCurrentGenreObject();
+      const vol = typeof window.ParadiceAudio.getVolume === 'function' ? window.ParadiceAudio.getVolume() : 0.5;
+
+      // Iconos Play/Pause
+      if (musicIcon) {
+        musicIcon.textContent = isMuted ? '🔇' : (genreObj?.icon || '🎵');
+      }
+      if (musicPopupIcon) {
+        musicPopupIcon.textContent = isMuted ? '▶️' : '⏸️';
+      }
+
+      // Display resumido en Header
+      if (headerGenre) {
+        headerGenre.textContent = `${genreObj?.icon || '✨'} ${genreObj?.name || 'Todos'}`;
+      }
+      if (trackDisplay) {
+        const artist = info.artist && info.artist !== 'Paradice Music' ? `${info.artist} - ` : '';
+        trackDisplay.textContent = `${artist}${info.title || window.ParadiceAudio.getCurrentTrackName() || 'Paradice'}`;
+        trackDisplay.title = `${info.title} (${genreObj?.name || 'Paradice'})`;
+      }
+
+      // Tarjeta dentro del Popover
+      if (cardTitle) cardTitle.textContent = info.title || 'Paradice Beats';
+      if (cardArtist) cardArtist.textContent = info.artist || 'Paradice Music';
+      if (cardGenre) cardGenre.textContent = genreObj?.name || 'Todos los Géneros';
+      if (cardIcon) cardIcon.textContent = genreObj?.icon || '🎶';
+
+      if (genreBadgeIndicator) {
+        genreBadgeIndicator.textContent = `${genreObj?.icon || '✨'} ${genreObj?.name || 'Todos'}`;
+      }
+      if (headerTrackCountBadge) {
+        const pl = window.ParadiceAudio.getPlaylist();
+        headerTrackCountBadge.textContent = `${pl.length} pistas en lista`;
+      }
+
+      if (genreSelect) {
+        genreSelect.value = window.ParadiceAudio.getCurrentGenre();
+      }
+
+      // Slider de volumen
+      if (volumeSlider && !volumeSlider._isDragging) {
+        volumeSlider.value = isMuted ? 0 : vol;
+      }
+      if (volumePercent) {
+        volumePercent.textContent = isMuted ? '0%' : `${Math.round(vol * 100)}%`;
+      }
+    };
+
+    // Eventos de controles del Popover
+    if (genreSelect) {
+      genreSelect.addEventListener('change', (e) => {
+        window.ParadiceAudio.setGenre(e.target.value);
+        updateAudioUI();
+      });
+    }
+
+    if (musicPrev) {
+      musicPrev.addEventListener('click', (e) => {
+        e.stopPropagation();
+        window.ParadiceAudio.prevTrack();
+        updateAudioUI();
+      });
+    }
+
     if (musicToggle) {
-      musicToggle.addEventListener('click', () => {
+      musicToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
         window.ParadiceAudio.toggleMusic();
         updateAudioUI();
       });
     }
+
     if (musicNext) {
-      musicNext.addEventListener('click', () => {
+      musicNext.addEventListener('click', (e) => {
+        e.stopPropagation();
         window.ParadiceAudio.playNextTrack();
         updateAudioUI();
       });
     }
 
+    if (musicRandom) {
+      musicRandom.addEventListener('click', (e) => {
+        e.stopPropagation();
+        window.ParadiceAudio.playRandomTrack();
+        updateAudioUI();
+      });
+    }
+
+    if (volumeSlider) {
+      volumeSlider.addEventListener('mousedown', () => { volumeSlider._isDragging = true; });
+      volumeSlider.addEventListener('mouseup', () => { volumeSlider._isDragging = false; });
+      volumeSlider.addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value);
+        if (typeof window.ParadiceAudio.setVolume === 'function') {
+          window.ParadiceAudio.setVolume(val);
+        }
+        if (volumePercent) volumePercent.textContent = `${Math.round(val * 100)}%`;
+      });
+    }
+
+    // Escuchar eventos globales del reproductor
+    window.addEventListener('audiotrackchange', updateAudioUI);
+    window.addEventListener('audiogenrechange', () => {
+      populateGenres();
+      updateAudioUI();
+    });
+
+    populateGenres();
     updateAudioUI();
-    setInterval(updateAudioUI, 1200);
+    setInterval(updateAudioUI, 2000);
   }
 });
