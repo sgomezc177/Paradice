@@ -1,0 +1,36 @@
+@charset "UTF-8";
+
+/* ==========================================================
+   PARADICE - ESTILOS OFICIALES RULETA SHOT
+   ========================================================== */
+
+body {
+  background-color: #040814;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(255, 0, 127, 0.15) 0%, transparent 60%),
+    radial-gradient(circle at 100% 100%, rgba(0, 240, 255, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 0% 100%, rgba(250, 204, 21, 0.12) 0%, transparent 50%);
+  background-attachment: fixed;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Aguja Indicadora (Flapper) */
+.wheel-pointer {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 16px solid transparent;
+  border-right: 16px solid transparent;
+  border-top: 32px solid #facc15;
+  filter: drop-shadow(0 0 10px #facc15);
+  z-index: 30;
+  transition: transform 0.05s ease;
+}
+
+.wheel-pointer.tick {
+  transform: translateX(-50%) rotate(-15deg);
+}

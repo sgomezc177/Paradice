@@ -33,17 +33,15 @@
       this.view.actualizarVidasUI(this.model.vidas);
       this.actualizarAudioUI();
 
-      // Escuchar cambios de pista de música
-      window.addEventListener('audiotrackchange', (e) => {
-        if (this.view.dom.musicTrackDisplay) {
-          this.view.dom.musicTrackDisplay.textContent = `🎵 ${e.detail.title}`;
-        }
-      });
-
-
-      // Si ya hay vidas consumidas (< 3 y > 0), iniciar temporizador
-      if (this.model.vidas < 3 && this.model.vidas > 0) {
-        this.iniciarTemporizadorTiro();
+      // JUEGO DESHABILITADO HASTA NUEVA ORDEN
+      if (this.view.dom.btnSpinWheel) {
+        this.view.dom.btnSpinWheel.disabled = true;
+      }
+      if (this.view.dom.btnSpinCenter) {
+        this.view.dom.btnSpinCenter.disabled = true;
+      }
+      if (this.view.dom.btnRespin) {
+        this.view.dom.btnRespin.disabled = true;
       }
     }
 
@@ -182,56 +180,8 @@
     }
 
     iniciarGiro() {
-      if (this.isSpinning) return;
-
-      this.detenerTemporizadorTiro();
-
-      if (this.model.vidas <= 0) {
-        this.model.reiniciarVidas();
-        this.view.actualizarVidasUI(this.model.vidas);
-      }
-
-      this.isSpinning = true;
-      this.model.consumirVida();
-      this.view.actualizarVidasUI(this.model.vidas);
-      this.view.actualizarEstadoGiro(true);
-
-      // Física de giro: vueltas completas aleatorias + desplazamiento angular
-      const extraVueltas = 5 + Math.floor(Math.random() * 4); // 5 a 8 vueltas completas
-      const randRadianes = Math.random() * 2 * Math.PI;
-      const anguloTotal = extraVueltas * 2 * Math.PI + randRadianes;
-      const duracionMs = 4500 + Math.random() * 1000;
-
-      const startAngle = this.currentAngle;
-      const startTime = performance.now();
-
-      // Función de aceleración suave con frenado natural (Cubic Ease Out)
-      const easeOutCubic = (t) => (--t) * t * t + 1;
-
-      const step = (currentTime) => {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duracionMs, 1);
-        const easedProgress = easeOutCubic(progress);
-
-        this.currentAngle = startAngle + anguloTotal * easedProgress;
-        this.view.dibujarRuleta(this.currentAngle, this.model.getSectores());
-
-        // Detección de paso de alfileres para ticks de sonido y movimiento de aguja
-        const { index: currentSectorIdx } = this.model.getSectorAtAngle(this.currentAngle);
-        if (currentSectorIdx !== this.lastSectorIdx) {
-          this.lastSectorIdx = currentSectorIdx;
-          this.audio.playRouletteTick();
-          this.view.moverAguja();
-        }
-
-        if (progress < 1) {
-          requestAnimationFrame(step);
-        } else {
-          this.finalizarGiro();
-        }
-      };
-
-      requestAnimationFrame(step);
+      // JUEGO DESHABILITADO HASTA NUEVA ORDEN: Nadie puede jugarlo
+      return;
     }
 
     finalizarGiro() {

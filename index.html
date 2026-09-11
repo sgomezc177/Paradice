@@ -1,105 +1,20 @@
 <!DOCTYPE html>
 <html lang="es" class="h-full scroll-smooth bg-slate-950 text-slate-100">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>PARADICE | Coctelería Frozen de Autor & Gaming Arcade</title>
-  <meta name="description" content="Vive la experiencia frozen definitiva con combinaciones exclusivas de coctelería de autor, granizados prémium y juegos interactivos para compartir en grande.">
+  <meta name="description"
+    content="Vive la experiencia frozen definitiva con combinaciones exclusivas de coctelería de autor, granizados prémium y juegos interactivos para compartir en grande.">
 
-  <!-- Tailwind CSS CDN -->
+  <!-- Tailwind CSS CDN & Configuración Centralizada -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            paradice: {
-              bg: '#040814',
-              surface: '#090f20',
-              cyan: '#00f0ff',
-              pink: '#ff007f',
-              purple: '#9333ea',
-              gold: '#facc15',
-              green: '#22c55e'
-            }
-          },
-          animation: {
-            'glow-pulse': 'glowPulse 3s ease-in-out infinite',
-            'float': 'float 4s ease-in-out infinite',
-            'spin-slow': 'spin 12s linear infinite'
-          },
-          keyframes: {
-            glowPulse: {
-              '0%, 100%': { opacity: 0.4, transform: 'scale(1)' },
-              '50%': { opacity: 0.8, transform: 'scale(1.05)' }
-            },
-            float: {
-              '0%, 100%': { transform: 'translateY(0px)' },
-              '50%': { transform: 'translateY(-10px)' }
-            }
-          }
-        }
-      }
-    };
-  </script>
+  <script src="js/config/tailwind.config.js"></script>
 
-  <style>
-    body {
-      background-color: #040814;
-      background-image: 
-        radial-gradient(ellipse at 50% -5%, rgba(0, 240, 255, 0.15) 0%, transparent 50%),
-        radial-gradient(ellipse at 90% 40%, rgba(255, 0, 127, 0.12) 0%, transparent 45%),
-        radial-gradient(ellipse at 10% 70%, rgba(147, 51, 234, 0.12) 0%, transparent 45%),
-        radial-gradient(ellipse at 50% 100%, rgba(250, 204, 21, 0.08) 0%, transparent 50%),
-        linear-gradient(180deg, #040814 0%, #060b19 100%);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-
-    .neon-glass {
-      background: linear-gradient(180deg, rgba(15, 23, 42, 0.80) 0%, rgba(6, 11, 25, 0.90) 100%);
-      backdrop-filter: blur(14px);
-      box-shadow: 0 0 35px rgba(0, 240, 255, 0.12), inset 0 0 1px rgba(255, 255, 255, 0.2);
-    }
-
-    .neon-border-cyan {
-      border: 1px solid rgba(0, 240, 255, 0.45);
-      box-shadow: 0 0 20px rgba(0, 240, 255, 0.25);
-    }
-
-    .neon-border-pink {
-      border: 1px solid rgba(255, 0, 127, 0.45);
-      box-shadow: 0 0 20px rgba(255, 0, 127, 0.25);
-    }
-
-    .neon-border-gold {
-      border: 1px solid rgba(250, 204, 21, 0.45);
-      box-shadow: 0 0 20px rgba(250, 204, 21, 0.25);
-    }
-
-    .text-glow-cyan {
-      text-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
-    }
-
-    .text-glow-pink {
-      text-shadow: 0 0 12px rgba(255, 0, 127, 0.6);
-    }
-
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar {
-      width: 7px;
-      height: 7px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #040814;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #1e293b;
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #00f0ff;
-    }
-  </style>
+  <!-- Estilos Oficiales Paradice -->
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/index.css">
 </head>
 
 <body class="min-h-full flex flex-col antialiased selection:bg-cyan-500 selection:text-black">
@@ -107,22 +22,26 @@
   <!-- ===================================================================== -->
   <!-- 1. NAVBAR GLASSMORPHIC FIJA -->
   <!-- ===================================================================== -->
-  <header class="fixed top-0 left-0 w-full z-40 bg-slate-950/80 backdrop-blur-md border-b border-cyan-500/20 px-4 sm:px-8 py-3.5 transition-all">
+  <header
+    class="fixed top-0 left-0 w-full z-40 bg-slate-950/80 backdrop-blur-md border-b border-cyan-500/20 px-4 sm:px-8 py-3.5 transition-all">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
-      
+
       <!-- Brand Logo -->
       <a href="#hero" class="flex items-center space-x-3 group">
-        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-500 via-pink-500 to-amber-300 p-0.5 shadow-[0_0_20px_rgba(0,240,255,0.4)] group-hover:scale-105 transition transform">
+        <div
+          class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-500 via-pink-500 to-amber-300 p-0.5 shadow-[0_0_20px_rgba(0,240,255,0.4)] group-hover:scale-105 transition transform">
           <div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center text-xl">
             🍧
           </div>
         </div>
         <div class="flex flex-col">
           <div class="flex items-center space-x-1.5">
-            <span class="text-xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-400 to-amber-300">
+            <span
+              class="text-xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-400 to-amber-300">
               PARADICE
             </span>
-            <span class="px-1.5 py-0.2 rounded text-[8px] font-black uppercase tracking-wider bg-cyan-950 text-cyan-300 border border-cyan-500/40">
+            <span
+              class="px-1.5 py-0.2 rounded text-[8px] font-black uppercase tracking-wider bg-cyan-950 text-cyan-300 border border-cyan-500/40">
               FROZEN
             </span>
           </div>
@@ -133,7 +52,8 @@
       <!-- Navigation Links (Desktop) -->
       <nav class="hidden md:flex items-center space-x-6 text-xs font-semibold uppercase tracking-wider">
         <a href="#hero" class="text-slate-300 hover:text-cyan-400 transition">Inicio</a>
-        <button id="open-menu-btn-nav" class="text-slate-300 hover:text-pink-400 transition flex items-center gap-1.5 cursor-pointer">
+        <button id="open-menu-btn-nav"
+          class="text-slate-300 hover:text-pink-400 transition flex items-center gap-1.5 cursor-pointer">
           <span>🍹</span> <span>Carta de Sabores</span>
         </button>
         <a href="#facultades" class="text-slate-300 hover:text-cyan-400 transition flex items-center gap-1">
@@ -148,19 +68,26 @@
       <!-- Controles de Audio Paradice & CTA -->
       <div class="flex items-center space-x-2 sm:space-x-3">
         <div class="flex items-center space-x-1.5">
-          <button id="btn-music-toggle" class="p-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-cyan-500/40 text-cyan-300 hover:text-white flex items-center justify-center text-xs shadow-[0_0_10px_rgba(0,240,255,0.2)] transition active:scale-95 cursor-pointer" title="Activar/Silenciar Música">
+          <button id="btn-music-toggle"
+            class="p-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-cyan-500/40 text-cyan-300 hover:text-white flex items-center justify-center text-xs shadow-[0_0_10px_rgba(0,240,255,0.2)] transition active:scale-95 cursor-pointer"
+            title="Activar/Silenciar Música">
             <span id="music-icon">🎵</span>
           </button>
-          <button id="btn-music-next" class="p-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-pink-500/40 text-pink-300 hover:text-white flex items-center justify-center text-xs shadow-[0_0_10px_rgba(255,0,127,0.2)] transition active:scale-95 cursor-pointer" title="Siguiente Canción">
+          <button id="btn-music-next"
+            class="p-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-pink-500/40 text-pink-300 hover:text-white flex items-center justify-center text-xs shadow-[0_0_10px_rgba(255,0,127,0.2)] transition active:scale-95 cursor-pointer"
+            title="Siguiente Canción">
             <span>⏭️</span>
           </button>
-          <div class="hidden xl:flex items-center px-2.5 py-1 rounded-xl bg-slate-900/90 border border-slate-800 text-[10px] text-slate-300 max-w-[150px] truncate" title="Pista musical actual">
+          <div
+            class="hidden xl:flex items-center px-2.5 py-1 rounded-xl bg-slate-900/90 border border-slate-800 text-[10px] text-slate-300 max-w-[150px] truncate"
+            title="Pista musical actual">
             <span class="mr-1 text-cyan-400">🎶</span>
             <span id="music-track-display" class="truncate">Música</span>
           </div>
         </div>
 
-        <button id="btn-login-signup" class="px-3.5 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-pink-500 via-purple-600 to-cyan-500 hover:from-pink-400 hover:to-cyan-400 text-white font-black text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(255,0,127,0.5)] active:scale-95 transition flex items-center gap-1.5 cursor-pointer">
+        <button id="btn-login-signup"
+          class="px-3.5 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-pink-500 via-purple-600 to-cyan-500 hover:from-pink-400 hover:to-cyan-400 text-white font-black text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(255,0,127,0.5)] active:scale-95 transition flex items-center gap-1.5 cursor-pointer">
           <span>👤</span> <span>Log In / Sign Up</span>
         </button>
       </div>
@@ -173,41 +100,64 @@
     <!-- ===================================================================== -->
     <!-- 2. HERO SECTION DE ALTO IMPACTO -->
     <!-- ===================================================================== -->
-    <section id="hero" class="relative overflow-hidden py-16 sm:py-24 px-4 sm:px-8 flex flex-col items-center justify-center text-center min-h-[85vh]">
-      
+    <section id="hero"
+      class="relative overflow-hidden py-16 sm:py-24 px-4 sm:px-8 flex flex-col items-center justify-center text-center min-h-[85vh]">
+
       <!-- Neon Ambient Glowing Orbs -->
-      <div class="absolute top-10 left-1/4 w-96 h-96 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none animate-glow-pulse"></div>
-      <div class="absolute bottom-10 right-1/4 w-96 h-96 bg-pink-500/15 rounded-full blur-3xl pointer-events-none animate-glow-pulse" style="animation-delay: 1.5s;"></div>
+      <div
+        class="absolute top-10 left-1/4 w-96 h-96 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none animate-glow-pulse">
+      </div>
+      <div
+        class="absolute bottom-10 right-1/4 w-96 h-96 bg-pink-500/15 rounded-full blur-3xl pointer-events-none animate-glow-pulse"
+        style="animation-delay: 1.5s;"></div>
 
       <div class="relative z-10 max-w-4xl mx-auto flex flex-col items-center space-y-6">
-        
-        <!-- Badge Superior -->
-        <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-cyan-500/40 text-xs font-bold text-cyan-300 shadow-[0_0_15px_rgba(0,240,255,0.25)]">
-          <span class="animate-pulse">⚡</span>
-          <span>Coctelería Frozen Prémium • Copas de Autor & Bolsas de 6 Litros</span>
+
+        <!-- Badge Superior & Callout a BattleRound -->
+        <div class="flex flex-col sm:flex-row items-center gap-2">
+          <div
+            class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-cyan-500/40 text-xs font-bold text-cyan-300 shadow-[0_0_15px_rgba(0,240,255,0.25)]">
+            <span class="animate-pulse">⚡</span>
+            <span>Coctelería Frozen Prémium • Copas de Autor & Bolsas de 6 Litros</span>
+          </div>
+          <a href="battleround.html"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-950/80 border border-rose-500/60 text-xs font-black text-rose-300 shadow-[0_0_15px_rgba(244,63,94,0.35)] hover:scale-105 transition-all">
+            <span class="animate-bounce">💥</span>
+            <span>¡JUEGA BATTLEROUND EN VIVO! →</span>
+          </a>
         </div>
 
         <!-- Titular Principal -->
         <h1 class="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight leading-none uppercase">
           EL PARAÍSO DEL <br class="hidden sm:block">
-          <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-400 to-amber-300 text-glow-cyan">
+          <span
+            class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-400 to-amber-300 text-glow-cyan">
             HIELO & EL BUEN RITMO
           </span>
         </h1>
 
         <!-- Subtítulo -->
         <p class="text-sm sm:text-base md:text-lg text-slate-300 max-w-2xl leading-relaxed">
-          Elevamos tus celebraciones y momentos de desconexión con creaciones frozen exclusivas preparadas con las mejores marcas de <strong class="text-white">Whisky, Vodka, Tequila, Ginebra y Coñac</strong>. Máxima frescura, balance de sabor y una experiencia interactiva para ganar beneficios en vivo.
+          Elevamos tus celebraciones y momentos de desconexión con creaciones frozen exclusivas preparadas con las
+          mejores marcas de <strong class="text-white">Whisky, Vodka, Tequila, Ginebra y Coñac</strong>. Máxima
+          frescura, balance de sabor y una experiencia interactiva para ganar beneficios en vivo.
         </p>
 
         <!-- Botones de Acción Hero -->
         <div class="pt-4 flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
-          <button id="open-menu-btn-hero" class="w-full sm:w-auto px-7 py-4 rounded-2xl bg-gradient-to-r from-pink-600 via-fuchsia-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(255,0,127,0.45)] hover:scale-105 active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer">
+          <a href="battleround.html"
+            class="w-full sm:w-auto px-7 py-4 rounded-2xl bg-gradient-to-r from-rose-600 via-pink-600 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(244,63,94,0.5)] hover:scale-105 active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer animate-pulse">
+            <span>💥</span> <span>Jugar BattleRound (P2P)</span>
+          </a>
+
+          <button id="open-menu-btn-hero"
+            class="w-full sm:w-auto px-7 py-4 rounded-2xl bg-gradient-to-r from-pink-600 via-fuchsia-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(255,0,127,0.45)] hover:scale-105 active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer">
             <span>🍹</span> <span>Explorar Carta de Sabores</span>
           </button>
 
-          <a href="#arcade" class="w-full sm:w-auto px-7 py-4 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-cyan-400/50 hover:border-cyan-300 text-cyan-300 hover:text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-[0_0_20px_rgba(0,240,255,0.2)] hover:scale-105 active:scale-95 transition flex items-center justify-center gap-2">
-            <span>🎮</span> <span>Descubrir Zona Arcade</span>
+          <a href="#arcade"
+            class="w-full sm:w-auto px-7 py-4 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-cyan-400/50 hover:border-cyan-300 text-cyan-300 hover:text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-[0_0_20px_rgba(0,240,255,0.2)] hover:scale-105 active:scale-95 transition flex items-center justify-center gap-2">
+            <span>🎮</span> <span>Zona Arcade</span>
           </a>
         </div>
 
@@ -240,30 +190,37 @@
     <!-- ===================================================================== -->
     <section id="facultades" class="py-16 px-4 sm:px-8 border-t border-slate-900 bg-slate-950/60 relative">
       <div class="max-w-7xl mx-auto flex flex-col space-y-12">
-        
+
         <div class="text-center space-y-3 max-w-2xl mx-auto">
-          <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-cyan-950 text-cyan-300 border border-cyan-500/40">
+          <span
+            class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-cyan-950 text-cyan-300 border border-cyan-500/40">
             PRESENCIA & COMUNIDAD
           </span>
           <h2 class="text-3xl sm:text-4xl font-black uppercase tracking-tight text-white">
             PUNTOS DE ENTREGA & FACULTADES
           </h2>
           <p class="text-xs sm:text-sm text-slate-400">
-            Acompañamos tus mejores momentos universitarios con entregas coordinadas en las principales sedes, pensadas para compartir entre clases, entregas de proyectos y cierres de semestre.
+            Acompañamos tus mejores momentos universitarios con entregas coordinadas en las principales sedes, pensadas
+            para compartir entre clases, entregas de proyectos y cierres de semestre.
           </p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          
+
           <!-- Sede 1: Universidad Nacional -->
-          <div class="neon-glass border border-cyan-500/30 rounded-3xl p-6 sm:p-7 flex flex-col justify-between relative overflow-hidden group hover:border-cyan-400 transition shadow-lg">
-            <div class="absolute -top-10 -right-10 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl group-hover:bg-cyan-500/20 transition"></div>
+          <div
+            class="neon-glass border border-cyan-500/30 rounded-3xl p-6 sm:p-7 flex flex-col justify-between relative overflow-hidden group hover:border-cyan-400 transition shadow-lg">
+            <div
+              class="absolute -top-10 -right-10 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl group-hover:bg-cyan-500/20 transition">
+            </div>
             <div class="space-y-4">
               <div class="flex items-center justify-between">
-                <span class="w-12 h-12 rounded-2xl bg-cyan-950/80 border border-cyan-500/40 flex items-center justify-center text-2xl">
+                <span
+                  class="w-12 h-12 rounded-2xl bg-cyan-950/80 border border-cyan-500/40 flex items-center justify-center text-2xl">
                   🏛️
                 </span>
-                <span class="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-cyan-950 text-cyan-300 border border-cyan-500/40">
+                <span
+                  class="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-cyan-950 text-cyan-300 border border-cyan-500/40">
                   Activo
                 </span>
               </div>
@@ -272,7 +229,8 @@
                 <p class="text-xs font-semibold text-cyan-300">UNAL • Ciudad Universitaria / Calle 26</p>
               </div>
               <p class="text-xs text-slate-300 leading-relaxed">
-                Entregas directas y coordinadas en accesos peatonales clave (Calle 26, Calle 45 y Carrera 30). La opción predilecta para desconectar en campus, celebrar el fin de parciales y compartir en grupo.
+                Entregas directas y coordinadas en accesos peatonales clave (Calle 26, Calle 45 y Carrera 30). La opción
+                predilecta para desconectar en campus, celebrar el fin de parciales y compartir en grupo.
               </p>
               <ul class="text-[11px] text-slate-400 space-y-1.5 pt-2 border-t border-slate-800">
                 <li class="flex items-center gap-1.5">✓ <span>Coordinación ágil en accesos estratégicos</span></li>
@@ -281,21 +239,27 @@
               </ul>
             </div>
             <div class="pt-6">
-              <button class="open-menu-direct-btn w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-cyan-950 border border-cyan-500/40 text-cyan-300 hover:text-white font-bold text-xs uppercase flex items-center justify-center gap-2 transition cursor-pointer">
+              <button
+                class="open-menu-direct-btn w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-cyan-950 border border-cyan-500/40 text-cyan-300 hover:text-white font-bold text-xs uppercase flex items-center justify-center gap-2 transition cursor-pointer">
                 <span>🍹</span> <span>Ver Carta para UNAL</span>
               </button>
             </div>
           </div>
 
           <!-- Sede 2: UD Tecnológica -->
-          <div class="neon-glass border border-pink-500/30 rounded-3xl p-6 sm:p-7 flex flex-col justify-between relative overflow-hidden group hover:border-pink-400 transition shadow-lg">
-            <div class="absolute -top-10 -right-10 w-32 h-32 bg-pink-500/10 rounded-full blur-2xl group-hover:bg-pink-500/20 transition"></div>
+          <div
+            class="neon-glass border border-pink-500/30 rounded-3xl p-6 sm:p-7 flex flex-col justify-between relative overflow-hidden group hover:border-pink-400 transition shadow-lg">
+            <div
+              class="absolute -top-10 -right-10 w-32 h-32 bg-pink-500/10 rounded-full blur-2xl group-hover:bg-pink-500/20 transition">
+            </div>
             <div class="space-y-4">
               <div class="flex items-center justify-between">
-                <span class="w-12 h-12 rounded-2xl bg-pink-950/80 border border-pink-500/40 flex items-center justify-center text-2xl">
+                <span
+                  class="w-12 h-12 rounded-2xl bg-pink-950/80 border border-pink-500/40 flex items-center justify-center text-2xl">
                   ⚙️
                 </span>
-                <span class="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-pink-950 text-pink-300 border border-pink-500/40">
+                <span
+                  class="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-pink-950 text-pink-300 border border-pink-500/40">
                   Activo
                 </span>
               </div>
@@ -304,30 +268,38 @@
                 <p class="text-xs font-semibold text-pink-300">Universidad Distrital • Sede Tecnológica</p>
               </div>
               <p class="text-xs text-slate-300 leading-relaxed">
-                El punto de encuentro para la comunidad técnica y de ingeniería. Bebidas frozen con mezclas intensas y refrescantes para celebrar entregas, sustentaciones y cierres de ciclo académico.
+                El punto de encuentro para la comunidad técnica y de ingeniería. Bebidas frozen con mezclas intensas y
+                refrescantes para celebrar entregas, sustentaciones y cierres de ciclo académico.
               </p>
               <ul class="text-[11px] text-slate-400 space-y-1.5 pt-2 border-t border-slate-800">
                 <li class="flex items-center gap-1.5">✓ <span>Punto de encuentro para grupos y celebraciones</span></li>
                 <li class="flex items-center gap-1.5">✓ <span>Sabores frozen con notas cítricas e intensas</span></li>
-                <li class="flex items-center gap-1.5">✓ <span>Beneficios y promociones especiales entre semana</span></li>
+                <li class="flex items-center gap-1.5">✓ <span>Beneficios y promociones especiales entre semana</span>
+                </li>
               </ul>
             </div>
             <div class="pt-6">
-              <button class="open-menu-direct-btn w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-pink-950 border border-pink-500/40 text-pink-300 hover:text-white font-bold text-xs uppercase flex items-center justify-center gap-2 transition cursor-pointer">
+              <button
+                class="open-menu-direct-btn w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-pink-950 border border-pink-500/40 text-pink-300 hover:text-white font-bold text-xs uppercase flex items-center justify-center gap-2 transition cursor-pointer">
                 <span>🍹</span> <span>Ver Carta para UD Tecnológica</span>
               </button>
             </div>
           </div>
 
           <!-- Sede 3: UD Macarena -->
-          <div class="neon-glass border border-amber-500/30 rounded-3xl p-6 sm:p-7 flex flex-col justify-between relative overflow-hidden group hover:border-amber-400 transition shadow-lg">
-            <div class="absolute -top-10 -right-10 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl group-hover:bg-amber-500/20 transition"></div>
+          <div
+            class="neon-glass border border-amber-500/30 rounded-3xl p-6 sm:p-7 flex flex-col justify-between relative overflow-hidden group hover:border-amber-400 transition shadow-lg">
+            <div
+              class="absolute -top-10 -right-10 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl group-hover:bg-amber-500/20 transition">
+            </div>
             <div class="space-y-4">
               <div class="flex items-center justify-between">
-                <span class="w-12 h-12 rounded-2xl bg-amber-950/80 border border-amber-500/40 flex items-center justify-center text-2xl">
+                <span
+                  class="w-12 h-12 rounded-2xl bg-amber-950/80 border border-amber-500/40 flex items-center justify-center text-2xl">
                   🎨
                 </span>
-                <span class="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-amber-950 text-amber-300 border border-amber-500/40">
+                <span
+                  class="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-amber-950 text-amber-300 border border-amber-500/40">
                   Activo
                 </span>
               </div>
@@ -336,16 +308,20 @@
                 <p class="text-xs font-semibold text-amber-300">Universidad Distrital • Sede La Macarena (A y B)</p>
               </div>
               <p class="text-xs text-slate-300 leading-relaxed">
-                En el corazón artístico y universitario de los cerros. Una cuidada selección de recetas frutales y frozen con perfiles exóticos, diseñadas para tardear y disfrutar en un ambiente relajado.
+                En el corazón artístico y universitario de los cerros. Una cuidada selección de recetas frutales y
+                frozen con perfiles exóticos, diseñadas para tardear y disfrutar en un ambiente relajado.
               </p>
               <ul class="text-[11px] text-slate-400 space-y-1.5 pt-2 border-t border-slate-800">
                 <li class="flex items-center gap-1.5">✓ <span>Coordinación de entregas en Sedes A y B</span></li>
-                <li class="flex items-center gap-1.5">✓ <span>Sabores destacados: Climax, Nebulosa y Starblue</span></li>
-                <li class="flex items-center gap-1.5">✓ <span>Disponibilidad para semanas universitarias y muestras culturales</span></li>
+                <li class="flex items-center gap-1.5">✓ <span>Sabores destacados: Climax, Nebulosa y Starblue</span>
+                </li>
+                <li class="flex items-center gap-1.5">✓ <span>Disponibilidad para semanas universitarias y muestras
+                    culturales</span></li>
               </ul>
             </div>
             <div class="pt-6">
-              <button class="open-menu-direct-btn w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-amber-950 border border-amber-500/40 text-amber-300 hover:text-white font-bold text-xs uppercase flex items-center justify-center gap-2 transition cursor-pointer">
+              <button
+                class="open-menu-direct-btn w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-amber-950 border border-amber-500/40 text-amber-300 hover:text-white font-bold text-xs uppercase flex items-center justify-center gap-2 transition cursor-pointer">
                 <span>🍹</span> <span>Ver Carta para UD Macarena</span>
               </button>
             </div>
@@ -360,161 +336,259 @@
     <!-- 4. SECCIÓN: PARADICE ARCADE (ZONA DE JUEGOS) -->
     <!-- ===================================================================== -->
     <section id="arcade" class="py-16 px-4 sm:px-8 relative overflow-hidden border-t border-slate-900">
-      
+
       <!-- Fondo estelar/neón -->
-      <div class="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-900/50 to-slate-950 pointer-events-none"></div>
+      <div class="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-900/50 to-slate-950 pointer-events-none">
+      </div>
 
       <div class="max-w-7xl mx-auto relative z-10 flex flex-col space-y-12">
-        
+
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div class="space-y-2">
-            <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-amber-950 text-amber-300 border border-amber-500/40">
+            <span
+              class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-amber-950 text-amber-300 border border-amber-500/40">
               GAMING ZONE & BENEFICIOS
             </span>
             <h2 class="text-3xl sm:text-4xl font-black uppercase tracking-tight text-white">
               PARADICE ARCADE
             </h2>
             <p class="text-xs sm:text-sm text-slate-400 max-w-xl">
-              Disfruta de nuestro ecosistema interactivo de minijuegos. Pon a prueba tus reflejos, reta a tus amigos y desbloquea beneficios exclusivos, promociones 2x1 y cortesías al instante.
+              Disfruta de nuestro ecosistema interactivo de minijuegos. Pon a prueba tus reflejos, reta a tus amigos y
+              desbloquea beneficios exclusivos, promociones 2x1 y cortesías al instante.
             </p>
           </div>
 
-          <a href="tragamonedas.html" class="self-start md:self-auto px-5 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-black text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(250,204,21,0.4)] transition flex items-center gap-2">
-            <span>🎰</span> <span>Probar Tragamonedas</span>
+          <a href="battleround.html"
+            class="self-start md:self-auto px-6 py-3.5 rounded-2xl bg-gradient-to-r from-rose-600 via-pink-600 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white font-black text-xs uppercase tracking-wider shadow-[0_0_25px_rgba(244,63,94,0.5)] transition flex items-center gap-2 animate-pulse hover:scale-105 active:scale-95 cursor-pointer">
+            <span>💥</span> <span>¡JUGAR BATTLEROUND (DESTACADO)!</span>
           </a>
         </div>
 
-        <!-- Grid de Juegos Arcade Paradice (5 Juegos Interactivos 100% Funcionales) -->
+        <!-- ================================================================= -->
+        <!-- BANNER SPOTLIGHT DESTACADO: BATTLEROUND PARADICE (MULTIJUGADOR)   -->
+        <!-- ================================================================= -->
+        <div
+          class="w-full rounded-3xl bg-gradient-to-r from-rose-950/90 via-slate-900/95 to-amber-950/80 border-2 border-rose-500 shadow-[0_0_40px_rgba(244,63,94,0.35)] p-6 sm:p-8 relative overflow-hidden backdrop-blur-md flex flex-col lg:flex-row items-center justify-between gap-6 group hover:border-rose-400 transition-all">
+          <!-- Brillos de fondo -->
+          <div class="absolute -right-12 -top-12 w-56 h-56 bg-rose-500/20 rounded-full blur-3xl pointer-events-none">
+          </div>
+          <div class="absolute -left-12 -bottom-12 w-56 h-56 bg-amber-500/15 rounded-full blur-3xl pointer-events-none">
+          </div>
+
+          <!-- Información Principal -->
+          <div class="flex-1 space-y-3 text-center lg:text-left z-10">
+            <div class="flex items-center justify-center lg:justify-start gap-2 flex-wrap">
+              <span
+                class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-rose-600 text-white shadow-[0_0_12px_rgba(244,63,94,0.7)] animate-pulse">
+                🔥 JUEGO ESTRELLA DESTACADO
+              </span>
+              <span
+                class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-slate-900 text-amber-300 border border-amber-500/40">
+                MULTIJUGADOR EN VIVO (P2P)
+              </span>
+              <span
+                class="px-3 py-1 rounded-full text-[10px] font-mono text-cyan-300 bg-slate-950 border border-cyan-500/40">
+                📱 QR DIRECTO DESDE EL CELULAR
+              </span>
+            </div>
+
+            <h3 class="text-2xl sm:text-3xl lg:text-4xl font-black text-white uppercase tracking-tight">
+              BATTLEROUND PARADICE 💥🍻
+            </h3>
+
+            <p class="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+              ¡La experiencia multijugador definitiva para parches universitarios! Sin registros ni descargas: crea tu
+              sala o escanea el código QR desde tu smartphone, compite en una matriz glacial 6x6, siembra minas
+              estratégicas y decide quién invita la siguiente ronda frozen.
+            </p>
+
+            <div class="flex items-center justify-center lg:justify-start gap-3 pt-2 text-xs text-slate-400 flex-wrap">
+              <span class="flex items-center gap-1"><span>👥</span> <strong>2 a 6 Jugadores</strong></span>
+              <span>•</span>
+              <span class="flex items-center gap-1"><span>⚡</span> <strong>Partidas en Tiempo Real</strong></span>
+              <span>•</span>
+              <span class="flex items-center gap-1"><span>🏆</span> <strong>Premios Frozen Reales</strong></span>
+            </div>
+          </div>
+
+          <!-- Botón de Entrada Inmediata -->
+          <div class="flex flex-col items-center lg:items-end justify-center z-10 flex-shrink-0 w-full lg:w-auto">
+            <a href="battleround.html"
+              class="w-full sm:w-auto px-8 py-5 rounded-2xl bg-gradient-to-r from-rose-600 via-pink-600 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white font-black text-sm sm:text-base uppercase tracking-wider shadow-[0_0_30px_rgba(244,63,94,0.6)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 cursor-pointer">
+              <span class="text-xl">💥</span>
+              <span>¡JUGAR BATTLEROUND AHORA!</span>
+              <span class="text-xl">➔</span>
+            </a>
+            <span class="text-[10px] text-slate-400 font-mono mt-2 text-center">
+              Compatible con Android, iOS y Navegadores Web
+            </span>
+          </div>
+        </div>
+
+        <!-- Grid de Juegos Arcade Paradice -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
           <!-- Juego 1: Tragamonedas Paradice (DISPONIBLE) -->
-          <div class="neon-glass border-2 border-cyan-400 rounded-3xl p-5 flex flex-col justify-between relative overflow-hidden shadow-[0_0_30px_rgba(0,240,255,0.25)] group hover:scale-[1.01] transition transform">
+          <div
+            class="neon-glass border-2 border-cyan-400 rounded-3xl p-5 flex flex-col justify-between relative overflow-hidden shadow-[0_0_30px_rgba(0,240,255,0.25)] group hover:scale-[1.01] transition transform">
             <div class="space-y-3">
-              <div class="w-full h-36 rounded-2xl bg-gradient-to-br from-cyan-950 via-slate-900 to-slate-950 border border-cyan-500/40 flex flex-col items-center justify-center p-3 relative overflow-hidden">
+              <div
+                class="w-full h-36 rounded-2xl bg-gradient-to-br from-cyan-950 via-slate-900 to-slate-950 border border-cyan-500/40 flex flex-col items-center justify-center p-3 relative overflow-hidden">
                 <span class="text-4xl animate-bounce">🎰</span>
                 <span class="text-[10px] font-mono text-cyan-300 mt-1 font-bold">5 RODILLOS • 3 VIDAS</span>
-                <div class="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-emerald-500 text-slate-950">
+                <div
+                  class="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-emerald-500 text-slate-950">
                   DISPONIBLE
                 </div>
               </div>
               <h3 class="text-lg font-black text-white uppercase tracking-tight">Tragamonedas Paradice</h3>
               <p class="text-xs text-slate-300 leading-relaxed">
-                Máquina de 5 rodillos con 3 vidas, minijuego Hit Bar a 5 casillas, promociones 2x1, combos especiales y sistema de cupones QR verificables en vivo.
+                Máquina de 5 rodillos con 3 vidas, minijuego Hit Bar a 5 casillas, promociones 2x1, combos especiales y
+                sistema de cupones QR verificables en vivo.
               </p>
             </div>
             <div class="pt-5">
-              <a href="tragamonedas.html" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg transition transform active:scale-95">
+              <a href="tragamonedas.html"
+                class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg transition transform active:scale-95">
                 <span>🔥</span> <span>JUGAR TRAGAMONEDAS</span>
               </a>
             </div>
           </div>
 
           <!-- Juego 2: Minas Paradice (DISPONIBLE) -->
-          <div class="neon-glass border-2 border-pink-500 rounded-3xl p-5 flex flex-col justify-between relative overflow-hidden shadow-[0_0_30px_rgba(255,0,127,0.25)] group hover:scale-[1.01] transition transform">
+          <div
+            class="neon-glass border-2 border-pink-500 rounded-3xl p-5 flex flex-col justify-between relative overflow-hidden shadow-[0_0_30px_rgba(255,0,127,0.25)] group hover:scale-[1.01] transition transform">
             <div class="space-y-3">
-              <div class="w-full h-36 rounded-2xl bg-gradient-to-br from-pink-950 via-slate-900 to-slate-950 border border-pink-500/40 flex flex-col items-center justify-center p-3 relative overflow-hidden">
+              <div
+                class="w-full h-36 rounded-2xl bg-gradient-to-br from-pink-950 via-slate-900 to-slate-950 border border-pink-500/40 flex flex-col items-center justify-center p-3 relative overflow-hidden">
                 <span class="text-4xl animate-pulse">🧊💥</span>
-                <span class="text-[10px] font-mono text-pink-300 mt-1 font-bold">5x5 TABLERO • 3 VIDAS • ICE CRUSH</span>
-                <div class="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-emerald-500 text-slate-950">
+                <span class="text-[10px] font-mono text-pink-300 mt-1 font-bold">5x5 TABLERO • 3 VIDAS • ICE
+                  CRUSH</span>
+                <div
+                  class="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-emerald-500 text-slate-950">
                   DISPONIBLE
                 </div>
               </div>
               <h3 class="text-lg font-black text-white uppercase tracking-tight">Minas Paradice</h3>
               <p class="text-xs text-slate-300 leading-relaxed">
-                Tablero táctico 5x5: descubre copas heladas, esquiva fracturas en el hielo y asegura premios 2x1 y descuentos acumulables antes del límite.
+                Tablero táctico 5x5: descubre copas heladas, esquiva fracturas en el hielo y asegura premios 2x1 y
+                descuentos acumulables antes del límite.
               </p>
             </div>
             <div class="pt-5">
-              <a href="minas.html" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-400 hover:to-rose-500 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,0,127,0.4)] transition transform active:scale-95">
+              <a href="minas.html"
+                class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-400 hover:to-rose-500 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,0,127,0.4)] transition transform active:scale-95">
                 <span>💣</span> <span>JUGAR MINAS PARADICE</span>
               </a>
             </div>
           </div>
 
           <!-- Juego 3: Hit Bar Rush 2.0 (DISPONIBLE) -->
-          <div class="neon-glass border-2 border-amber-400 rounded-3xl p-5 flex flex-col justify-between relative overflow-hidden shadow-[0_0_30px_rgba(250,204,21,0.25)] group hover:scale-[1.01] transition transform">
+          <div
+            class="neon-glass border-2 border-amber-400 rounded-3xl p-5 flex flex-col justify-between relative overflow-hidden shadow-[0_0_30px_rgba(250,204,21,0.25)] group hover:scale-[1.01] transition transform">
             <div class="space-y-3">
-              <div class="w-full h-36 rounded-2xl bg-gradient-to-br from-amber-950 via-slate-900 to-slate-950 border border-amber-500/40 flex flex-col items-center justify-center p-3 relative overflow-hidden">
+              <div
+                class="w-full h-36 rounded-2xl bg-gradient-to-br from-amber-950 via-slate-900 to-slate-950 border border-amber-500/40 flex flex-col items-center justify-center p-3 relative overflow-hidden">
                 <span class="text-4xl animate-bounce">⚡🎵</span>
-                <span class="text-[10px] font-mono text-amber-300 mt-1 font-bold">REFLEJO RÍTMICO • 128-160 BPM</span>
-                <div class="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-emerald-500 text-slate-950">
+                <span class="text-[10px] font-mono text-amber-300 mt-1 font-bold">REFLEJO RÍTMICO • ESCALERA 7
+                  NIVELES</span>
+                <div
+                  class="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-emerald-500 text-slate-950">
                   DISPONIBLE
                 </div>
               </div>
               <h3 class="text-lg font-black text-white uppercase tracking-tight">Hit Bar Rush 2.0</h3>
               <p class="text-xs text-slate-300 leading-relaxed">
-                Desafío vertical de reflejos y timing a ritmo electrónico. Detén la barra en la zona láser central para elevar tu nivel de recompensa hasta el 2x1.
+                Desafío vertical de reflejos y timing a ritmo electrónico. Detén la barra en la zona láser central para
+                elevar tu nivel de recompensa hasta el 3x2.
               </p>
             </div>
             <div class="pt-5">
-              <a href="hitbar.html" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(250,204,21,0.4)] transition transform active:scale-95">
+              <a href="hitbar.html"
+                class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(250,204,21,0.4)] transition transform active:scale-95">
                 <span>⚡</span> <span>JUGAR HIT BAR RUSH</span>
               </a>
             </div>
           </div>
 
-          <!-- Juego 4: Dice Battle Paradice (DISPONIBLE) -->
-          <div class="neon-glass border-2 border-purple-500 rounded-3xl p-5 flex flex-col justify-between relative overflow-hidden shadow-[0_0_30px_rgba(147,51,234,0.25)] group hover:scale-[1.01] transition transform">
+          <!-- Juego 4: Dice Battle Paradice (EN MANTENIMIENTO) -->
+          <div
+            class="neon-glass border-2 border-slate-700/60 rounded-3xl p-5 flex flex-col justify-between relative overflow-hidden opacity-60 grayscale-[35%]">
             <div class="space-y-3">
-              <div class="w-full h-36 rounded-2xl bg-gradient-to-br from-purple-950 via-slate-900 to-slate-950 border border-purple-500/40 flex flex-col items-center justify-center p-3 relative overflow-hidden">
-                <span class="text-4xl animate-pulse">🎲❄️</span>
-                <span class="text-[10px] font-mono text-purple-300 mt-1 font-bold">DADOS 3D • DUELOS DE PARCHE</span>
-                <div class="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-emerald-500 text-slate-950">
-                  DISPONIBLE
+              <div
+                class="w-full h-36 rounded-2xl bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 border border-slate-800 flex flex-col items-center justify-center p-3 relative overflow-hidden">
+                <span class="text-4xl filter grayscale">🎲❄️</span>
+                <span class="text-[10px] font-mono text-slate-500 mt-1 font-bold">DADOS 3D • DUELOS DE PARCHE</span>
+                <div
+                  class="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-rose-950 text-rose-300 border border-rose-500/50">
+                  DESHABILITADO
                 </div>
               </div>
-              <h3 class="text-lg font-black text-white uppercase tracking-tight">Dice Battle Paradice</h3>
-              <p class="text-xs text-slate-300 leading-relaxed">
-                Lanzamiento de dados translúcidos con simulación física 3D y audio inmersivo. Obtén combinaciones ganadoras para desbloquear cortesías grupales.
+              <h3 class="text-lg font-black text-slate-400 uppercase tracking-tight">Dice Battle Paradice</h3>
+              <p class="text-xs text-slate-500 leading-relaxed">
+                Este juego se encuentra temporalmente fuera de servicio hasta nueva orden. Te invitamos a probar y jugar
+                BattleRound Paradice en vivo.
               </p>
             </div>
             <div class="pt-5">
-              <a href="dados.html" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-purple-600 via-fuchsia-500 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(147,51,234,0.4)] transition transform active:scale-95">
-                <span>🎲</span> <span>JUGAR DICE BATTLE</span>
-              </a>
+              <button disabled
+                class="w-full py-3 px-4 rounded-xl bg-slate-800/90 text-slate-500 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 border border-slate-700 cursor-not-allowed">
+                <span>🛑</span> <span>EN MANTENIMIENTO</span>
+              </button>
             </div>
           </div>
 
-          <!-- Juego 5: Ruleta Paradice Shot (DISPONIBLE) -->
-          <div class="neon-glass border-2 border-emerald-400 rounded-3xl p-5 flex flex-col justify-between relative overflow-hidden shadow-[0_0_30px_rgba(52,211,153,0.25)] group hover:scale-[1.01] transition transform">
+          <!-- Juego 5: Ruleta Paradice Shot (EN MANTENIMIENTO) -->
+          <div
+            class="neon-glass border-2 border-slate-700/60 rounded-3xl p-5 flex flex-col justify-between relative overflow-hidden opacity-60 grayscale-[35%]">
             <div class="space-y-3">
-              <div class="w-full h-36 rounded-2xl bg-gradient-to-br from-emerald-950 via-slate-900 to-slate-950 border border-emerald-500/40 flex flex-col items-center justify-center p-3 relative overflow-hidden">
-                <span class="text-4xl animate-bounce">🎡✨</span>
-                <span class="text-[10px] font-mono text-emerald-300 mt-1 font-bold">12 SECTORES • FÍSICA INERCIAL</span>
-                <div class="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-emerald-500 text-slate-950">
-                  DISPONIBLE
+              <div
+                class="w-full h-36 rounded-2xl bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 border border-slate-800 flex flex-col items-center justify-center p-3 relative overflow-hidden">
+                <span class="text-4xl filter grayscale">🎡✨</span>
+                <span class="text-[10px] font-mono text-slate-500 mt-1 font-bold">12 SECTORES • FÍSICA INERCIAL</span>
+                <div
+                  class="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-rose-950 text-rose-300 border border-rose-500/50">
+                  DESHABILITADO
                 </div>
               </div>
-              <h3 class="text-lg font-black text-white uppercase tracking-tight">Ruleta Paradice Shot</h3>
-              <p class="text-xs text-slate-300 leading-relaxed">
-                Ruleta de alta precisión con desaceleración inercial realista. 12 casillas cargadas con beneficios directos, promociones 2x1 y adiciones prémium.
+              <h3 class="text-lg font-black text-slate-400 uppercase tracking-tight">Ruleta Paradice Shot</h3>
+              <p class="text-xs text-slate-500 leading-relaxed">
+                Este juego se encuentra temporalmente fuera de servicio hasta nueva orden. Te invitamos a probar y jugar
+                BattleRound Paradice en vivo.
               </p>
             </div>
             <div class="pt-5">
-              <a href="ruleta.html" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(52,211,153,0.4)] transition transform active:scale-95">
-                <span>🎡</span> <span>JUGAR RULETA SHOT</span>
-              </a>
+              <button disabled
+                class="w-full py-3 px-4 rounded-xl bg-slate-800/90 text-slate-500 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 border border-slate-700 cursor-not-allowed">
+                <span>🛑</span> <span>EN MANTENIMIENTO</span>
+              </button>
             </div>
           </div>
 
-          <!-- Juego 6: BattleRound Paradice (MULTIJUGADOR EN VIVO) -->
-          <div class="neon-glass border-2 border-red-500 rounded-3xl p-5 flex flex-col justify-between relative overflow-hidden shadow-[0_0_30px_rgba(244,63,94,0.25)] group hover:scale-[1.01] transition transform">
+          <!-- Juego 6: BattleRound Paradice (MULTIJUGADOR EN VIVO - DESTACADO) -->
+          <div
+            class="neon-glass border-2 border-red-500 rounded-3xl p-5 flex flex-col justify-between relative overflow-hidden shadow-[0_0_35px_rgba(244,63,94,0.35)] group hover:scale-[1.02] transition transform ring-2 ring-rose-500/50">
             <div class="space-y-3">
-              <div class="w-full h-36 rounded-2xl bg-gradient-to-br from-rose-950 via-slate-900 to-slate-950 border border-red-500/40 flex flex-col items-center justify-center p-3 relative overflow-hidden">
+              <div
+                class="w-full h-36 rounded-2xl bg-gradient-to-br from-rose-950 via-slate-900 to-slate-950 border border-red-500/40 flex flex-col items-center justify-center p-3 relative overflow-hidden">
                 <span class="text-4xl animate-pulse">💥🍻</span>
-                <span class="text-[10px] font-mono text-rose-300 mt-1 font-bold">MULTIJUGADOR P2P • QR CELULARES • 6x6</span>
-                <div class="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-red-500 text-white animate-pulse">
-                  NUEVO
+                <span class="text-[10px] font-mono text-rose-300 mt-1 font-bold">MULTIJUGADOR P2P • QR CELULARES •
+                  6x6</span>
+                <div
+                  class="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-rose-500 text-white animate-pulse shadow-[0_0_10px_rgba(244,63,94,0.8)]">
+                  ★ DESTACADO
                 </div>
               </div>
               <h3 class="text-lg font-black text-white uppercase tracking-tight">BattleRound Paradice</h3>
               <p class="text-xs text-slate-300 leading-relaxed">
-                Duelo multijugador en tiempo real sin registros ni descargas. Conéctate con amigos escaneando un código QR, siembra minas estratégicas para conquistar puntos y decide quién invita la siguiente ronda frozen.
+                Duelo multijugador en tiempo real sin registros ni descargas. Conéctate con amigos escaneando un código
+                QR, siembra minas estratégicas para conquistar puntos y decide quién invita la siguiente ronda frozen.
               </p>
             </div>
             <div class="pt-5">
-              <a href="battleround.html" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-rose-600 via-pink-600 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(244,63,94,0.4)] transition transform active:scale-95">
-                <span>💥</span> <span>JUGAR BATTLEROUND (P2P)</span>
+              <a href="battleround.html"
+                class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-rose-600 via-pink-600 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(244,63,94,0.5)] transition transform active:scale-95">
+                <span>💥</span> <span>¡JUGAR BATTLEROUND AHORA!</span>
               </a>
             </div>
           </div>
@@ -529,24 +603,30 @@
     <!-- 5. BANNER CTA DE PEDIDO RÁPIDO -->
     <!-- ===================================================================== -->
     <section id="contacto" class="py-16 px-4 sm:px-8 border-t border-slate-900">
-      <div class="max-w-5xl mx-auto neon-glass border border-pink-500/40 rounded-3xl p-8 sm:p-12 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden shadow-[0_0_40px_rgba(255,0,127,0.2)]">
+      <div
+        class="max-w-5xl mx-auto neon-glass border border-pink-500/40 rounded-3xl p-8 sm:p-12 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden shadow-[0_0_40px_rgba(255,0,127,0.2)]">
         <div class="space-y-3 text-center md:text-left">
-          <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-pink-950 text-pink-300 border border-pink-500/40">
+          <span
+            class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-pink-950 text-pink-300 border border-pink-500/40">
             FORMATO PARA GRUPOS & CELEBRACIONES
           </span>
           <h2 class="text-3xl sm:text-4xl font-black text-white uppercase tracking-tight">
             BOLSA DE 6 LITROS PARADICE
           </h2>
           <p class="text-xs sm:text-sm text-slate-300 max-w-lg">
-            La solución frozen definitiva para eventos, reuniones privadas y encuentros universitarios. Diseñada para conservar la textura helada ideal y servir ágilmente a todos tus invitados con las combinaciones y recetas que tú elijas.
+            La solución frozen definitiva para eventos, reuniones privadas y encuentros universitarios. Diseñada para
+            conservar la textura helada ideal y servir ágilmente a todos tus invitados con las combinaciones y recetas
+            que tú elijas.
           </p>
         </div>
 
         <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
-          <button id="open-menu-btn-cta" class="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-gradient-to-r from-pink-600 via-fuchsia-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(255,0,127,0.4)] flex items-center justify-center gap-2 transition cursor-pointer">
+          <button id="open-menu-btn-cta"
+            class="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-gradient-to-r from-pink-600 via-fuchsia-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(255,0,127,0.4)] flex items-center justify-center gap-2 transition cursor-pointer">
             <span>🍹</span> <span>Explorar Sabores Disponibles</span>
           </button>
-          <a href="#arcade" class="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-cyan-400/50 hover:border-cyan-300 text-cyan-300 hover:text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-[0_0_20px_rgba(0,240,255,0.2)] flex items-center justify-center gap-2 transition">
+          <a href="#arcade"
+            class="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-cyan-400/50 hover:border-cyan-300 text-cyan-300 hover:text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-[0_0_20px_rgba(0,240,255,0.2)] flex items-center justify-center gap-2 transition">
             <span>🎮</span> <span>Ganar Descuentos en Arcade</span>
           </a>
         </div>
@@ -559,8 +639,9 @@
   <!-- 6. FOOTER CORPORATIVO -->
   <!-- ===================================================================== -->
   <footer class="border-t border-slate-900 bg-slate-950/90 py-10 px-4 sm:px-8 text-xs text-slate-400">
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
-      
+    <div
+      class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+
       <div class="flex items-center space-x-3">
         <span class="text-2xl">🍧</span>
         <div>
@@ -571,11 +652,13 @@
 
       <div class="flex flex-wrap items-center justify-center gap-6 text-slate-400 font-medium">
         <a href="#hero" class="hover:text-cyan-400 transition">Inicio</a>
-        <button id="open-menu-btn-footer" class="hover:text-pink-400 transition cursor-pointer">Carta de Sabores</button>
+        <button id="open-menu-btn-footer" class="hover:text-pink-400 transition cursor-pointer">Carta de
+          Sabores</button>
         <a href="#facultades" class="hover:text-cyan-400 transition">Sedes</a>
         <a href="#arcade" class="hover:text-amber-400 transition">Zona Arcade</a>
         <span class="text-slate-600">|</span>
-        <span class="text-[11px] text-amber-300/90 font-semibold">🔞 Venta y consumo exclusivo para mayores de edad</span>
+        <span class="text-[11px] text-amber-300/90 font-semibold">🔞 Venta y consumo exclusivo para mayores de
+          edad</span>
       </div>
 
       <div class="text-[11px] text-slate-500">
@@ -589,7 +672,8 @@
   <!-- 7. BOTÓN FLOTANTE: CARTA DE SABORES (INFERIOR DERECHO) -->
   <!-- ===================================================================== -->
   <aside class="fixed bottom-5 right-5 z-50 flex items-center space-x-3">
-    <button id="btn-floating-menu" class="group flex items-center space-x-2 px-4 py-3 rounded-full bg-gradient-to-r from-pink-600 via-fuchsia-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-black text-xs uppercase tracking-wider shadow-[0_0_30px_rgba(255,0,127,0.5)] hover:scale-105 active:scale-95 transition-all cursor-pointer">
+    <button id="btn-floating-menu"
+      class="group flex items-center space-x-2 px-4 py-3 rounded-full bg-gradient-to-r from-pink-600 via-fuchsia-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-black text-xs uppercase tracking-wider shadow-[0_0_30px_rgba(255,0,127,0.5)] hover:scale-105 active:scale-95 transition-all cursor-pointer">
       <span class="text-xl animate-pulse">🍹</span>
       <span class="hidden sm:inline">Carta de Sabores</span>
       <span class="sm:hidden">Sabores</span>
@@ -599,13 +683,16 @@
   <!-- ===================================================================== -->
   <!-- 8. MODAL POPOUT: CARTA DE SABORES CON LICOR (39 SABORES EXCLUSIVOS) -->
   <!-- ===================================================================== -->
-  <div id="flavors-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 hidden">
-    <div class="w-full max-w-4xl max-h-[90vh] bg-slate-900/95 border-2 border-pink-500/50 rounded-3xl shadow-[0_0_60px_rgba(255,0,127,0.3)] flex flex-col overflow-hidden animate-fadeIn">
-      
+  <div id="flavors-modal"
+    class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 hidden">
+    <div
+      class="w-full max-w-4xl max-h-[90vh] bg-slate-900/95 border-2 border-pink-500/50 rounded-3xl shadow-[0_0_60px_rgba(255,0,127,0.3)] flex flex-col overflow-hidden animate-fadeIn">
+
       <!-- Modal Header -->
       <div class="p-5 sm:p-6 border-b border-slate-800 flex items-center justify-between bg-slate-950/80">
         <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-pink-500 to-purple-600 flex items-center justify-center text-xl shadow-md">
+          <div
+            class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-pink-500 to-purple-600 flex items-center justify-center text-xl shadow-md">
             🍹
           </div>
           <div>
@@ -616,27 +703,36 @@
           </div>
         </div>
 
-        <button id="close-modal-btn" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center text-base transition cursor-pointer">
+        <button id="close-modal-btn"
+          class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center text-base transition cursor-pointer">
           ✕
         </button>
       </div>
 
       <!-- Modal Filter & Search Toolbar -->
-      <div class="p-4 sm:px-6 bg-slate-900 border-b border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
-        
+      <div
+        class="p-4 sm:px-6 bg-slate-900 border-b border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
+
         <!-- Search Input -->
         <div class="w-full sm:w-64 relative">
-          <input type="text" id="flavor-search-input" placeholder="Buscar sabor o licor..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-pink-500">
+          <input type="text" id="flavor-search-input" placeholder="Buscar sabor o licor..."
+            class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-pink-500">
         </div>
 
         <!-- Filter Pills by Liquor -->
         <div class="flex flex-wrap items-center gap-1.5 w-full sm:w-auto text-[11px]">
-          <button data-filter="TODOS" class="flavor-filter-btn active px-3 py-1.5 rounded-xl font-bold bg-pink-600 text-white transition">Todos</button>
-          <button data-filter="WHISKY" class="flavor-filter-btn px-3 py-1.5 rounded-xl font-medium bg-slate-950 text-slate-300 hover:text-white border border-slate-800 transition">Whisky</button>
-          <button data-filter="VODKA" class="flavor-filter-btn px-3 py-1.5 rounded-xl font-medium bg-slate-950 text-slate-300 hover:text-white border border-slate-800 transition">Vodka</button>
-          <button data-filter="TEQUILA" class="flavor-filter-btn px-3 py-1.5 rounded-xl font-medium bg-slate-950 text-slate-300 hover:text-white border border-slate-800 transition">Tequila</button>
-          <button data-filter="GINEBRA" class="flavor-filter-btn px-3 py-1.5 rounded-xl font-medium bg-slate-950 text-slate-300 hover:text-white border border-slate-800 transition">Ginebra</button>
-          <button data-filter="COÑAC" class="flavor-filter-btn px-3 py-1.5 rounded-xl font-medium bg-slate-950 text-slate-300 hover:text-white border border-slate-800 transition">Coñac</button>
+          <button data-filter="TODOS"
+            class="flavor-filter-btn active px-3 py-1.5 rounded-xl font-bold bg-pink-600 text-white transition">Todos</button>
+          <button data-filter="WHISKY"
+            class="flavor-filter-btn px-3 py-1.5 rounded-xl font-medium bg-slate-950 text-slate-300 hover:text-white border border-slate-800 transition">Whisky</button>
+          <button data-filter="VODKA"
+            class="flavor-filter-btn px-3 py-1.5 rounded-xl font-medium bg-slate-950 text-slate-300 hover:text-white border border-slate-800 transition">Vodka</button>
+          <button data-filter="TEQUILA"
+            class="flavor-filter-btn px-3 py-1.5 rounded-xl font-medium bg-slate-950 text-slate-300 hover:text-white border border-slate-800 transition">Tequila</button>
+          <button data-filter="GINEBRA"
+            class="flavor-filter-btn px-3 py-1.5 rounded-xl font-medium bg-slate-950 text-slate-300 hover:text-white border border-slate-800 transition">Ginebra</button>
+          <button data-filter="COÑAC"
+            class="flavor-filter-btn px-3 py-1.5 rounded-xl font-medium bg-slate-950 text-slate-300 hover:text-white border border-slate-800 transition">Coñac</button>
         </div>
 
       </div>
@@ -647,9 +743,11 @@
       </div>
 
       <!-- Modal Footer -->
-      <div class="p-4 sm:px-6 bg-slate-950 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+      <div
+        class="p-4 sm:px-6 bg-slate-950 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
         <span>Bolsas de 6 Litros y vasos individuales para parches universitarios</span>
-        <a href="#arcade" id="btn-modal-to-arcade" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-pink-500 hover:from-amber-400 hover:to-pink-400 text-slate-950 font-bold uppercase tracking-wider text-[11px] flex items-center gap-1.5 transition cursor-pointer">
+        <a href="#arcade" id="btn-modal-to-arcade"
+          class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-pink-500 hover:from-amber-400 hover:to-pink-400 text-slate-950 font-bold uppercase tracking-wider text-[11px] flex items-center gap-1.5 transition cursor-pointer">
           <span>🎰</span> <span>Ganar Descuentos en el Arcade</span>
         </a>
       </div>
@@ -660,53 +758,65 @@
   <!-- ===================================================================== -->
   <!-- MODAL POPOUT: LOG IN / SIGN UP (PRÓXIMAMENTE & INVITACIÓN ARCADE)     -->
   <!-- ===================================================================== -->
-  <div id="modal-auth-coming-soon" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
-    <div class="relative w-full max-w-md bg-gradient-to-b from-slate-900 via-slate-900/95 to-slate-950 border-2 border-pink-500/70 rounded-3xl p-6 sm:p-7 shadow-[0_0_50px_rgba(255,0,127,0.4)] flex flex-col items-center text-center animate-fadeIn">
-      
+  <div id="modal-auth-coming-soon"
+    class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div
+      class="relative w-full max-w-md bg-gradient-to-b from-slate-900 via-slate-900/95 to-slate-950 border-2 border-pink-500/70 rounded-3xl p-6 sm:p-7 shadow-[0_0_50px_rgba(255,0,127,0.4)] flex flex-col items-center text-center animate-fadeIn">
+
       <!-- Close Button -->
-      <button id="btn-close-auth-modal" class="absolute top-4 right-4 w-9 h-9 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-sm transition cursor-pointer">
+      <button id="btn-close-auth-modal"
+        class="absolute top-4 right-4 w-9 h-9 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-sm transition cursor-pointer">
         ✕
       </button>
 
       <!-- Animated Icon -->
-      <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-pink-500 via-purple-600 to-cyan-400 p-0.5 shadow-[0_0_25px_rgba(255,0,127,0.5)] mb-3 animate-bounce">
+      <div
+        class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-pink-500 via-purple-600 to-cyan-400 p-0.5 shadow-[0_0_25px_rgba(255,0,127,0.5)] mb-3 animate-bounce">
         <div class="w-full h-full bg-slate-950 rounded-[22px] flex items-center justify-center text-3xl">
           🚀
         </div>
       </div>
 
       <!-- Badge -->
-      <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-pink-950 text-pink-300 border border-pink-500/50 mb-2">
+      <span
+        class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-pink-950 text-pink-300 border border-pink-500/50 mb-2">
         SISTEMA DE CUENTAS PARADICE
       </span>
 
       <!-- Title -->
-      <h3 class="text-2xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-300 to-cyan-300 uppercase tracking-tight mb-2">
+      <h3
+        class="text-2xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-300 to-cyan-300 uppercase tracking-tight mb-2">
         ¡PRÓXIMAMENTE!
       </h3>
 
       <!-- Body text -->
       <p class="text-xs sm:text-sm text-slate-300 leading-relaxed mb-4">
-        Estamos desarrollando el nuevo sistema de <strong>Log In & Sign Up</strong>. Muy pronto podrás registrarte, guardar tus puntos, subir de nivel, desbloquear descuentos universitarios para tu parche y canjear premios en barra.
+        Estamos desarrollando el nuevo sistema de <strong>Log In & Sign Up</strong>. Muy pronto podrás registrarte,
+        guardar tus puntos, subir de nivel, desbloquear descuentos universitarios para tu parche y canjear premios en
+        barra.
       </p>
 
       <!-- Invitation Card to Arcade -->
-      <div class="w-full p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-yellow-500/15 to-orange-500/10 border border-amber-500/40 mb-5 text-left">
+      <div
+        class="w-full p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-yellow-500/15 to-orange-500/10 border border-amber-500/40 mb-5 text-left">
         <div class="flex items-center gap-2 text-amber-300 font-black text-xs uppercase mb-1">
           <span>🎰</span> <span>¡La diversión ya comenzó!</span>
         </div>
         <p class="text-[11px] text-amber-200/90 leading-tight">
-          Mientras habilitamos los registros, no te quedes por fuera: prueba tus reflejos y juega en nuestra <strong>Zona Arcade</strong> con 5 juegos 100% interactivos.
+          Mientras habilitamos los registros, no te quedes por fuera: prueba tus reflejos y juega en nuestra
+          <strong>Zona Arcade</strong> con 5 juegos 100% interactivos.
         </p>
       </div>
 
       <!-- CTA to Arcade -->
-      <a href="#arcade" id="btn-auth-to-arcade" class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-amber-400 via-orange-500 to-pink-500 hover:from-amber-300 hover:to-pink-400 text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(250,204,21,0.5)] active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer mb-2">
+      <a href="#arcade" id="btn-auth-to-arcade"
+        class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-amber-400 via-orange-500 to-pink-500 hover:from-amber-300 hover:to-pink-400 text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(250,204,21,0.5)] active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer mb-2">
         <span>🎮</span> <span>¡EXPLORAR LA ZONA ARCADE!</span>
       </a>
 
       <!-- Cancel / Close secondary -->
-      <button id="btn-close-auth-modal-secondary" class="text-xs text-slate-400 hover:text-white font-semibold transition cursor-pointer mt-1">
+      <button id="btn-close-auth-modal-secondary"
+        class="text-xs text-slate-400 hover:text-white font-semibold transition cursor-pointer mt-1">
         Continuar viendo la página
       </button>
 
@@ -714,322 +824,11 @@
   </div>
 
   <!-- ===================================================================== -->
-  <!-- 9. JAVASCRIPT: CATÁLOGO DE SABORES CON LICOR & INTERACCIÓN -->
+  <!-- 9. SERVICIOS Y SCRIPTS DE PÁGINA (CATÁLOGO, AUDIO & MODALES)           -->
   <!-- ===================================================================== -->
-  <script>
-    // Catálogo de Sabores Exclusivos Paradice (Coctelería Frozen)
-    const SABORES_CON_LICOR = [
-      // --- WHISKY BASE ---
-      { nombre: "EXTASIS", ingredientes: "Whisky, uva y sandia.", licor: "WHISKY", color: "amber", icono: "🍇" },
-      { nombre: "BOMBOMBUN", ingredientes: "Whisky, fresa y bombombun.", licor: "WHISKY", color: "amber", icono: "🍓" },
-      { nombre: "TROPICO", ingredientes: "Whisky, vodka y frutos amarillos.", licor: "WHISKY", color: "amber", icono: "🍍" },
-      { nombre: "CITRUS", ingredientes: "Whisky y naranja.", licor: "WHISKY", color: "amber", icono: "🍊" },
-      { nombre: "NERDS", ingredientes: "Whisky, sandia y frambuesa.", licor: "WHISKY", color: "amber", icono: "🍬" },
-      { nombre: "PINK DRINK", ingredientes: "Whisky, sandia y frutos rojos.", licor: "WHISKY", color: "amber", icono: "🍉" },
-      { nombre: "CHERRY SLING", ingredientes: "Whisky, cereza y limón.", licor: "WHISKY", color: "amber", icono: "🍒" },
-
-      // --- VODKA / SMIRNOFF BASE ---
-      { nombre: "SANDIA", ingredientes: "Vodka, ginebra y sandia.", licor: "VODKA", color: "cyan", icono: "🍉" },
-      { nombre: "SMIRNOFF MANZANA", ingredientes: "Smirnoff, vodka y manzana.", licor: "VODKA", color: "cyan", icono: "🍏" },
-      { nombre: "SMIRNOFF MORAZUL", ingredientes: "Smirnoff, vodka y morazul.", licor: "VODKA", color: "cyan", icono: "🫐" },
-      { nombre: "SMIRNOFF", ingredientes: "Limón y vodka.", licor: "VODKA", color: "cyan", icono: "🍋" },
-      { nombre: "CANDY", ingredientes: "Vodka, champaña y liche.", licor: "VODKA", color: "cyan", icono: "🥂" },
-      { nombre: "CAIPIROSKA", ingredientes: "Vodka, frambuesa y limon.", licor: "VODKA", color: "cyan", icono: "🍹" },
-      { nombre: "RED FANTASY", ingredientes: "Vodka y frutos rojos.", licor: "VODKA", color: "cyan", icono: "🍓" },
-      { nombre: "BUBALU", ingredientes: "Vodka, morazul y sandia.", licor: "VODKA", color: "cyan", icono: "🫐" },
-      { nombre: "FOURLOKO", ingredientes: "Vodka y fourloko ponche.", licor: "VODKA", color: "cyan", icono: "💥" },
-      { nombre: "BLACK GRAPE", ingredientes: "Vodka, bombombun y uva.", licor: "VODKA", color: "cyan", icono: "🍇" },
-      { nombre: "PARTY BLUE", ingredientes: "Vodka y champaña.", licor: "VODKA", color: "cyan", icono: "🍾" },
-      { nombre: "MALIBÚ", ingredientes: "Vodka, cereza y morazul.", licor: "VODKA", color: "cyan", icono: "🍒" },
-      { nombre: "SEX ON THE BEACH", ingredientes: "Vodka, granadina, naranja.", licor: "VODKA", color: "cyan", icono: "🏖️" },
-
-      // --- GINEBRA BASE ---
-      { nombre: "IBIZA", ingredientes: "Ginebra, uva y frutos rojos.", licor: "GINEBRA", color: "purple", icono: "🍇" },
-      { nombre: "STARBLUE", ingredientes: "Ginebra, cereza limón y maracuyá.", licor: "GINEBRA", color: "purple", icono: "⭐" },
-      { nombre: "PARADAISE", ingredientes: "Ginebra, vodka, uva y chicle.", licor: "GINEBRA", color: "purple", icono: "🍧" },
-      { nombre: "PASION PURPLE", ingredientes: "Ginebra, vodka, fresa y uva.", licor: "GINEBRA", color: "purple", icono: "💜" },
-      { nombre: "SWEET CANDY", ingredientes: "Ginebra, vodka y uva.", licor: "GINEBRA", color: "purple", icono: "🍬" },
-      { nombre: "SEDUCCIÓN", ingredientes: "Ginebra, vodka y cereza.", licor: "GINEBRA", color: "purple", icono: "🍒" },
-
-      // --- TEQUILA BASE ---
-      { nombre: "MANGO BICHE", ingredientes: "Tequila y mango.", licor: "TEQUILA", color: "pink", icono: "🥭" },
-      { nombre: "OJO DEL DIABLO", ingredientes: "Tequila, vodka, kola y granadina.", licor: "TEQUILA", color: "pink", icono: "🔥" },
-      { nombre: "CLIMAX", ingredientes: "Tequila, vodka, frambuesa y maracuyá.", licor: "TEQUILA", color: "pink", icono: "🌋" },
-      { nombre: "NEBULOSA", ingredientes: "Tequila, chicle y tutti frutty.", licor: "TEQUILA", color: "pink", icono: "🌌" },
-      { nombre: "BLUBERRY BLOOM", ingredientes: "Tequila, vodka chicle y mora azul.", licor: "TEQUILA", color: "pink", icono: "🫐" },
-      { nombre: "TEQUILULO", ingredientes: "Tequila y lulo.", licor: "TEQUILA", color: "pink", icono: "🍈" },
-      { nombre: "MARACUYA TEQUILA", ingredientes: "Maracuyá y tequila.", licor: "TEQUILA", color: "pink", icono: "🟡" },
-      { nombre: "MARACUMANGO", ingredientes: "Tequila, maracuya y mango.", licor: "TEQUILA", color: "pink", icono: "🥭" },
-      { nombre: "MARACULULO", ingredientes: "Tequila, maracuyá y lulo.", licor: "TEQUILA", color: "pink", icono: "🍈" },
-      { nombre: "PANDA IKI", ingredientes: "Tequila, licor de naranja y limón.", licor: "TEQUILA", color: "pink", icono: "🐼" },
-      { nombre: "KRIPTONITA", ingredientes: "Tequila, limon, maracuya y fresa.", licor: "TEQUILA", color: "pink", icono: "🧪" },
-      { nombre: "MARACUTUSSI", ingredientes: "Vodka, tequila, maracuyá y sandia.", licor: "TEQUILA", color: "pink", icono: "⚡" },
-
-      // --- COÑAC BASE ---
-      { nombre: "TUSSI", ingredientes: "Coñac, vodka y chicle.", licor: "COÑAC", color: "fuchsia", icono: "💎" },
-      { nombre: "BLACK DIAMOND", ingredientes: "Coñac y frutos negros.", licor: "COÑAC", color: "fuchsia", icono: "🖤" }
-    ];
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const modal = document.getElementById('flavors-modal');
-      const closeModalBtn = document.getElementById('close-modal-btn');
-      const flavorsGrid = document.getElementById('flavors-grid');
-      const searchInput = document.getElementById('flavor-search-input');
-      const filterBtns = document.querySelectorAll('.flavor-filter-btn');
-
-      // Botones que abren el modal
-      const openButtons = [
-        document.getElementById('open-menu-btn-nav'),
-        document.getElementById('open-menu-btn-hero'),
-        document.getElementById('open-menu-btn-cta'),
-        document.getElementById('btn-floating-menu'),
-        document.getElementById('open-menu-btn-footer')
-      ];
-
-      function openModal() {
-        if (modal) {
-          modal.classList.remove('hidden');
-          document.body.style.overflow = 'hidden';
-          renderFlavors();
-        }
-      }
-
-      function closeModal() {
-        if (modal) {
-          modal.classList.add('hidden');
-          document.body.style.overflow = '';
-        }
-      }
-
-      openButtons.forEach(btn => {
-        if (btn) btn.addEventListener('click', openModal);
-      });
-
-      // Botones directos de sedes universitarias
-      document.querySelectorAll('.open-menu-direct-btn').forEach(btn => {
-        btn.addEventListener('click', openModal);
-      });
-
-      // Botón del pie del modal hacia el Arcade
-      const btnModalArcade = document.getElementById('btn-modal-to-arcade');
-      if (btnModalArcade) {
-        btnModalArcade.addEventListener('click', (e) => {
-          e.preventDefault();
-          closeModal();
-          const target = document.getElementById('arcade');
-          if (target) {
-            target.scrollIntoView({ behavior: 'smooth' });
-          }
-        });
-      }
-
-      if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
-
-      // Cerrar al pulsar el fondo oscuro
-      if (modal) {
-        modal.addEventListener('click', (e) => {
-          if (e.target === modal) closeModal();
-        });
-      }
-
-      // Cerrar con Escape
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
-          closeModal();
-        }
-      });
-
-      let activeFilter = 'TODOS';
-      let currentQuery = '';
-
-      function renderFlavors() {
-        if (!flavorsGrid) return;
-
-        let filtered = SABORES_CON_LICOR;
-
-        // Filtro por licor
-        if (activeFilter !== 'TODOS') {
-          filtered = filtered.filter(s => s.licor === activeFilter || (s.licorSecundario && s.licorSecundario === activeFilter));
-        }
-
-        // Filtro por búsqueda
-        if (currentQuery.trim()) {
-          const q = currentQuery.toLowerCase();
-          filtered = filtered.filter(s => 
-            s.nombre.toLowerCase().includes(q) ||
-            s.ingredientes.toLowerCase().includes(q) ||
-            s.licor.toLowerCase().includes(q)
-          );
-        }
-
-        if (filtered.length === 0) {
-          flavorsGrid.innerHTML = `
-            <div class="col-span-full py-12 text-center text-slate-500">
-              <span class="text-3xl">🔍</span>
-              <p class="text-xs font-bold mt-2">No se encontraron sabores con ese filtro.</p>
-            </div>
-          `;
-          return;
-        }
-
-        flavorsGrid.innerHTML = filtered.map(s => {
-          let badgeColor = "bg-amber-950 text-amber-300 border-amber-500/40";
-          if (s.licor === 'VODKA') badgeColor = "bg-cyan-950 text-cyan-300 border-cyan-500/40";
-          if (s.licor === 'GINEBRA') badgeColor = "bg-purple-950 text-purple-300 border-purple-500/40";
-          if (s.licor === 'TEQUILA') badgeColor = "bg-pink-950 text-pink-300 border-pink-500/40";
-          if (s.licor === 'COÑAC') badgeColor = "bg-fuchsia-950 text-fuchsia-300 border-fuchsia-500/40";
-
-          return `
-            <div class="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 hover:border-pink-500/40 transition flex flex-col justify-between group">
-              <div class="space-y-1.5">
-                <div class="flex items-center justify-between">
-                  <span class="text-lg">${s.icono}</span>
-                  <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider border ${badgeColor}">
-                    ${s.licor}
-                  </span>
-                </div>
-                <h4 class="text-sm font-black text-white uppercase tracking-tight group-hover:text-pink-300 transition">
-                  ${s.nombre}
-                </h4>
-                <p class="text-[11px] text-slate-300 leading-snug">
-                  ${s.ingredientes}
-                </p>
-              </div>
-
-              <div class="pt-3 border-t border-slate-900 mt-2 flex items-center justify-between">
-                <span class="text-[10px] text-pink-400 font-bold">✨ Receta de Autor</span>
-                <span class="px-2 py-0.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 font-medium text-[9px] uppercase">
-                  Frozen
-                </span>
-              </div>
-            </div>
-          `;
-        }).join('');
-      }
-
-      // Eventos de filtros
-      filterBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-          filterBtns.forEach(b => {
-            b.classList.remove('active', 'bg-pink-600', 'text-white');
-            b.classList.add('bg-slate-950', 'text-slate-300');
-          });
-          btn.classList.add('active', 'bg-pink-600', 'text-white');
-          btn.classList.remove('bg-slate-950', 'text-slate-300');
-          activeFilter = btn.dataset.filter;
-          renderFlavors();
-        });
-      });
-
-      // Evento buscador
-      if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-          currentQuery = e.target.value;
-          renderFlavors();
-        });
-      }
-
-      // Renderizado inicial de la carta de sabores
-      renderFlavors();
-
-      // Abrir modal automáticamente si viene en URL (?modal=sabores o #sabores)
-      if (new URLSearchParams(window.location.search).get('modal') === 'sabores' || window.location.hash === '#sabores') {
-        openModal();
-      }
-
-      // --- MODAL LOG IN / SIGN UP (PRÓXIMAMENTE) ---
-      const authModal = document.getElementById('modal-auth-coming-soon');
-      const btnLoginSignup = document.getElementById('btn-login-signup');
-      const btnCloseAuth = document.getElementById('btn-close-auth-modal');
-      const btnCloseAuthSec = document.getElementById('btn-close-auth-modal-secondary');
-      const btnAuthToArcade = document.getElementById('btn-auth-to-arcade');
-
-      const openAuthModal = () => {
-        if (authModal) {
-          authModal.classList.remove('hidden');
-          document.body.classList.add('overflow-hidden');
-        }
-      };
-
-      const closeAuthModal = () => {
-        if (authModal) {
-          authModal.classList.add('hidden');
-          document.body.classList.remove('overflow-hidden');
-        }
-      };
-
-      if (btnLoginSignup) {
-        btnLoginSignup.addEventListener('click', (e) => {
-          e.preventDefault();
-          openAuthModal();
-        });
-      }
-
-      if (btnCloseAuth) btnCloseAuth.addEventListener('click', closeAuthModal);
-      if (btnCloseAuthSec) btnCloseAuthSec.addEventListener('click', closeAuthModal);
-
-      if (btnAuthToArcade) {
-        btnAuthToArcade.addEventListener('click', () => {
-          closeAuthModal();
-          const target = document.getElementById('arcade');
-          if (target) {
-            target.scrollIntoView({ behavior: 'smooth' });
-          }
-        });
-      }
-
-      if (authModal) {
-        authModal.addEventListener('click', (e) => {
-          if (e.target === authModal) closeAuthModal();
-        });
-      }
-
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && authModal && !authModal.classList.contains('hidden')) {
-          closeAuthModal();
-        }
-      });
-    });
-  </script>
-
-  <!-- REPRODUCTOR DE AUDIO UNIVERSAL PARADICE -->
   <script src="js/core/AudioManager.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      if (window.ParadiceAudio) {
-        window.ParadiceAudio.init();
-        const musicToggle = document.getElementById('btn-music-toggle');
-        const musicNext = document.getElementById('btn-music-next');
-        const musicIcon = document.getElementById('music-icon');
-        const trackDisplay = document.getElementById('music-track-display');
-
-        const updateAudioUI = () => {
-          if (musicIcon) {
-            musicIcon.textContent = window.ParadiceAudio.isMusicMuted ? '🔇' : '🎵';
-          }
-          if (trackDisplay) {
-            trackDisplay.textContent = window.ParadiceAudio.getCurrentTrackName() || 'Paradice Beats';
-          }
-        };
-
-        if (musicToggle) {
-          musicToggle.addEventListener('click', () => {
-            window.ParadiceAudio.toggleMusic();
-            updateAudioUI();
-          });
-        }
-        if (musicNext) {
-          musicNext.addEventListener('click', () => {
-            window.ParadiceAudio.playNextTrack();
-            updateAudioUI();
-          });
-        }
-
-        updateAudioUI();
-        setInterval(updateAudioUI, 1200);
-      }
-    });
-  </script>
+  <script src="js/pages/index.js"></script>
 
 </body>
+
 </html>

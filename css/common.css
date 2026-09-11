@@ -1,0 +1,101 @@
+@charset "UTF-8";
+
+/* ==========================================================
+   PARADICE - ESTILOS COMUNES Y UTILIDADES COMPARTIDAS
+   ========================================================== */
+
+:root {
+  --neon-cyan: #00f0ff;
+  --neon-blue: #0284c7;
+  --neon-pink: #ff007f;
+  --neon-purple: #9333ea;
+  --neon-gold: #facc15;
+  --neon-green: #22c55e;
+}
+
+/* ==========================================================
+   1. SCROLLBAR PERSONALIZADO UNIVERSAL
+   ========================================================== */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #040814;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00f0ff;
+}
+
+/* ==========================================================
+   2. VIDRIO NEÓN & EFECTOS GLASSMORPHISM
+   ========================================================== */
+.neon-glass {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.80) 0%, rgba(6, 11, 25, 0.90) 100%);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 0 35px rgba(0, 240, 255, 0.12), inset 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+.neon-border-cyan {
+  border: 1px solid rgba(0, 240, 255, 0.45);
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.25);
+}
+
+.neon-border-pink {
+  border: 1px solid rgba(255, 0, 127, 0.45);
+  box-shadow: 0 0 20px rgba(255, 0, 127, 0.25);
+}
+
+.neon-border-gold {
+  border: 1px solid rgba(250, 204, 21, 0.45);
+  box-shadow: 0 0 20px rgba(250, 204, 21, 0.25);
+}
+
+.text-glow-cyan {
+  text-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
+}
+
+.text-glow-pink {
+  text-shadow: 0 0 12px rgba(255, 0, 127, 0.6);
+}
+
+/* ==========================================================
+   3. ELEMENTOS DE JUEGO COMPARTIDOS (VIDAS & TENSIÓN)
+   ========================================================== */
+.life-heart {
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+}
+
+.life-heart.lost {
+  opacity: 0.25;
+  filter: grayscale(1);
+  transform: scale(0.75);
+}
+
+.tension-danger-overlay::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+  box-shadow: inset 0 0 70px rgba(239, 68, 68, 0.75), inset 0 0 140px rgba(225, 29, 72, 0.45);
+  animation: tensionDangerPulse 0.7s infinite alternate ease-in-out;
+}
+
+@keyframes tensionDangerPulse {
+  0% {
+    opacity: 0.35;
+    box-shadow: inset 0 0 50px rgba(239, 68, 68, 0.6), inset 0 0 100px rgba(225, 29, 72, 0.3);
+  }
+  100% {
+    opacity: 0.95;
+    box-shadow: inset 0 0 90px rgba(239, 68, 68, 0.9), inset 0 0 160px rgba(225, 29, 72, 0.65);
+  }
+}

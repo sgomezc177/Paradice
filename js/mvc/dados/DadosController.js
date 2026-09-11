@@ -31,17 +31,12 @@
       this.view.actualizarVidasUI(this.model.vidas);
       this.actualizarAudioUI();
 
-      // Escuchar cambios de pista de música
-      window.addEventListener('audiotrackchange', (e) => {
-        if (this.view.dom.musicTrackDisplay) {
-          this.view.dom.musicTrackDisplay.textContent = `🎵 ${e.detail.title}`;
-        }
-      });
-
-
-      // Si ya hay vidas consumidas (< 3 y > 0), iniciar temporizador
-      if (this.model.vidas < 3 && this.model.vidas > 0) {
-        this.iniciarTemporizadorTiro();
+      // JUEGO DESHABILITADO HASTA NUEVA ORDEN
+      if (this.view.dom.btnRoll) {
+        this.view.dom.btnRoll.disabled = true;
+      }
+      if (this.view.dom.btnReroll) {
+        this.view.dom.btnReroll.disabled = true;
       }
     }
 
@@ -176,45 +171,8 @@
     }
 
     ejecutarLanzamiento() {
-      if (this.isRolling) return;
-
-      this.detenerTemporizadorTiro();
-
-      if (this.model.vidas <= 0) {
-        this.model.reiniciarVidas();
-        this.view.actualizarVidasUI(this.model.vidas);
-      }
-
-      this.isRolling = true;
-      this.model.consumirVida();
-      this.view.actualizarVidasUI(this.model.vidas);
-
-      this.audio.playDiceShake();
-
-      this.view.animarLanzamiento(() => {
-        const { dice, resultado } = this.model.lanzarDados();
-        this.view.renderDice(dice);
-        this.view.actualizarResultadoUI(resultado, this.model.intentoActual, this.model.vidas);
-        this.isRolling = false;
-
-        if (resultado.esMayor) {
-          this.audio.playWinSong();
-          this.view.lanzarConfeti(true);
-        } else {
-          this.audio.playWinDiscount();
-        }
-
-        if (this.model.vidas > 0) {
-          this.iniciarTemporizadorTiro();
-        } else {
-          setTimeout(() => {
-            this.view.mostrarModalPerdidaVida(0, () => {
-              this.model.reiniciarVidas();
-              this.view.actualizarVidasUI(this.model.vidas);
-            });
-          }, 800);
-        }
-      });
+      // JUEGO DESHABILITADO HASTA NUEVA ORDEN: Nadie puede jugarlo
+      return;
     }
 
     asegurarPromoYCanjear() {

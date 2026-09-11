@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es" class="h-full bg-slate-950 overflow-hidden">
 <head>
   <meta charset="UTF-8">
@@ -7,29 +7,14 @@
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            brand: {
-              cyan: '#00f0ff',
-              blue: '#0284c7',
-              pink: '#ff007f',
-              purple: '#9333ea',
-              gold: '#facc15'
-            }
-          }
-        }
-      }
-    };
-  </script>
+  <script src="js/config/tailwind.config.js"></script>
 
   <!-- Canvas Confetti CDN -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
-  <!-- Estilos Custom Oficiales -->
-  <link rel="stylesheet" href="css/style.css">
+  <!-- Estilos Oficiales Paradice -->
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/slot.css">
 </head>
 
 <body class="h-full w-full flex flex-col items-center justify-center p-0 sm:p-2 relative overflow-hidden selection:bg-cyan-500 selection:text-slate-950">
@@ -941,26 +926,26 @@
       <div>
         <h4 class="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-2">🎮 Otros Juegos Paradice</h4>
         <div class="space-y-1.5">
+          <a href="battleround.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-gradient-to-r from-rose-950/90 to-slate-900/90 hover:from-rose-900/90 hover:to-slate-800 border border-rose-500/50 text-xs font-black text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.3)] transition">
+            <span class="flex items-center gap-2"><span>💥</span> BattleRound</span>
+            <span class="text-[9px] font-black px-1.5 py-0.5 rounded bg-rose-600 text-white animate-pulse">★ DESTACADO</span>
+          </a>
           <a href="hitbar.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 border border-amber-500/20 hover:border-amber-400 text-xs font-bold text-amber-300 transition">
             <span class="flex items-center gap-2"><span>⚡</span> Hit Bar Rush</span>
             <span class="text-[9px] text-amber-400 font-mono">Velocidad</span>
-          </a>
-          <a href="battleround.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 border border-rose-500/20 hover:border-rose-400 text-xs font-bold text-rose-300 transition">
-            <span class="flex items-center gap-2"><span>💥</span> BattleRound</span>
-            <span class="text-[9px] text-rose-400 font-mono">Multiplayer</span>
           </a>
           <a href="minas.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 border border-pink-500/20 hover:border-pink-400 text-xs font-bold text-pink-300 transition">
             <span class="flex items-center gap-2"><span>💣</span> Minas Glaciales</span>
             <span class="text-[9px] text-pink-400 font-mono">1 Jugador</span>
           </a>
-          <a href="dados.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 border border-purple-500/20 hover:border-purple-400 text-xs font-bold text-purple-300 transition">
+          <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/30 border border-slate-800 text-xs font-medium text-slate-600 cursor-not-allowed opacity-50">
             <span class="flex items-center gap-2"><span>🎲</span> Dice Battle</span>
-            <span class="text-[9px] text-purple-400 font-mono">Duelo</span>
-          </a>
-          <a href="ruleta.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 border border-emerald-500/20 hover:border-emerald-400 text-xs font-bold text-emerald-300 transition">
+            <span class="text-[9px] text-rose-500 font-mono">Pausado</span>
+          </div>
+          <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/30 border border-slate-800 text-xs font-medium text-slate-600 cursor-not-allowed opacity-50">
             <span class="flex items-center gap-2"><span>🎡</span> Ruleta Glacial</span>
-            <span class="text-[9px] text-emerald-400 font-mono">Premios</span>
-          </a>
+            <span class="text-[9px] text-rose-500 font-mono">Pausado</span>
+          </div>
           <a href="index.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/40 hover:bg-slate-800/80 border border-slate-800 hover:border-slate-700 text-xs font-bold text-slate-400 hover:text-white transition">
             <span class="flex items-center gap-2"><span>🏠</span> Landing Oficial</span>
             <span class="text-[9px] text-slate-500">Inicio</span>
@@ -987,43 +972,7 @@
   <script src="js/mvc/slot/SlotModel.js"></script>
   <script src="js/mvc/slot/SlotView.js"></script>
   <script src="js/mvc/slot/SlotController.js"></script>
-  <script>
-    (function () {
-      function startSlot() {
-        if (window.__slotStarted) return;
-        window.__slotStarted = true;
-        window.slotController = new SlotController();
-        window.slotController.init();
-
-        // Control del Drawer Lateral
-        const openBtn = document.getElementById('btn-open-sidebar');
-        const closeBtn = document.getElementById('btn-close-sidebar');
-        const drawer = document.getElementById('sidebar-drawer');
-        const backdrop = document.getElementById('sidebar-backdrop');
-        function openDrawer() {
-          backdrop?.classList.remove('opacity-0', 'pointer-events-none');
-          backdrop?.classList.add('opacity-100', 'pointer-events-auto');
-          drawer?.classList.remove('translate-x-full');
-        }
-        function closeDrawer() {
-          backdrop?.classList.remove('opacity-100', 'pointer-events-auto');
-          backdrop?.classList.add('opacity-0', 'pointer-events-none');
-          drawer?.classList.add('translate-x-full');
-        }
-        openBtn?.addEventListener('click', openDrawer);
-        closeBtn?.addEventListener('click', closeDrawer);
-        backdrop?.addEventListener('click', closeDrawer);
-
-        ['instructions-btn', 'combinations-btn', 'supervisor-btn'].forEach(id => {
-          document.getElementById(id)?.addEventListener('click', closeDrawer);
-        });
-      }
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', startSlot);
-      } else {
-        startSlot();
-      }
-    })();
-  </script>
+  <script src="js/pages/slot-app.js"></script>
 </body>
 </html>
+

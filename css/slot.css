@@ -1,0 +1,693 @@
+﻿@charset "UTF-8";
+
+/* ==========================================================
+   PARADICE - HIT BAR / PREMIOS GRANIZADOS (ESTILOS OFICIALES)
+   Basado fielmente en la imagen de referencia de diseño
+   ========================================================== */
+
+:root {
+  --neon-cyan: #00f0ff;
+  --neon-blue: #0284c7;
+  --neon-pink: #ff007f;
+  --neon-purple: #9333ea;
+  --neon-gold: #facc15;
+}
+
+/* Ajuste exacto a la pantalla (100dvh) sin scroll indeseado */
+html, body {
+  height: 100%;
+  height: 100dvh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #020617;
+  background-image: 
+    radial-gradient(ellipse at 50% 35%, rgba(2, 6, 23, 0.72) 0%, rgba(2, 6, 23, 0.90) 100%),
+    url('../images/bg-granizados.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: #f8fafc;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app-container {
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100dvh;
+  background: rgba(2, 6, 23, 0.82) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+/* ==========================================================
+   1. ELEMENTOS DE FONDO: Rayos de Sol (Sunburst), Estrellas y Splashes
+   ========================================================== */
+.bg-stage-elements {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+/* Fondo con haz de luz radiante ascendente */
+.sunburst-glow {
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse at 50% 90%, rgba(56, 189, 248, 0.35) 0%, rgba(14, 116, 144, 0.15) 35%, transparent 70%),
+    repeating-conic-gradient(from 260deg at 50% 85%, 
+      rgba(56, 189, 248, 0.10) 0deg 7deg, 
+      transparent 7deg 14deg);
+  filter: contrast(1.15) brightness(1.1);
+}
+
+/* Capa de Estrellas y Destellos Flotantes */
+.stars-field {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(1.5px 1.5px at 15% 15%, #ffffff 100%, transparent),
+    radial-gradient(2px 2px at 30% 25%, #7dd3fc 100%, transparent),
+    radial-gradient(1px 1px at 45% 10%, #ffffff 100%, transparent),
+    radial-gradient(2.5px 2.5px at 60% 20%, #e0f2fe 100%, transparent),
+    radial-gradient(1.5px 1.5px at 80% 12%, #ffffff 100%, transparent),
+    radial-gradient(2px 2px at 88% 30%, #38bdf8 100%, transparent),
+    radial-gradient(1.5px 1.5px at 25% 45%, #ffffff 100%, transparent),
+    radial-gradient(2px 2px at 75% 55%, #bae6fd 100%, transparent),
+    radial-gradient(1.5px 1.5px at 10% 70%, #ffffff 100%, transparent),
+    radial-gradient(2px 2px at 90% 75%, #ffffff 100%, transparent);
+  opacity: 0.85;
+}
+
+/* ==========================================================
+   2. SALPICADURAS LÍQUIDAS (SPLASHES) LATERALES DE LA TORRE
+   ========================================================== */
+.splash-stream-left {
+  position: absolute;
+  top: 45px;
+  left: -12px;
+  width: 50px;
+  height: 180px;
+  pointer-events: none;
+  z-index: 15;
+  filter: drop-shadow(0 0 10px rgba(225, 29, 72, 0.85));
+}
+
+.splash-stream-right {
+  position: absolute;
+  top: 45px;
+  right: -12px;
+  width: 50px;
+  height: 180px;
+  pointer-events: none;
+  z-index: 15;
+  filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.85));
+}
+
+/* ==========================================================
+   2.5 LOGO GLACIAL CON DISEÑO DE FRÍO Y GRANIZADO
+   ========================================================== */
+.paradice-frost-logo {
+  box-shadow: 
+    0 0 14px rgba(56, 189, 248, 0.45),
+    inset 0 0 8px rgba(186, 230, 253, 0.25);
+  border: 1.5px solid rgba(56, 189, 248, 0.65);
+  background: linear-gradient(135deg, rgba(8, 47, 73, 0.9) 0%, rgba(2, 6, 23, 0.95) 100%);
+  backdrop-filter: blur(8px);
+}
+
+/* ==========================================================
+   3. TORRE DE PREMIOS GRANIZADOS (Trapecio Invertido & Header)
+   ========================================================== */
+.premios-banner-box {
+  background: linear-gradient(180deg, #1e1b4b 0%, #0f172a 100%);
+  border: 2px solid #38bdf8;
+  border-radius: 9999px;
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.5), inset 0 0 8px rgba(168, 85, 247, 0.4);
+}
+
+.premios-3d-text {
+  font-family: system-ui, Arial Black, Impact, sans-serif;
+  color: #ffffff;
+  text-shadow: 
+    0 1px 0 #7e22ce,
+    0 2px 0 #6b21a8,
+    0 3px 0 #581c87,
+    0 0 8px #38bdf8,
+    0 0 14px #a855f7;
+  letter-spacing: 0.05em;
+  line-height: 1.05;
+}
+
+/* Contenedor Trapezoidal Invertido (Más Ancho Arriba, Más Delgado Abajo) */
+.premios-tower-trapezoid {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(3, 7, 18, 0.98) 100%);
+  border: 2px solid #38bdf8;
+  border-radius: 1.25rem;
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.4), inset 0 0 12px rgba(2, 132, 199, 0.25);
+  clip-path: polygon(0% 0%, 100% 0%, 90% 100%, 10% 100%);
+}
+
+/* Filas Tipo Píldora de la Torre con Texto Centrado */
+.pill-row {
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5),
+              0 2px 4px rgba(0, 0, 0, 0.6);
+  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+  line-height: 1.15;
+  text-align: center;
+  justify-content: center !important;
+}
+
+/* Animación de subida peldaño por peldaño */
+.pill-row-climbing {
+  filter: brightness(1.7) !important;
+  box-shadow: 0 0 20px #00f0ff, inset 0 0 10px #ffffff !important;
+  transform: scale(1.05);
+  border-color: #00f0ff !important;
+  z-index: 25;
+}
+
+/* Destello triunfal al ganar */
+.pill-row-active {
+  animation: pillGlow 0.8s infinite alternate;
+  filter: brightness(1.35) !important;
+  transform: scale(1.04);
+  z-index: 20;
+}
+
+@keyframes pillGlow {
+  0% {
+    box-shadow: 0 0 14px #facc15, inset 0 0 8px #ffffff;
+    border-color: #facc15;
+  }
+  100% {
+    box-shadow: 0 0 25px #00f0ff, inset 0 0 14px #ffffff;
+    border-color: #00f0ff;
+  }
+}
+
+/* ==========================================================
+   4. VIEWPORT DE RODILLOS Y CELDAS DE SÍMBOLOS
+   ========================================================== */
+.reels-viewport-casino {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+  background: rgba(8, 14, 28, 0.94);
+  box-shadow: inset 0 8px 18px rgba(0, 0, 0, 0.95),
+              inset 0 -8px 18px rgba(0, 0, 0, 0.95),
+              0 0 16px rgba(56, 189, 248, 0.35);
+  border: 2px solid rgba(56, 189, 248, 0.5);
+  height: 204px;
+  min-height: 204px;
+  max-height: 204px;
+}
+@media (min-width: 640px) {
+  .reels-viewport-casino {
+    height: 216px;
+    min-height: 216px;
+    max-height: 216px;
+  }
+}
+
+.reels-viewport-casino::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 18%;
+  background: linear-gradient(180deg, rgba(8, 14, 28, 0.98) 0%, rgba(8, 14, 28, 0) 100%);
+  pointer-events: none;
+  z-index: 25;
+}
+
+.reels-viewport-casino::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 18%;
+  background: linear-gradient(0deg, rgba(8, 14, 28, 0.98) 0%, rgba(8, 14, 28, 0) 100%);
+  pointer-events: none;
+  z-index: 25;
+}
+
+.reel-column {
+  border-right: 1px solid rgba(56, 189, 248, 0.18);
+  height: 100%;
+  overflow: hidden;
+}
+.reel-column:last-child {
+  border-right: none;
+}
+
+.reel-track,
+.reel-strip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  will-change: transform, filter;
+  transition-property: transform;
+}
+
+.reel-spinning,
+.reel-strip-spinning,
+.spinning-blur {
+  animation: reelFluidLoop 0.26s linear infinite !important;
+  filter: blur(2.5px);
+  will-change: transform, filter;
+}
+
+@keyframes reelFluidLoop {
+  0% {
+    transform: translateY(0px);
+  }
+  100% {
+    transform: translateY(-544px);
+  }
+}
+
+/* Giro Ultra Rápido para Evento HIT BAR */
+@keyframes reelFastInfiniteSpin {
+  0% {
+    transform: translateY(0px);
+  }
+  100% {
+    transform: translateY(-680px);
+  }
+}
+
+.reel-fast-spin-active {
+  animation: reelFastInfiniteSpin 0.22s linear infinite !important;
+  filter: blur(3.5px) brightness(1.35) drop-shadow(0 0 12px rgba(0, 240, 255, 0.75)) !important;
+  will-change: transform, filter;
+}
+
+/* Modo Hit Bar: Arranque de Súper Velocidad (Hyper Spin Rush) */
+.reel-hitbar-hyper {
+  animation: reelFluidLoop 0.10s linear infinite !important;
+  filter: blur(3.5px) brightness(1.3) drop-shadow(0 0 12px rgba(0, 240, 255, 0.85)) !important;
+  will-change: transform, filter;
+}
+
+/* Modo Hit Bar: Giro Estabilizado Moderado para Inicio de Paradas */
+.reel-hitbar-stable {
+  animation: reelFluidLoop 0.58s linear infinite !important;
+  filter: blur(0.5px) brightness(1.1) drop-shadow(0 0 8px rgba(250, 204, 21, 0.6)) !important;
+  will-change: transform, filter;
+}
+
+/* Modo Hit Bar: Aceleración Progresiva al Conectar Aciertos */
+.reel-hitbar-speed-1 {
+  animation: reelFluidLoop 0.44s linear infinite !important;
+  filter: blur(1px) brightness(1.15) drop-shadow(0 0 10px rgba(250, 204, 21, 0.75)) !important;
+  will-change: transform, filter;
+}
+
+.reel-hitbar-speed-2 {
+  animation: reelFluidLoop 0.33s linear infinite !important;
+  filter: blur(1.5px) brightness(1.22) drop-shadow(0 0 14px rgba(250, 204, 21, 0.85)) !important;
+  will-change: transform, filter;
+}
+
+.reel-hitbar-speed-3 {
+  animation: reelFluidLoop 0.23s linear infinite !important;
+  filter: blur(2.2px) brightness(1.3) drop-shadow(0 0 18px rgba(250, 204, 21, 0.95)) !important;
+  will-change: transform, filter;
+}
+
+.reel-hitbar-speed-4 {
+  animation: reelFluidLoop 0.14s linear infinite !important;
+  filter: blur(3.5px) brightness(1.45) drop-shadow(0 0 24px rgba(255, 0, 127, 0.95)) !important;
+  will-change: transform, filter;
+}
+
+.symbol-cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 68px !important;
+  box-sizing: border-box;
+}
+@media (min-width: 640px) {
+  .symbol-cell {
+    height: 72px !important;
+  }
+}
+
+/* Celdas Ganadoras con Destello Dorado */
+.symbol-winner {
+  animation: winnerPulsing 0.9s infinite alternate;
+  z-index: 20;
+}
+
+.symbol-winner .symbol-box-inner {
+  border-color: #facc15 !important;
+  background: rgba(234, 179, 8, 0.35) !important;
+  box-shadow: 0 0 18px rgba(250, 204, 21, 0.95), inset 0 0 10px rgba(255, 255, 255, 0.7);
+}
+
+@keyframes winnerPulsing {
+  0% { transform: scale(0.95); }
+  100% { transform: scale(1.08); }
+}
+
+/* ==========================================================
+   5. PANEL DE AUTOPLAY Y BOTÓN CIRCULAR GIGANTE
+   ========================================================== */
+.autoplay-panel-card {
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.75) 0%, rgba(15, 23, 42, 0.9) 100%);
+  border: 1.5px solid rgba(100, 116, 139, 0.5);
+  border-radius: 1.25rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+}
+
+.spin-main-button {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #1e293b 0%, #0f172a 70%, #020617 100%);
+  border: 2px solid #64748b;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.8),
+              inset 0 2px 4px rgba(255, 255, 255, 0.3);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.spin-main-button:hover:not(:disabled) {
+  border-color: #38bdf8;
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.4);
+}
+
+.spin-main-button:active:not(:disabled) {
+  transform: scale(0.93);
+}
+
+.spin-main-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  filter: grayscale(0.8);
+}
+
+/* Botones Auxiliares BET y AUTO-PLAY */
+.side-circle-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  border: 1.5px solid #475569;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  transition: all 0.15s ease;
+}
+
+.side-circle-btn:hover {
+  border-color: #38bdf8;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+}
+
+/* ==========================================================
+   6. BARRA INFERIOR DE HIT BAR Y NAVIGATION LABELS
+   ========================================================== */
+.hit-bar-status-strip {
+  background: rgba(15, 23, 42, 0.95);
+  border-top: 1px solid rgba(56, 189, 248, 0.25);
+  border-bottom: 1px solid rgba(56, 189, 248, 0.25);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.nav-label-pill {
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  border: 1px solid #475569;
+  border-radius: 0.5rem;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 2px 4px rgba(0, 0, 0, 0.4);
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  transition: border-color 0.15s ease;
+}
+
+.nav-label-pill:hover {
+  border-color: #38bdf8;
+  color: #38bdf8;
+}
+
+/* ==========================================================
+   7. CANVAS Y UTILIDADES
+   ========================================================== */
+#confetti-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Animación del Popout Ganador */
+.animate-popout-zoom {
+  animation: popoutZoom 0.38s cubic-bezier(0.17, 0.89, 0.32, 1.28) forwards;
+}
+
+@keyframes popoutZoom {
+  0% {
+    transform: scale(0.65);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ==========================================================
+   8. EFECTO 3D FLIP CARD PARA POPOUT Y QR DE SEGURIDAD
+   ========================================================== */
+#win-popout-modal:not(.hidden) {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.flip-card-container {
+  perspective: 1200px;
+  perspective-origin: center center;
+  width: 100%;
+  max-width: 340px;
+  height: 480px;
+  max-height: 90vh;
+  margin: auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (min-width: 640px) {
+  .flip-card-container {
+    max-width: 360px;
+    height: 500px;
+  }
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.65s cubic-bezier(0.4, 0.0, 0.2, 1);
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  transform-origin: center center;
+}
+
+.flip-card-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front,
+.flip-card-back {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  border-radius: 1.5rem;
+  box-sizing: border-box;
+}
+
+.flip-card-front {
+  transform: rotateY(0deg) translateZ(1px);
+  -webkit-transform: rotateY(0deg) translateZ(1px);
+}
+
+.flip-card-back {
+  transform: rotateY(180deg) translateZ(1px);
+  -webkit-transform: rotateY(180deg) translateZ(1px);
+}
+
+/* ==========================================================
+   9. INDICADOR DE VIDAS / INTENTOS
+   ========================================================== */
+.life-heart {
+  filter: drop-shadow(0 0 6px rgba(244, 63, 94, 0.85));
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.life-heart.lost {
+  filter: grayscale(1) opacity(0.3);
+  transform: scale(0.8);
+}
+
+/* ==========================================================
+   10. MODAL HIT BAR Y BLOQUEO DE TERMINAL
+   ========================================================== */
+#hitbar-modal:not(.hidden),
+#terminal-blocked-modal:not(.hidden) {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.hitbar-viewport {
+  background: radial-gradient(circle at center, #091225 0%, #020617 100%);
+}
+
+.hitbar-target-line {
+  box-shadow: 0 0 16px rgba(250, 204, 21, 0.45), inset 0 0 8px rgba(250, 204, 21, 0.2);
+}
+
+.hitbar-cell {
+  width: 100%;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  box-sizing: border-box;
+}
+
+.hitbar-lane-active {
+  background: rgba(56, 189, 248, 0.08);
+  box-shadow: inset 0 0 12px rgba(56, 189, 248, 0.3);
+}
+
+.hitbar-cell-success {
+  animation: hitbarSuccessFlash 0.5s ease-out;
+  background: radial-gradient(circle, rgba(34, 197, 94, 0.35) 0%, transparent 70%);
+}
+
+.hitbar-cell-fail {
+  animation: hitbarFailFlash 0.5s ease-out;
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.3) 0%, transparent 70%);
+}
+
+@keyframes hitbarSuccessFlash {
+  0% { transform: scale(1.15); filter: brightness(1.8); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+
+@keyframes hitbarFailFlash {
+  0% { transform: scale(0.92); filter: brightness(0.6); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+
+/* ==========================================================
+   11. ESTILOS DE HIT BAR EN PANEL PRINCIPAL Y BOTÓN DETENER
+   ========================================================== */
+.spin-btn-hitbar-mode {
+  background: radial-gradient(circle at 50% 35%, #fbbf24 0%, #d97706 60%, #78350f 100%) !important;
+  border-color: #fef08a !important;
+  box-shadow: 0 0 35px rgba(250, 204, 21, 0.95), inset 0 2px 4px rgba(255, 255, 255, 0.8) !important;
+  animation: hitbarBtnPulse 0.55s infinite alternate !important;
+}
+
+@keyframes hitbarBtnPulse {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+    box-shadow: 0 0 25px rgba(250, 204, 21, 0.8);
+  }
+  100% {
+    transform: scale(1.06);
+    filter: brightness(1.3);
+    box-shadow: 0 0 45px rgba(250, 204, 21, 1);
+  }
+}
+
+.hitbar-payline-active {
+  border-color: #facc15 !important;
+  background: rgba(250, 204, 21, 0.12) !important;
+  box-shadow: 0 0 25px rgba(250, 204, 21, 0.7), inset 0 0 10px rgba(250, 204, 21, 0.3) !important;
+}
+
+.reel-column-active {
+  background: rgba(250, 204, 21, 0.1) !important;
+  box-shadow: inset 0 0 16px rgba(250, 204, 21, 0.5) !important;
+}
+
+.reel-cell-hit-success {
+  animation: cellHitPulse 0.8s infinite alternate !important;
+  border-color: #facc15 !important;
+  box-shadow: 0 0 25px rgba(250, 204, 21, 0.9), inset 0 0 15px rgba(250, 204, 21, 0.5) !important;
+}
+
+@keyframes cellHitPulse {
+  0% { transform: scale(1); filter: brightness(1.1); }
+  100% { transform: scale(1.08); filter: brightness(1.6); }
+}
+
+/* ==========================================================
+   12. EFECTO DE TENSIÓN Y PELIGRO ÚLTIMOS 10s
+   ========================================================== */
+.tension-danger-overlay::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+  box-shadow: inset 0 0 70px rgba(239, 68, 68, 0.75), inset 0 0 140px rgba(225, 29, 72, 0.45);
+  animation: tensionDangerPulse 0.7s infinite alternate ease-in-out;
+}
+
+@keyframes tensionDangerPulse {
+  0% {
+    opacity: 0.35;
+    box-shadow: inset 0 0 50px rgba(239, 68, 68, 0.6), inset 0 0 100px rgba(225, 29, 72, 0.3);
+  }
+  100% {
+    opacity: 0.95;
+    box-shadow: inset 0 0 90px rgba(239, 68, 68, 0.9), inset 0 0 160px rgba(225, 29, 72, 0.65);
+  }
+}
+

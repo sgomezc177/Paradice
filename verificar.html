@@ -7,62 +7,11 @@
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            brand: {
-              cyan: '#00f0ff',
-              blue: '#0284c7',
-              pink: '#ff007f',
-              purple: '#9333ea',
-              gold: '#facc15'
-            }
-          }
-        }
-      }
-    };
-  </script>
+  <script src="js/config/tailwind.config.js"></script>
 
-  <style>
-    body {
-      background-color: #040814;
-      background-image: 
-        radial-gradient(ellipse at 50% 5%, rgba(56, 189, 248, 0.20) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 90%, rgba(147, 51, 234, 0.15) 0%, transparent 60%),
-        radial-gradient(ellipse at 20% 90%, rgba(245, 158, 11, 0.10) 0%, transparent 60%),
-        linear-gradient(180deg, #040814 0%, #020617 100%);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-    .neon-panel {
-      background: linear-gradient(180deg, rgba(15, 23, 42, 0.94) 0%, rgba(2, 6, 23, 0.98) 100%);
-      box-shadow: 0 0 30px rgba(56, 189, 248, 0.15), inset 0 0 1px rgba(255, 255, 255, 0.15);
-    }
-    .glow-gold {
-      box-shadow: 0 0 25px rgba(250, 204, 21, 0.25);
-    }
-    .glow-rose {
-      box-shadow: 0 0 35px rgba(244, 63, 94, 0.35);
-    }
-    .glow-emerald {
-      box-shadow: 0 0 35px rgba(52, 211, 153, 0.35);
-    }
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #090e1a;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #1e293b;
-      border-radius: 3px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #334155;
-    }
-  </style>
+  <!-- Estilos Oficiales Paradice -->
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/verificar.css">
 </head>
 
 <body class="min-h-full flex flex-col p-3 sm:p-6 lg:p-8 text-slate-100 antialiased">
@@ -351,11 +300,6 @@
   <script src="js/mvc/verificar/VerificarModel.js"></script>
   <script src="js/mvc/verificar/VerificarView.js"></script>
   <script src="js/mvc/verificar/VerificarController.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      window.verificarController = new VerificarController();
-      window.verificarController.init();
-    });
-  </script>
+  <script src="js/pages/verificar-app.js"></script>
 </body>
 </html>

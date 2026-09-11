@@ -16,174 +16,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
 
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Montserrat', 'system-ui', 'sans-serif'],
-            display: ['Outfit', 'sans-serif'],
-          },
-          colors: {
-            paradice: {
-              bg: '#040814',
-              surface: '#090f24',
-              cyan: '#00f0ff',
-              pink: '#ff007f',
-              purple: '#9333ea',
-              gold: '#facc15',
-              ice: '#38bdf8'
-            }
-          },
-          animation: {
-            'glow-pulse': 'glowPulse 2s ease-in-out infinite',
-            'shimmer': 'shimmer 2.5s infinite',
-            'shake': 'shake 0.4s ease-in-out',
-          },
-          keyframes: {
-            glowPulse: {
-              '0%, 100%': { boxShadow: '0 0 15px rgba(0, 240, 255, 0.4), inset 0 0 10px rgba(0, 240, 255, 0.2)' },
-              '50%': { boxShadow: '0 0 28px rgba(0, 240, 255, 0.8), inset 0 0 18px rgba(0, 240, 255, 0.4)' },
-            },
-            shake: {
-              '0%, 100%': { transform: 'translateX(0)' },
-              '20%, 60%': { transform: 'translateX(-6px)' },
-              '40%, 80%': { transform: 'translateX(6px)' },
-            }
-          }
-        }
-      }
-    }
-  </script>
-
-  <style>
-    body {
-      background-color: #040814;
-      background-image: 
-        radial-gradient(circle at 50% 0%, rgba(0, 240, 255, 0.15) 0%, transparent 60%),
-        radial-gradient(circle at 100% 100%, rgba(255, 0, 127, 0.12) 0%, transparent 50%),
-        radial-gradient(circle at 0% 100%, rgba(147, 51, 234, 0.15) 0%, transparent 50%);
-      background-attachment: fixed;
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    /* Baldosa de Hielo Paradice 3D */
-    .ice-tile {
-      aspect-ratio: 1 / 1;
-      perspective: 1000px;
-      transform-style: preserve-3d;
-      transition: transform 0.15s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .ice-tile:active {
-      transform: scale(0.94);
-    }
-
-    .ice-tile-inner {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      transform-style: preserve-3d;
-      transition: transform 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    .ice-tile.revealed .ice-tile-inner {
-      transform: rotateY(180deg);
-    }
-
-    .ice-tile-front, .ice-tile-back {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      backface-visibility: hidden;
-      border-radius: 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* Cara Frontal: Cubo de Hielo Frío Translúcido */
-    .ice-tile-front {
-      background: linear-gradient(135deg, rgba(14, 165, 233, 0.22) 0%, rgba(2, 132, 199, 0.12) 100%);
-      border: 1.5px solid rgba(56, 189, 248, 0.4);
-      backdrop-filter: blur(8px);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), inset 0 0 12px rgba(56, 189, 248, 0.25);
-    }
-
-    .ice-tile-front:hover {
-      border-color: rgba(0, 240, 255, 0.85);
-      box-shadow: 0 0 20px rgba(0, 240, 255, 0.5), inset 0 0 15px rgba(0, 240, 255, 0.35);
-      transform: translateY(-2px);
-    }
-
-    /* Cara Trasera */
-    .ice-tile-back {
-      transform: rotateY(180deg);
-    }
-
-    /* Destapado Seguro (Granizado) */
-    .ice-tile-safe {
-      background: linear-gradient(135deg, rgba(6, 78, 59, 0.85) 0%, rgba(4, 120, 87, 0.9) 100%);
-      border: 2px solid #34d399;
-      box-shadow: 0 0 25px rgba(52, 211, 153, 0.6), inset 0 0 15px rgba(52, 211, 153, 0.4);
-    }
-
-    /* Destapado Mina (Hielo Roto / Derretido) */
-    .ice-tile-mine {
-      background: linear-gradient(135deg, rgba(136, 19, 55, 0.9) 0%, rgba(225, 29, 72, 0.95) 100%);
-      border: 2px solid #f43f5e;
-      box-shadow: 0 0 30px rgba(244, 63, 94, 0.8), inset 0 0 15px rgba(244, 63, 94, 0.5);
-    }
-
-    /* Peldaños de la Escalera de Promociones */
-    .promo-ladder-item {
-      transition: all 0.25s ease;
-    }
-    .promo-ladder-item.active-tier {
-      background: linear-gradient(90deg, rgba(250, 204, 21, 0.25) 0%, rgba(245, 158, 11, 0.35) 100%);
-      border-color: #facc15;
-      box-shadow: 0 0 15px rgba(250, 204, 21, 0.5);
-      transform: scale(1.02);
-    }
-    .promo-ladder-item.passed-tier {
-      opacity: 0.6;
-      border-color: rgba(52, 211, 153, 0.5);
-    }
-
-    /* Vidas */
-    .life-heart {
-      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
-    }
-    .life-heart.lost {
-      opacity: 0.25;
-      filter: grayscale(1);
-      transform: scale(0.75);
-    }
-
-    /* Animación del Letrero de Cambio de Premio */
-    @keyframes prizePulseGlow {
-      0% {
-        transform: scale(0.98);
-        border-color: rgba(250, 204, 21, 0.4);
-        box-shadow: 0 0 10px rgba(250, 204, 21, 0.3);
-      }
-      50% {
-        transform: scale(1.02);
-        border-color: #facc15;
-        box-shadow: 0 0 25px rgba(250, 204, 21, 0.8), inset 0 0 15px rgba(250, 204, 21, 0.25);
-      }
-      100% {
-        transform: scale(1);
-        border-color: rgba(56, 189, 248, 0.4);
-        box-shadow: 0 0 12px rgba(0, 240, 255, 0.2);
-      }
-    }
-
-    .prize-updated-animation {
-      animation: prizePulseGlow 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    }
-  </style>
+  <!-- Tailwind CSS Centralizado & Estilos Oficiales -->
+  <script src="js/config/tailwind.config.js"></script>
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/minas.css">
 </head>
 
 <body class="min-h-screen text-slate-100 flex flex-col items-center justify-between p-2 sm:p-4 md:p-6 overflow-x-hidden">
@@ -300,26 +136,26 @@
       <div>
         <h4 class="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-2">🎮 Otros Juegos Paradice</h4>
         <div class="space-y-1.5">
+          <a href="battleround.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-gradient-to-r from-rose-950/90 to-slate-900/90 hover:from-rose-900/90 hover:to-slate-800 border border-rose-500/50 text-xs font-black text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.3)] transition">
+            <span class="flex items-center gap-2"><span>💥</span> BattleRound</span>
+            <span class="text-[9px] font-black px-1.5 py-0.5 rounded bg-rose-600 text-white animate-pulse">★ DESTACADO</span>
+          </a>
           <a href="tragamonedas.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 border border-cyan-500/20 hover:border-cyan-400 text-xs font-bold text-cyan-300 transition">
             <span class="flex items-center gap-2"><span>🎰</span> Slots Glaciales</span>
             <span class="text-[9px] text-cyan-400 font-mono">3 Vidas</span>
-          </a>
-          <a href="battleround.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 border border-rose-500/20 hover:border-rose-400 text-xs font-bold text-rose-300 transition">
-            <span class="flex items-center gap-2"><span>💥</span> BattleRound</span>
-            <span class="text-[9px] text-rose-400 font-mono">Multiplayer</span>
           </a>
           <a href="hitbar.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 border border-amber-500/20 hover:border-amber-400 text-xs font-bold text-amber-300 transition">
             <span class="flex items-center gap-2"><span>⚡</span> Hit Bar</span>
             <span class="text-[9px] text-amber-400 font-mono">Speed</span>
           </a>
-          <a href="dados.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 border border-purple-500/20 hover:border-purple-400 text-xs font-bold text-purple-300 transition">
+          <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/30 border border-slate-800 text-xs font-medium text-slate-600 cursor-not-allowed opacity-50">
             <span class="flex items-center gap-2"><span>🎲</span> Dice Battle</span>
-            <span class="text-[9px] text-purple-400 font-mono">Duelo</span>
-          </a>
-          <a href="ruleta.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 border border-emerald-500/20 hover:border-emerald-400 text-xs font-bold text-emerald-300 transition">
+            <span class="text-[9px] text-rose-500 font-mono">Pausado</span>
+          </div>
+          <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/30 border border-slate-800 text-xs font-medium text-slate-600 cursor-not-allowed opacity-50">
             <span class="flex items-center gap-2"><span>🎡</span> Ruleta Glacial</span>
-            <span class="text-[9px] text-emerald-400 font-mono">Premios</span>
-          </a>
+            <span class="text-[9px] text-rose-500 font-mono">Pausado</span>
+          </div>
           <a href="index.html" class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/40 hover:bg-slate-800/80 border border-slate-800 hover:border-slate-700 text-xs font-bold text-slate-400 hover:text-white transition">
             <span class="flex items-center gap-2"><span>🏠</span> Landing Oficial</span>
             <span class="text-[9px] text-slate-500">Inicio</span>
@@ -752,42 +588,7 @@
   <script src="js/mvc/minas/MinasModel.js"></script>
   <script src="js/mvc/minas/MinasView.js"></script>
   <script src="js/mvc/minas/MinasController.js"></script>
-  <script>
-    (function () {
-      function startMinas() {
-        if (window.__minasStarted) return;
-        window.__minasStarted = true;
-        window.minasController = new MinasController();
-        window.minasController.init();
-
-        // Control del Drawer Lateral
-        const openBtn = document.getElementById('btn-open-sidebar');
-        const closeBtn = document.getElementById('btn-close-sidebar');
-        const drawer = document.getElementById('sidebar-drawer');
-        const backdrop = document.getElementById('sidebar-backdrop');
-        function openDrawer() {
-          backdrop?.classList.remove('opacity-0', 'pointer-events-none');
-          backdrop?.classList.add('opacity-100', 'pointer-events-auto');
-          drawer?.classList.remove('translate-x-full');
-        }
-        function closeDrawer() {
-          backdrop?.classList.remove('opacity-100', 'pointer-events-auto');
-          backdrop?.classList.add('opacity-0', 'pointer-events-none');
-          drawer?.classList.add('translate-x-full');
-        }
-        openBtn?.addEventListener('click', openDrawer);
-        closeBtn?.addEventListener('click', closeDrawer);
-        backdrop?.addEventListener('click', closeDrawer);
-
-        document.getElementById('btn-instructions')?.addEventListener('click', closeDrawer);
-      }
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', startMinas);
-      } else {
-        startMinas();
-      }
-    })();
-  </script>
+  <script src="js/pages/minas-app.js"></script>
 
 </body>
 </html>
